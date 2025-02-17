@@ -11,4 +11,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RentIt.Bookings.Application\RentIt.Bookings.Application.csproj" />
+    <ProjectReference Include="..\RentIt.Bookings.Core\RentIt.Bookings.Core.csproj" />
+    <ProjectReference Include="..\RentIt.Bookings.Infrastructure\RentIt.Bookings.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
