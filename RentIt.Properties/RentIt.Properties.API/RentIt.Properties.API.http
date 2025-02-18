@@ -1,0 +1,6 @@
+@RentIt.Properties.API_HostAddress = http://localhost:5047
+
+GET {{RentIt.Properties.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
