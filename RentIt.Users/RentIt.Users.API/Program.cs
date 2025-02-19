@@ -1,10 +1,38 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using RentIt.Users.API.Endpoints;
+using RentIt.Users.API.Extensions;
+using RentIt.Users.Infrastructure.Data;
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json.Serialization;
 
+var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseConnection");
+
+builder.Services.AddDbContext<RentItDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
+
+builder.Services.AddApplicationRepositories();
+builder.Services.AddApplicationUtilities();
+builder.Services.AddCoreServices();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+});
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    await seeder.SeedAsync(CancellationToken.None);
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -12,8 +40,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.MapUserEndpoints();
 
 app.Run();

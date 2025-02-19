@@ -10,4 +10,9 @@
     <ProjectReference Include="..\RentIt.Core\RentIt.Users.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+  </ItemGroup>
+
 </Project>
