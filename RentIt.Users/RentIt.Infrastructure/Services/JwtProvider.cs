@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RentIt.Users.Application.Interfaces;
+using RentIt.Users.Application.Options;
 using RentIt.Users.Core.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -11,11 +13,11 @@ namespace RentIt.Users.Infrastructure.Services
 {
     public class JwtProvider : IJwtProvider
     {
-        private readonly IConfiguration _configuration;
+        private readonly JwtOptions _jwtOptions;
 
-        public JwtProvider(IConfiguration configuration)
+        public JwtProvider(IOptions<JwtOptions> options)
         {
-            _configuration = configuration;
+            _jwtOptions = options.Value;
         }
 
         public string GenerateAccessToken(User user)
@@ -25,20 +27,20 @@ namespace RentIt.Users.Infrastructure.Services
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new Claim(ClaimTypes.Role, user.Role.RoleName.ToString())
             };
 
             var signingCreds = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key)),
                 SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: claims,
-                signingCredentials: signingCreds,
-                expires: DateTime.UtcNow.AddMinutes(double.Parse(_configuration["Jwt:TokenLifetimeMinutes"]))
-                );
+                expires: DateTime.UtcNow.AddMinutes(_jwtOptions.TokenLifetimeMinutes),
+                signingCredentials: signingCreds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

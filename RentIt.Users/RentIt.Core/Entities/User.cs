@@ -15,6 +15,8 @@ namespace RentIt.Users.Core.Entities
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public UserStatus Status { get; set; }
-        public UserProfile Profile { get; set; }
+        public UserProfile Profile { get; set; } = new();
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiryTime { get; set; } = DateTime.UtcNow.AddDays(7);
     }
 }

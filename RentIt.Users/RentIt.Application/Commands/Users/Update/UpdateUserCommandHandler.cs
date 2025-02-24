@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
+using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Core.Interfaces.Repositories;
 
@@ -8,24 +10,26 @@ namespace RentIt.Users.Application.Commands.Users.Update
     {
         private readonly IUserRepository _userRepository;
         private readonly IEmailNormalizer _emailNormalizer;
+        private readonly IMapper _mapper;
 
         public UpdateUserCommandHandler(
             IUserRepository userRepository,
-            IEmailNormalizer emailNormalizer)
+            IEmailNormalizer emailNormalizer,
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _emailNormalizer = emailNormalizer;
+            _mapper = mapper;
         }
 
         public async Task<bool> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
-                return false;
+                throw new NotFoundException("При обновлении профиля произошла ошибка: Пользователь не найден.");
 
-            user.FirstName = request.FirstName;
-            user.LastName = request.LastName;
-            user.Email = request.Email;
+            _mapper.Map(request, user);
+
             user.NormalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
             user.UpdatedAt = DateTime.UtcNow;
 

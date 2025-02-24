@@ -53,7 +53,8 @@ namespace RentIt.Users.Infrastructure.Configurations
 
             builder.HasOne(u => u.Profile)
                .WithOne(p => p.User)
-               .HasForeignKey<UserProfile>(p => p.UserId);
+               .HasForeignKey<UserProfile>(p => p.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

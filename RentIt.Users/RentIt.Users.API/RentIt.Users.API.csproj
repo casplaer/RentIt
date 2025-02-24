@@ -20,6 +20,7 @@
     <ProjectReference Include="..\RentIt.Application\RentIt.Users.Application.csproj" />
     <ProjectReference Include="..\RentIt.Core\RentIt.Users.Core.csproj" />
     <ProjectReference Include="..\RentIt.Infrastructure\RentIt.Users.Infrastructure.csproj" />
+    <ProjectReference Include="..\RentIt.Users.Contracts\RentIt.Users.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

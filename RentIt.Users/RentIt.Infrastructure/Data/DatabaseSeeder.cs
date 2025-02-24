@@ -1,4 +1,5 @@
-﻿using RentIt.Users.Core.Entities;
+﻿using RentIt.Users.Application.Interfaces;
+using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
 
@@ -9,15 +10,21 @@ namespace RentIt.Users.Infrastructure.Data
         private readonly RentItDbContext _context;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly IJwtProvider _jwtProvider;
 
         public DatabaseSeeder(
             RentItDbContext context, 
             IUserRepository userRepository, 
-            IRoleRepository roleRepository)
+            IRoleRepository roleRepository,
+            IPasswordHasher passwordHasher,
+            IJwtProvider jwtProvider)
         {
             _context = context;
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _passwordHasher = passwordHasher;
+            _jwtProvider = jwtProvider;
         }
 
         public async Task SeedAsync(CancellationToken cancellationToken)
@@ -42,11 +49,13 @@ namespace RentIt.Users.Infrastructure.Data
                 LastName = "Adminov",
                 Email = "admin@example.com",
                 NormalizedEmail = "admin@example.com".ToLowerInvariant(),
-                PasswordHash = "hashedpassword123",
+                PasswordHash = _passwordHasher.Hash("testadmin"),
                 RoleId = adminRole.RoleId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Active,
+                RefreshToken = _jwtProvider.GenerateRefreshToken(),
+                Profile = new UserProfile()
             };
 
             var regularUser = new User
@@ -56,11 +65,13 @@ namespace RentIt.Users.Infrastructure.Data
                 LastName = "Doe",
                 Email = "john.doe@example.com",
                 NormalizedEmail = "john.doe@example.com".ToLowerInvariant(),
-                PasswordHash = "hashedpassword123",
+                PasswordHash = _passwordHasher.Hash("testuser"),
                 RoleId = userRole.RoleId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Active,
+                RefreshToken = _jwtProvider.GenerateRefreshToken(),
+                Profile = new UserProfile()
             };
 
             var landlordUser = new User
@@ -70,11 +81,13 @@ namespace RentIt.Users.Infrastructure.Data
                 LastName = "Smith",
                 Email = "michael.smith@example.com",
                 NormalizedEmail = "michael.smith@example.com".ToLowerInvariant(),
-                PasswordHash = "hashedpassword123",
+                PasswordHash = _passwordHasher.Hash("testlandlord"),
                 RoleId = landlordRole.RoleId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                Status = UserStatus.Active
+                Status = UserStatus.Active,
+                RefreshToken = _jwtProvider.GenerateRefreshToken(),
+                Profile = new UserProfile()
             };
 
             await _userRepository.AddAsync(adminUser, cancellationToken);

@@ -7,7 +7,6 @@ namespace RentIt.Users.Application.Commands.Users.Create
         string FirstName,
         string LastName,
         string Email,
-        string Password,
-        Role Role
+        string Password
         ) : IRequest<Guid>;
 } 

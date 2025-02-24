@@ -18,7 +18,7 @@ namespace RentIt.Users.Infrastructure.Repositories
             return await _context.Set<T>().FindAsync(id, cancellationToken);
         }
 
-        public async Task<ICollection<T>> GetAllAsync(CancellationToken cancellationToken)
+        public virtual async Task<ICollection<T>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _context.Set<T>().ToListAsync();
         }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Core.Interfaces.Repositories;
 
@@ -27,7 +28,7 @@ namespace RentIt.Users.Application.Commands.Users.Login
             var user = await _userRepository.GetUserByNormalizedEmailAsync(normalizedEmail, cancellationToken);
             if (user == null)
             {
-                throw new Exception("Пользователь не найден."); 
+                throw new NotFoundException("Пользователь не найден."); 
             }
 
             if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
@@ -38,8 +39,10 @@ namespace RentIt.Users.Application.Commands.Users.Login
             var accessToken = _jwtProvider.GenerateAccessToken(user);
             var refreshToken = _jwtProvider.GenerateRefreshToken();
 
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
-            return new LoginUserResponse(accessToken, refreshToken);
+            return new LoginUserResponse(accessToken);
         }
     }
 }
