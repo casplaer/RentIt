@@ -1,6 +1,6 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace RentIt.Users.Application.Specifications
+namespace RentIt.Users.Core.Specifications
 {
     public static class SpecificationEvaluator
     {
@@ -11,7 +11,7 @@ namespace RentIt.Users.Application.Specifications
         {
             IQueryable<TEntity> queryable = inputQueryable;
 
-            if(specification.Criteria is not null)
+            if (specification.Criteria is not null)
             {
                 queryable = queryable.Where(specification.Criteria);
             }
@@ -21,7 +21,7 @@ namespace RentIt.Users.Application.Specifications
                 (current, includeExpresion) =>
                     current.Include(includeExpresion));
 
-            if(specification.OrderByExpression is not null)
+            if (specification.OrderByExpression is not null)
             {
                 queryable = queryable.OrderBy(specification.OrderByExpression);
             }
@@ -30,6 +30,9 @@ namespace RentIt.Users.Application.Specifications
                 queryable = queryable.OrderByDescending(
                     specification.OrderByDescendingExpression);
             }
+
+            queryable = queryable.Skip((specification.Page - 1) * specification.PageSize)
+                     .Take(specification.PageSize);
 
             return queryable;
         }

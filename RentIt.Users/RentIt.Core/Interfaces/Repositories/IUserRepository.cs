@@ -1,5 +1,6 @@
 ﻿using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
+using RentIt.Users.Core.Specifications;
 
 namespace RentIt.Users.Core.Interfaces.Repositories
 {
@@ -11,16 +12,7 @@ namespace RentIt.Users.Core.Interfaces.Repositories
         Task<User?> GetUserByNormalizedEmailAsync(string normalizedEmail, CancellationToken cancellationToken);
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
         Task<ICollection<User>> GetUsersByStatusAsync(UserStatus status, CancellationToken cancellationToken);
-        Task<PaginatedResult<User>> GetFilteredUsersAsync(
-            string? FirstName,
-            string? lastName,
-            string? email,
-            string? country,
-            string? city,
-            string? phoneNumber, 
-            int page, 
-            int pageSize, 
-            CancellationToken cancellationToken);
+        Task<PaginatedResult<User>> GetFilteredUsersAsync(Specification<User> specification, CancellationToken cancellationToken);
 
         //Методы с использованием навигационного свойства UserProfile
         Task<ICollection<User>> GetUsersByCountry(string country, CancellationToken cancellationToken);

@@ -1,9 +1,9 @@
 ﻿using System.Linq.Expressions;
 
-namespace RentIt.Users.Application.Specifications
+namespace RentIt.Users.Core.Specifications
 {
     public abstract class Specification<TEntity>
-        where TEntity : class
+            where TEntity : class
     {
         protected Specification(Expression<Func<TEntity, bool>>? criteria) =>
             Criteria = criteria;
@@ -16,6 +16,10 @@ namespace RentIt.Users.Application.Specifications
 
         public Expression<Func<TEntity, object>>? OrderByDescendingExpression { get; private set; }
 
+        public int Page { get; private set; } = 1;
+
+        public int PageSize { get; private set; } = 10;
+
         protected void AddInclude(Expression<Func<TEntity, object>> includeExpression) =>
             IncludeExpressions.Add(includeExpression);
 
@@ -25,6 +29,12 @@ namespace RentIt.Users.Application.Specifications
         protected void AddOrderByDescending(
             Expression<Func<TEntity, object>> orderByDescendingExpression) =>
             OrderByDescendingExpression = orderByDescendingExpression;
+
+        protected void SetPagination(int page, int pageSize)
+        {
+            Page = page;
+            PageSize = pageSize;
+        }
 
     }
 }

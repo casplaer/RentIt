@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RentIt.Users.Application.Specifications.Users;
 using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
+using RentIt.Users.Core.Specifications;
 using RentIt.Users.Infrastructure.Data;
-using RentIt.Users.Infrastructure.Extensions;
 
 namespace RentIt.Users.Infrastructure.Repositories
 {
@@ -14,10 +15,8 @@ namespace RentIt.Users.Infrastructure.Repositories
 
         public override async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.Profile)
-                .FirstOrDefaultAsync(u => u.UserId == id, cancellationToken);
+            return await ApplySpecification(new GetUserByIdSpecification(id))
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public override async Task<ICollection<User>> GetAllAsync(CancellationToken cancellationToken)
@@ -70,46 +69,35 @@ namespace RentIt.Users.Infrastructure.Repositories
         }
 
         public async Task<PaginatedResult<User>> GetFilteredUsersAsync(
-            string? firstName,
-            string? lastName,
-            string? email,
-            string? country,
-            string? city,
-            string? phoneNumber,
-            int page,
-            int pageSize,
+            Specification<User> specification,
             CancellationToken cancellationToken)
         {
 
             var query = _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.Profile)
                 .AsQueryable();
 
-            query = query
-                .ApplyFilter(u => u.FirstName.Contains(firstName!), !string.IsNullOrEmpty(firstName))
-                .ApplyFilter(u => u.LastName.Contains(lastName!), !string.IsNullOrEmpty(lastName))
-                .ApplyFilter(u => u.Email.Contains(email!), !string.IsNullOrEmpty(email))
-                .ApplyFilter(u => u.Profile.Country.Contains(country!), !string.IsNullOrEmpty(country))
-                .ApplyFilter(u => u.Profile.City.Contains(city!), !string.IsNullOrEmpty(city))
-                .ApplyFilter(u => u.Profile.PhoneNumber.Contains(phoneNumber!), !string.IsNullOrEmpty(phoneNumber));
+            query = ApplySpecification(specification);
 
             var totalCount = await query.CountAsync(cancellationToken);
-            var skip = (Math.Max(1, page) - 1) * pageSize;
 
-            var items = await query
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync(cancellationToken);
+            var items = await query.ToListAsync(cancellationToken);
 
             return new PaginatedResult<User>
             {
                 Items = items,
                 TotalCount = totalCount,
-                PageSize = pageSize,
-                CurrentPage = page,
-                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+                PageSize = specification.PageSize,
+                CurrentPage =specification.Page,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)specification.PageSize)
             };
+        }
+
+        private IQueryable<User> ApplySpecification(
+            Specification<User> specification)
+        {
+            return SpecificationEvaluator.GetQuery(
+                _context.Set<User>(),
+                specification);
         }
 
         //Методы с использованием навигационного свойства UserProfile
