@@ -45,6 +45,7 @@ namespace RentIt.Users.API.Endpoints
                     request.FirstName,
                     request.LastName,
                     request.Email,
+                    request.Role,
                     request.Country,
                     request.City,
                     request.PhoneNumber,
@@ -80,7 +81,7 @@ namespace RentIt.Users.API.Endpoints
             });
 
             usersGroup.MapPost("/sign-in", async (
-                LoginUserCommand command, 
+                LoginUserCommand command,
                 IMediator mediator,
                 HttpContext httpContext
                 ) =>
@@ -91,27 +92,63 @@ namespace RentIt.Users.API.Endpoints
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddMinutes(15)
+                    SameSite = SameSiteMode.None
+                });
+
+                httpContext.Response.Cookies.Append("RefreshToken", result.RefreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None
                 });
 
                 return Results.Ok(result);
             });
 
-            usersGroup.MapPost("/refresh", async (HttpContext httpContext, IMediator mediator, IJwtProvider jwtProvider) =>
+            usersGroup.MapPost("/sign-out", async(
+                HttpContext httpContext,
+                IJwtProvider jwtProvider
+                ) =>
+            {
+                var refreshToken = httpContext.Request.Cookies["RefreshToken"];
+                var accessToken = httpContext.Request.Cookies["AccessToken"];
+
+                if (!string.IsNullOrEmpty(refreshToken))
+                {
+                    await jwtProvider.RevokeRefreshTokenAsync(refreshToken);
+                }
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    await jwtProvider.RevokeAccessTokenAsync(accessToken);
+                }
+
+                httpContext.Response.Cookies.Delete("AccessToken");
+                httpContext.Response.Cookies.Delete("RefreshToken");
+
+                return Results.Ok("Пользователь успешно вышел.");
+            });
+
+
+            usersGroup.MapPost("/refresh", async (
+                HttpContext httpContext,
+                IMediator mediator,
+                IJwtProvider jwtProvider) =>
             {
                 var refreshToken = httpContext.Request.Cookies["RefreshToken"];
 
-                var user = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken)); 
+                var storedRefreshToken = await jwtProvider.GetStoredTokenAsync(refreshToken);
+                if (string.IsNullOrEmpty(refreshToken) || storedRefreshToken == null)
+                {
+                    return Results.Unauthorized();
+                }
 
-                var newAccessToken = jwtProvider.GenerateAccessToken(user);
+                var newAccessToken = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken));
 
                 httpContext.Response.Cookies.Append("AccessToken", newAccessToken, new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddMinutes(15)
+                    SameSite = SameSiteMode.None
                 });
 
                 return Results.Ok(new { accessToken = newAccessToken });

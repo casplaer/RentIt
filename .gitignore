@@ -44,3 +44,7 @@ msbuild.err
 msbuild.wrn
 
 postgres_data/
+mongo_data/
+postgres_data_booking/
+postgres_data_users/
+redis_data/

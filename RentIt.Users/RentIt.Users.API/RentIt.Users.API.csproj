@@ -12,7 +12,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.8.24" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
@@ -20,7 +22,10 @@
     <ProjectReference Include="..\RentIt.Application\RentIt.Users.Application.csproj" />
     <ProjectReference Include="..\RentIt.Core\RentIt.Users.Core.csproj" />
     <ProjectReference Include="..\RentIt.Infrastructure\RentIt.Users.Infrastructure.csproj" />
+    <ProjectReference Include="..\RentIt.Users.Application\RentIt.Users.Application.csproj" />
     <ProjectReference Include="..\RentIt.Users.Contracts\RentIt.Users.Contracts.csproj" />
+    <ProjectReference Include="..\RentIt.Users.Core\RentIt.Users.Core.csproj" />
+    <ProjectReference Include="..\RentIt.Users.Infrastructure\RentIt.Users.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

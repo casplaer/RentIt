@@ -4,6 +4,7 @@
         string? FirstName,
         string? LastName,
         string? Email,
+        string? Role,
         string? Country,
         string? City,
         string? PhoneNumber,
