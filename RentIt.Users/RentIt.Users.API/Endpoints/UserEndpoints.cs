@@ -32,7 +32,8 @@ namespace RentIt.Users.API.Endpoints
             {
                 var users = await mediator.Send(new GetAllUsersQuery());
                 return Results.Ok(users);
-            });
+            })
+            .RequireAuthorization("AdminPolicy");
 
             usersGroup.MapGet("/search", async (
                 [AsParameters] GetUsersRequest request,
@@ -54,7 +55,8 @@ namespace RentIt.Users.API.Endpoints
                     request.PageSize));
 
                 return users;
-            });
+            })
+            .RequireAuthorization("AdminPolicy");
 
             usersGroup.MapPut("/", async (
                 UpdateUserRequest request, 
@@ -146,7 +148,8 @@ namespace RentIt.Users.API.Endpoints
                 httpContext.Response.Cookies.Delete("RefreshToken");
 
                 return Results.Ok("Пользователь успешно вышел.");
-            });
+            })
+            .RequireAuthorization();
 
 
             usersGroup.MapPost("/refresh", async (
@@ -172,13 +175,15 @@ namespace RentIt.Users.API.Endpoints
                 });
 
                 return Results.Ok();
-            });
+            })
+            .RequireAuthorization();
 
             usersGroup.MapDelete("/{id:guid}", async (Guid id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new DeleteUserCommand(id));
                 return Results.Ok();
-            }).RequireAuthorization();
+            })
+            .RequireAuthorization();
         }
     }
 }
