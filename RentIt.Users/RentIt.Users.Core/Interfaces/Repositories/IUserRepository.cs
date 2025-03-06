@@ -1,6 +1,6 @@
 ﻿using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
-using RentIt.Users.Core.Specifications;
+using RentIt.Users.Core.Interfaces.Specifications;
 
 namespace RentIt.Users.Core.Interfaces.Repositories
 {
@@ -9,6 +9,6 @@ namespace RentIt.Users.Core.Interfaces.Repositories
         Task<User?> GetUserByNormalizedEmailAsync(string normalizedEmail, CancellationToken cancellationToken);
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
         Task<ICollection<User>> GetUsersByStatusAsync(UserStatus status, CancellationToken cancellationToken);
-        Task<PaginatedResult<User>> GetFilteredUsersAsync(Specification<User> specification, CancellationToken cancellationToken);
+        Task<PaginatedResult<User>> GetFilteredUsersAsync(ISpecification<User> specification, CancellationToken cancellationToken);
     }
 }

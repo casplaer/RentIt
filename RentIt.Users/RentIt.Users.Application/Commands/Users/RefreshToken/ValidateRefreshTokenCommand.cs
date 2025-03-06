@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using RentIt.Users.Core.Entities;
+using RentIt.Users.Contracts.Responses.RefreshToken;
 
 namespace RentIt.Users.Application.Commands.Users.RefreshToken
 {
-    public class ValidateRefreshTokenCommand : IRequest<string>
+    public class ValidateRefreshTokenCommand : IRequest<ValidateRefreshTokenResponse>
     {
         public string RefreshToken { get; }
 

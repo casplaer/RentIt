@@ -46,7 +46,6 @@ namespace RentIt.Users.API.Middleware
                     var firstErrorMessage = validationException.Errors?.FirstOrDefault()?.ErrorMessage
                         ?? "Ошибка валидации.";
                     message = firstErrorMessage;
-
                     break;
 
                 case UnauthorizedAccessException:

@@ -3,9 +3,8 @@ using MediatR;
 using RentIt.Users.Contracts.DTO.Users;
 using RentIt.Users.Contracts.Responses.Users;
 using RentIt.Users.Core.Interfaces.Repositories;
-using LinqKit;
-using RentIt.Users.Core.Entities;
 using RentIt.Users.Application.Specifications.Users;
+using FluentValidation;
 
 namespace RentIt.Users.Application.Queries.Users
 {
@@ -13,21 +12,21 @@ namespace RentIt.Users.Application.Queries.Users
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IValidator<GetFilteredUsersQuery> _validator;
 
         public GetFilteredUsersQueryHandler(
             IUserRepository userRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IValidator<GetFilteredUsersQuery> validator)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<GetUsersResponse> Handle(GetFilteredUsersQuery request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            { 
-                throw new ArgumentNullException(nameof(request), "Отсутствуют данные для фильтрации.");
-            }
+            await _validator.ValidateAndThrowAsync(request);
 
             var specification = new GetFilteredUsersSpecification(
                 request.FirstName,

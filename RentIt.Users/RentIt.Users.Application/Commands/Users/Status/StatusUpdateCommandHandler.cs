@@ -17,7 +17,9 @@ namespace RentIt.Users.Application.Commands.Users.Status
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
+            {
                 throw new NotFoundException("Пользователь не найден.");
+            }    
 
             user.Status = user.Status == UserStatus.Inactive ? UserStatus.Active : UserStatus.Inactive;
 

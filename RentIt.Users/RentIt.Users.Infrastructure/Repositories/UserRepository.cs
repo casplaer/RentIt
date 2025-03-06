@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RentIt.Users.Application.Specifications.Users;
 using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
-using RentIt.Users.Core.Specifications;
+using RentIt.Users.Application.Specifications;
 using RentIt.Users.Infrastructure.Data;
+using RentIt.Users.Core.Interfaces.Specifications;
 
 namespace RentIt.Users.Infrastructure.Repositories
 {
@@ -15,13 +15,16 @@ namespace RentIt.Users.Infrastructure.Repositories
 
         public override async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await ApplySpecification(new GetUserByIdSpecification(id))
-                .FirstOrDefaultAsync(cancellationToken);
+            return await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Profile)
+                .FirstOrDefaultAsync(u=>u.UserId == id, cancellationToken);
         }
 
         public override async Task<ICollection<User>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _context.Users
+                .AsNoTracking()
                 .Include(u => u.Role)
                 .ToListAsync(cancellationToken);
         }
@@ -48,7 +51,7 @@ namespace RentIt.Users.Infrastructure.Repositories
         }
 
         public async Task<PaginatedResult<User>> GetFilteredUsersAsync(
-            Specification<User> specification,
+            ISpecification<User> specification,
             CancellationToken cancellationToken)
         {
 
@@ -72,7 +75,7 @@ namespace RentIt.Users.Infrastructure.Repositories
         }
 
         private IQueryable<User> ApplySpecification(
-            Specification<User> specification)
+            ISpecification<User> specification)
         {
             return SpecificationEvaluator.GetQuery(
                 _context.Set<User>(),

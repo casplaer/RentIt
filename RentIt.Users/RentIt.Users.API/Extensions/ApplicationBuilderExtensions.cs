@@ -2,7 +2,7 @@
 
 namespace RentIt.Users.API.Extensions
 {
-    public static class MiddlewareExtensions
+    public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseCustomMiddlewares(this IApplicationBuilder app)
         {

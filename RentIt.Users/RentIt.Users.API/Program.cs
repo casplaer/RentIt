@@ -4,7 +4,9 @@ using RentIt.Users.API.Extensions;
 using RentIt.Users.Infrastructure.Data;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json.Serialization;
-using RentIt.Users.Application.Options;
+using RentIt.Users.Infrastructure.Options;
+using RentIt.Users.Application.Extensions;
+using RentIt.Users.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseConnection");
@@ -15,7 +17,7 @@ builder.Services.AddDbContext<RentItDbContext>(options =>
 
 builder.Services.AddApplicationRepositories();
 builder.Services.AddApplicationUtilities();
-builder.Services.AddCoreServices();
+builder.Services.AddMediatR();
 builder.Services.MapAllProfiles();
 builder.Services.AddValidators();
 
@@ -39,9 +41,6 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<RentItDbContext>();
     dbContext.Database.Migrate();
-
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-    await seeder.SeedAsync(CancellationToken.None);
 }
 
 if (app.Environment.IsDevelopment())

@@ -1,18 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
-using RentIt.Users.Application.Exceptions;
-using RentIt.Users.Application.Options;
+using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 namespace RentIt.Users.API.Extensions
 {
-    public static class AuthenticationExtensions
+    public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<IConnectionMultiplexer>(sp =>
+            {
+                var connectionString = configuration.GetConnectionString("RedisConnection");
+                return ConnectionMultiplexer.Connect(connectionString);
+            });
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("RedisConnection");
+                options.InstanceName = "RentIt";
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddJwtAuthentication(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddAuthentication(options =>

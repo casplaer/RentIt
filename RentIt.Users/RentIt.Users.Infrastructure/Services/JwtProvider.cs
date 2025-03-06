@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RentIt.Users.Application.Interfaces;
-using RentIt.Users.Application.Options;
 using RentIt.Users.Core.Entities;
+using RentIt.Users.Infrastructure.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -23,7 +23,7 @@ namespace RentIt.Users.Infrastructure.Services
             _cache = cache;
         }
 
-        public string GenerateAccessToken(User user)
+        public async Task<string> GenerateAccessTokenAsync(User user)
         {
             var jti = Guid.NewGuid().ToString();
 
@@ -51,15 +51,15 @@ namespace RentIt.Users.Infrastructure.Services
             var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             var key = $"access:{jti}";
-            _cache.SetStringAsync(key, tokenString, new DistributedCacheEntryOptions
+            await _cache.SetStringAsync(key, tokenString, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOptions.TokenLifetimeMinutes)
-            }).Wait();
+            });
 
             return tokenString;
         }
 
-        public string GenerateRefreshToken(User? user)
+        public async Task<string> GenerateRefreshTokenAsync(User? user)
         {
             var jti = Guid.NewGuid().ToString();
             var randomNumber = new byte[32];
@@ -71,10 +71,10 @@ namespace RentIt.Users.Infrastructure.Services
             var refreshToken = Convert.ToBase64String(randomNumber);
 
             var key = $"refresh:{refreshToken}";
-            _cache.SetStringAsync(key, refreshToken, new DistributedCacheEntryOptions
+            await _cache.SetStringAsync(key, refreshToken, new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(7)
-            }).Wait();
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(_jwtOptions.RefreshTokenLifetimeDays)
+            });
 
             return refreshToken;
         }

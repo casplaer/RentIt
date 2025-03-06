@@ -3,6 +3,7 @@ using MediatR;
 using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Responses.Users;
 using RentIt.Users.Core.Interfaces.Repositories;
 
 namespace RentIt.Users.Application.Commands.Users.Login
@@ -12,40 +13,41 @@ namespace RentIt.Users.Application.Commands.Users.Login
         private readonly IUserRepository _userRepository;
         private readonly IJwtProvider _jwtProvider;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IEmailNormalizer _emailNormalizer;
         private readonly IMapper _mapper;
 
         public LoginUserCommandHandler(
             IUserRepository userRepository,
             IJwtProvider jwtProvider,
             IPasswordHasher passwordHasher,
-            IMapper mapper)
+            IMapper mapper,
+            IEmailNormalizer emailNormalizer)
         {
             _userRepository = userRepository;
             _jwtProvider = jwtProvider;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
+            _emailNormalizer = emailNormalizer;
         }
 
         public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+            var normalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
 
             var user = await _userRepository.GetUserByNormalizedEmailAsync(normalizedEmail, cancellationToken);
-            if (user == null)
+
+            if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
             {
-                throw new NotFoundException("Пользователь не найден."); 
+                throw new UnauthorizedAccessException("Неверные учетные данные.");
             }
 
-            if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
-            {
-                throw new Exception("Неверные учетные данные."); 
-            }
-
-            var accessToken = _jwtProvider.GenerateAccessToken(user);
-            var refreshToken = _jwtProvider.GenerateRefreshToken(user);
+            var accessToken = await _jwtProvider.GenerateAccessTokenAsync(user);
+            var refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user);
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _userRepository.SaveChangesAsync(cancellationToken);
 
             var userDTO = _mapper.Map<UserDTO>(user);
 

@@ -1,5 +1,4 @@
 ﻿using RentIt.Users.Core.Entities;
-using RentIt.Users.Core.Specifications;
 
 namespace RentIt.Users.Application.Specifications.Users
 {

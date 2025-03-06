@@ -11,6 +11,7 @@ using RentIt.Users.Application.Commands.Users.Update;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Application.Queries.Users;
 using RentIt.Users.Contracts.Requests.Users;
+using System.Security.Claims;
 
 namespace RentIt.Users.API.Endpoints
 {
@@ -55,19 +56,38 @@ namespace RentIt.Users.API.Endpoints
                 return users;
             });
 
-            usersGroup.MapPut("/", async (UpdateUserCommand command, IMediator mediator) =>
+            usersGroup.MapPut("/", async (
+                UpdateUserRequest request, 
+                HttpContext httpContext,
+                IMediator mediator) =>
             {
-                var result = await mediator.Send(command);
+                var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Results.Unauthorized();
+                }
+
+                var result = await mediator
+                .Send(new UpdateUserCommand(
+                    userId,
+                    request.FirstName,
+                    request.LastName,
+                    request.Email,
+                    request.PhoneNumber,
+                    request.Country,
+                    request.City,
+                    request.Address));
+
                 return Results.Ok();
             }).RequireAuthorization();
 
-            usersGroup.MapPut("/status/{id:guid}", async (Guid id, IMediator mediator) =>
+            usersGroup.MapPatch("/status/{id:guid}", async (Guid id, IMediator mediator) =>
             {
                 var result = await mediator.Send(new StatusUpdateCommand(id));
                 return Results.Ok();
             }).RequireAuthorization();
 
-            usersGroup.MapPut("/role", async (UpdateUserRoleCommand request, IMediator mediator) => 
+            usersGroup.MapPatch("/role", async (UpdateUserRoleCommand request, IMediator mediator) => 
             {
                 var result = await mediator.Send(request);
 
@@ -76,8 +96,8 @@ namespace RentIt.Users.API.Endpoints
 
             usersGroup.MapPost("/sign-up", async (CreateUserCommand command, IMediator mediator) =>
             {
-                var userId = await mediator.Send(command);
-                return Results.Created($"/users/{userId}", new { userId });
+                await mediator.Send(command);
+                return Results.Ok("Пользователь успешно зарегистрирован.");
             });
 
             usersGroup.MapPost("/sign-in", async (
@@ -102,7 +122,7 @@ namespace RentIt.Users.API.Endpoints
                     SameSite = SameSiteMode.None
                 });
 
-                return Results.Ok(result);
+                return Results.Ok();
             });
 
             usersGroup.MapPost("/sign-out", async(
@@ -131,27 +151,27 @@ namespace RentIt.Users.API.Endpoints
 
             usersGroup.MapPost("/refresh", async (
                 HttpContext httpContext,
-                IMediator mediator,
-                IJwtProvider jwtProvider) =>
+                IMediator mediator) =>
             {
                 var refreshToken = httpContext.Request.Cookies["RefreshToken"];
 
-                var storedRefreshToken = await jwtProvider.GetStoredTokenAsync(refreshToken);
-                if (string.IsNullOrEmpty(refreshToken) || storedRefreshToken == null)
-                {
-                    return Results.Unauthorized();
-                }
+                var result = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken));
 
-                var newAccessToken = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken));
-
-                httpContext.Response.Cookies.Append("AccessToken", newAccessToken, new CookieOptions
+                httpContext.Response.Cookies.Append("AccessToken", result.NewAccessToken, new CookieOptions
                 {
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None
                 });
 
-                return Results.Ok(new { accessToken = newAccessToken });
+                httpContext.Response.Cookies.Append("RefreshToken", result.NewRefreshToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None
+                });
+
+                return Results.Ok();
             });
 
             usersGroup.MapDelete("/{id:guid}", async (Guid id, IMediator mediator) =>

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using RentIt.Users.Core.Entities;
 
 namespace RentIt.Users.Application.Commands.Users.Create
 {
@@ -8,5 +7,5 @@ namespace RentIt.Users.Application.Commands.Users.Create
         string LastName,
         string Email,
         string Password
-        ) : IRequest<Guid>;
+        ) : IRequest;
 } 

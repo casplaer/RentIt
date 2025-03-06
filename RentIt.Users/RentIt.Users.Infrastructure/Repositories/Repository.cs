@@ -20,7 +20,7 @@ namespace RentIt.Users.Infrastructure.Repositories
 
         public virtual async Task<ICollection<T>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Set<T>().ToListAsync();
+            return await _context.Set<T>().AsNoTracking().ToListAsync();
         }
 
         public async Task AddAsync(T entity, CancellationToken cancellationToken)
