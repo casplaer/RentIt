@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using RentIt.Users.Application.Interfaces;
-using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Dto.Users;
 using RentIt.Users.Contracts.Responses.Users;
 using RentIt.Users.Core.Interfaces.Repositories;
 

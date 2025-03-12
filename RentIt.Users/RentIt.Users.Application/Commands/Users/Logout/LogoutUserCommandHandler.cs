@@ -27,13 +27,6 @@ namespace RentIt.Users.Application.Commands.Users.Logout
                 await _jwtProvider.RevokeAccessTokenAsync(request.AccessToken, cancellationToken);
             }
 
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                httpContext.Response.Cookies.Delete("AccessToken");
-                httpContext.Response.Cookies.Delete("RefreshToken");
-            }
-
             return "Пользователь успешно вышел.";
         }
     }

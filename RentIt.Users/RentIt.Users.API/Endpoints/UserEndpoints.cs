@@ -137,6 +137,10 @@ namespace RentIt.Users.API.Endpoints
                 var accessToken = httpContext.Request.Cookies["AccessToken"];
 
                 var result = await mediator.Send(new LogoutUserCommand(accessToken, refreshToken), cancellationToken);
+
+                httpContext.Response.Cookies.Delete("AccessToken");
+                httpContext.Response.Cookies.Delete("RefreshToken");
+
                 return Results.Ok(result);
             })
             .RequireAuthorization();

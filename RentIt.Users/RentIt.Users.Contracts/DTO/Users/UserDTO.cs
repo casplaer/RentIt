@@ -1,4 +1,4 @@
-﻿namespace RentIt.Users.Contracts.DTO.Users
+﻿namespace RentIt.Users.Contracts.Dto.Users
 {
     public record UserDto
     {
