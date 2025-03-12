@@ -1,6 +1,6 @@
 ﻿namespace RentIt.Users.Contracts.DTO.Users
 {
-    public record UserDTO
+    public record UserDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

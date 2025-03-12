@@ -21,7 +21,7 @@ namespace RentIt.Users.Application.Commands.Users.RefreshToken
 
         public async Task<ValidateRefreshTokenResponse> Handle(ValidateRefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var storedRefreshToken = await _jwtProvider.GetStoredTokenAsync(request.RefreshToken);
+            var storedRefreshToken = await _jwtProvider.GetStoredTokenAsync(request.RefreshToken, cancellationToken);
 
             if (string.IsNullOrEmpty(request.RefreshToken) || storedRefreshToken == null)
             {
@@ -35,8 +35,8 @@ namespace RentIt.Users.Application.Commands.Users.RefreshToken
                 throw new NotFoundException("Требуется повторный вход.");
             }
 
-            var newAccessToken = await _jwtProvider.GenerateAccessTokenAsync(user);
-            var newRefreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user);
+            var newAccessToken = await _jwtProvider.GenerateAccessTokenAsync(user, cancellationToken);
+            var newRefreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user, cancellationToken);
 
             return new ValidateRefreshTokenResponse(newAccessToken, newRefreshToken);
         }

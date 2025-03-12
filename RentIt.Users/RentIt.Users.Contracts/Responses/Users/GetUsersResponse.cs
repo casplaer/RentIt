@@ -3,7 +3,7 @@
 namespace RentIt.Users.Contracts.Responses.Users
 {
     public record GetUsersResponse(
-        ICollection<UserDTO> Users,
+        ICollection<UserDto> Users,
         int PageNumber,
         int TotalPages
         );

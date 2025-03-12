@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using RentIt.Users.Application.Interfaces;
@@ -23,17 +22,17 @@ namespace RentIt.Users.Infrastructure.Services
             _cache = cache;
         }
 
-        public async Task<string> GenerateAccessTokenAsync(User user)
+        public async Task<string> GenerateAccessTokenAsync(User user, CancellationToken cancellationToken)
         {
             var jti = Guid.NewGuid().ToString();
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Jti, jti),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.RoleName.ToString())
+                new(JwtRegisteredClaimNames.Jti, jti),
+                new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.Role, user.Role.RoleName.ToString())
             };
 
             var signingCreds = new SigningCredentials(
@@ -54,12 +53,12 @@ namespace RentIt.Users.Infrastructure.Services
             await _cache.SetStringAsync(key, tokenString, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_jwtOptions.TokenLifetimeMinutes)
-            });
+            }, cancellationToken);
 
             return tokenString;
         }
 
-        public async Task<string> GenerateRefreshTokenAsync(User? user)
+        public async Task<string> GenerateRefreshTokenAsync(User? user, CancellationToken cancellationToken)
         {
             var jti = Guid.NewGuid().ToString();
             var randomNumber = new byte[32];
@@ -74,33 +73,37 @@ namespace RentIt.Users.Infrastructure.Services
             await _cache.SetStringAsync(key, refreshToken, new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(_jwtOptions.RefreshTokenLifetimeDays)
-            });
+            }, cancellationToken);
 
             return refreshToken;
         }
 
-        public async Task RevokeAccessTokenAsync(string accessToken)
+        public async Task RevokeAccessTokenAsync(string accessToken, CancellationToken cancellationToken)
         {
             var handler = new JwtSecurityTokenHandler();
-            if (handler.ReadToken(accessToken) is JwtSecurityToken jwtToken)
+            if (!(handler.ReadToken(accessToken) is JwtSecurityToken jwtToken))
             {
-                var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
-                if (!string.IsNullOrEmpty(jti))
-                {
-                    await _cache.RemoveAsync($"access:{jti}");
-                }
+                return;
             }
+
+            var jti = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
+            if (string.IsNullOrEmpty(jti))
+            {
+                return;
+            }
+
+            await _cache.RemoveAsync($"access:{jti}", cancellationToken);
         }
 
-        public async Task RevokeRefreshTokenAsync(string refreshToken)
+        public async Task RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
         {
-            await _cache.RemoveAsync($"refresh:{refreshToken}");
+            await _cache.RemoveAsync($"refresh:{refreshToken}", cancellationToken);
         }
 
-        public async Task<string> GetStoredTokenAsync(string jti)
+        public async Task<string> GetStoredTokenAsync(string jti, CancellationToken cancellationToken)
         {
-            return await _cache.GetStringAsync($"refresh:{jti}") 
-                ?? await _cache.GetStringAsync($"access:{jti}");
+            return await _cache.GetStringAsync($"refresh:{jti}", cancellationToken)
+                ?? await _cache.GetStringAsync($"access:{jti}", cancellationToken);
         }
     }
 }

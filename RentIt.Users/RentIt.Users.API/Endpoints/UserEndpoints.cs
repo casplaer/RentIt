@@ -1,14 +1,15 @@
 ﻿using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using RentIt.Users.API.Extensions;
 using RentIt.Users.Application.Commands.Users.Create;
 using RentIt.Users.Application.Commands.Users.Delete;
 using RentIt.Users.Application.Commands.Users.Login;
+using RentIt.Users.Application.Commands.Users.Logout;
 using RentIt.Users.Application.Commands.Users.RefreshToken;
 using RentIt.Users.Application.Commands.Users.Role;
 using RentIt.Users.Application.Commands.Users.Status;
 using RentIt.Users.Application.Commands.Users.Update;
-using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Application.Queries.Users;
 using RentIt.Users.Contracts.Requests.Users;
 using System.Security.Claims;
@@ -21,16 +22,21 @@ namespace RentIt.Users.API.Endpoints
         {
             var usersGroup = app.MapGroup("/users");
 
-            usersGroup.MapGet("/{id:guid}", async (Guid id, IMediator mediator) =>
+            usersGroup.MapGet("/{id:guid}", async (
+                Guid id, 
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                var user = await mediator.Send(new GetUserByIdQuery(id));
+                var user = await mediator.Send(new GetUserByIdQuery(id), cancellationToken);
                 return Results.Ok(user);
             })
             .RequireAuthorization("AdminPolicy");
 
-            usersGroup.MapGet("/", async (IMediator mediator) =>
+            usersGroup.MapGet("/", async (
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                var users = await mediator.Send(new GetAllUsersQuery());
+                var users = await mediator.Send(new GetAllUsersQuery(), cancellationToken);
                 return Results.Ok(users);
             })
             .RequireAuthorization("AdminPolicy");
@@ -38,12 +44,9 @@ namespace RentIt.Users.API.Endpoints
             usersGroup.MapGet("/search", async (
                 [AsParameters] GetUsersRequest request,
                 IMediator mediator,
-                [FromServices] IValidator<GetUsersRequest> validator) =>
+                CancellationToken cancellationToken) =>
             {
-                await validator.ValidateAndThrowAsync(request);
-
-                var users = await mediator
-                .Send(new GetFilteredUsersQuery(
+                var users = await mediator.Send(new GetFilteredUsersQuery(
                     request.FirstName,
                     request.LastName,
                     request.Email,
@@ -51,17 +54,18 @@ namespace RentIt.Users.API.Endpoints
                     request.Country,
                     request.City,
                     request.PhoneNumber,
-                    request.Page, 
-                    request.PageSize));
+                    request.Page,
+                    request.PageSize), cancellationToken);
 
-                return users;
+                return Results.Ok(users);
             })
-            .RequireAuthorization("AdminPolicy");
+            .RequireAuthorization();
 
-            usersGroup.MapPut("/", async (
-                UpdateUserRequest request, 
+            usersGroup.MapPut("/me", async (
+                UpdateUserRequest request,
                 HttpContext httpContext,
-                IMediator mediator) =>
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
             {
                 var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
                 if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
@@ -69,8 +73,7 @@ namespace RentIt.Users.API.Endpoints
                     return Results.Unauthorized();
                 }
 
-                var result = await mediator
-                .Send(new UpdateUserCommand(
+                var result = await mediator.Send(new UpdateUserCommand(
                     userId,
                     request.FirstName,
                     request.LastName,
@@ -78,110 +81,87 @@ namespace RentIt.Users.API.Endpoints
                     request.PhoneNumber,
                     request.Country,
                     request.City,
-                    request.Address));
+                    request.Address), cancellationToken);
 
-                return Results.Ok();
-            }).RequireAuthorization();
+                return Results.Ok(result);
+            })
+            .RequireAuthorization();
 
-            usersGroup.MapPatch("/status/{id:guid}", async (Guid id, IMediator mediator) =>
+            usersGroup.MapPatch("/{id}/status", async (
+                Guid id, 
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new StatusUpdateCommand(id));
-                return Results.Ok();
-            }).RequireAuthorization();
+                var result = await mediator.Send(new StatusUpdateCommand(id), cancellationToken);
+                return Results.Ok(result);
+            })
+            .RequireAuthorization();
 
-            usersGroup.MapPatch("/role", async (UpdateUserRoleCommand request, IMediator mediator) => 
+            usersGroup.MapPatch("/{id}/role", async (
+                UpdateUserRoleCommand request, 
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(request);
+                var result = await mediator.Send(request, cancellationToken);
+                return Results.Ok(result);
+            })
+            .RequireAuthorization("AdminPolicy");
 
-                return Results.Ok();
-            }).RequireAuthorization("AdminPolicy");
-
-            usersGroup.MapPost("/sign-up", async (CreateUserCommand command, IMediator mediator) =>
+            usersGroup.MapPost("/register", async (
+                CreateUserCommand command, 
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                await mediator.Send(command);
+                await mediator.Send(command, cancellationToken);
                 return Results.Ok("Пользователь успешно зарегистрирован.");
             });
 
-            usersGroup.MapPost("/sign-in", async (
+            usersGroup.MapPost("/login", async (
                 LoginUserCommand command,
                 IMediator mediator,
-                HttpContext httpContext
-                ) =>
+                HttpContext httpContext,
+                CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(command);
+                var result = await mediator.Send(command, cancellationToken);
 
-                httpContext.Response.Cookies.Append("AccessToken", result.AccessToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
-
-                httpContext.Response.Cookies.Append("RefreshToken", result.RefreshToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
-
+                httpContext.Response.SetAuthCookies(result.AccessToken, result.RefreshToken);
                 return Results.Ok();
             });
 
-            usersGroup.MapPost("/sign-out", async(
+            usersGroup.MapPost("/logout", async (
                 HttpContext httpContext,
-                IJwtProvider jwtProvider
-                ) =>
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
             {
                 var refreshToken = httpContext.Request.Cookies["RefreshToken"];
                 var accessToken = httpContext.Request.Cookies["AccessToken"];
 
-                if (!string.IsNullOrEmpty(refreshToken))
-                {
-                    await jwtProvider.RevokeRefreshTokenAsync(refreshToken);
-                }
-                if (!string.IsNullOrEmpty(accessToken))
-                {
-                    await jwtProvider.RevokeAccessTokenAsync(accessToken);
-                }
-
-                httpContext.Response.Cookies.Delete("AccessToken");
-                httpContext.Response.Cookies.Delete("RefreshToken");
-
-                return Results.Ok("Пользователь успешно вышел.");
+                var result = await mediator.Send(new LogoutUserCommand(accessToken, refreshToken), cancellationToken);
+                return Results.Ok(result);
             })
             .RequireAuthorization();
 
-
-            usersGroup.MapPost("/refresh", async (
+            usersGroup.MapPost("/tokens/refresh", async (
                 HttpContext httpContext,
-                IMediator mediator) =>
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
             {
                 var refreshToken = httpContext.Request.Cookies["RefreshToken"];
 
-                var result = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken));
+                var result = await mediator.Send(new ValidateRefreshTokenCommand(refreshToken), cancellationToken);
 
-                httpContext.Response.Cookies.Append("AccessToken", result.NewAccessToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
-
-                httpContext.Response.Cookies.Append("RefreshToken", result.NewRefreshToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
-
+                httpContext.Response.SetAuthCookies(result.NewAccessToken, result.NewRefreshToken);
                 return Results.Ok();
             })
             .RequireAuthorization();
 
-            usersGroup.MapDelete("/{id:guid}", async (Guid id, IMediator mediator) =>
+            usersGroup.MapDelete("/{id:guid}", async (
+                Guid id, 
+                IMediator mediator, 
+                CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new DeleteUserCommand(id));
-                return Results.Ok();
+                var result = await mediator.Send(new DeleteUserCommand(id), cancellationToken);
+                return Results.Ok(result);
             })
             .RequireAuthorization();
         }

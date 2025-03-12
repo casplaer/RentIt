@@ -12,18 +12,15 @@ namespace RentIt.Users.Application.Commands.Users.Update
         private readonly IUserRepository _userRepository;
         private readonly IEmailNormalizer _emailNormalizer;
         private readonly IMapper _mapper;
-        private readonly IValidator<UpdateUserCommand> _validator;
 
         public UpdateUserCommandHandler(
             IUserRepository userRepository,
             IEmailNormalizer emailNormalizer,
-            IMapper mapper,
-            IValidator<UpdateUserCommand> validator)
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _emailNormalizer = emailNormalizer;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public async Task<bool> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -33,8 +30,6 @@ namespace RentIt.Users.Application.Commands.Users.Update
             {
                 throw new NotFoundException("Пользователь не найден.");
             }
-
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
 
             _mapper.Map(request, user);
 

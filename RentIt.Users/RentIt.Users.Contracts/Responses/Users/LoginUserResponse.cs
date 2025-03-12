@@ -2,5 +2,5 @@
 
 namespace RentIt.Users.Contracts.Responses.Users
 {
-    public record LoginUserResponse(string AccessToken, string RefreshToken, UserDTO User);
+    public record LoginUserResponse(string AccessToken, string RefreshToken, UserDto User);
 }
