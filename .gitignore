@@ -42,3 +42,9 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
+
+postgres_data/
+mongo_data_housing/
+postgres_data_booking/
+postgres_data_users/
+redis_data_users/
