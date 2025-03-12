@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Dto.Users;
 using RentIt.Users.Core.Entities;
 
 namespace RentIt.Users.Application.Mappings
