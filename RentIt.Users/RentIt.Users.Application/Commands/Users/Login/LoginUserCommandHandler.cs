@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
-using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
-using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Dto.Users;
 using RentIt.Users.Contracts.Responses.Users;
 using RentIt.Users.Core.Interfaces.Repositories;
 
@@ -41,15 +40,15 @@ namespace RentIt.Users.Application.Commands.Users.Login
                 throw new UnauthorizedAccessException("Неверные учетные данные.");
             }
 
-            var accessToken = await _jwtProvider.GenerateAccessTokenAsync(user);
-            var refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user);
+            var accessToken = await _jwtProvider.GenerateAccessTokenAsync(user, cancellationToken);
+            var refreshToken = await _jwtProvider.GenerateRefreshTokenAsync(user, cancellationToken);
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
             await _userRepository.SaveChangesAsync(cancellationToken);
 
-            var userDTO = _mapper.Map<UserDTO>(user);
+            var userDTO = _mapper.Map<UserDto>(user);
 
             return new LoginUserResponse(accessToken, refreshToken, userDTO);
         }

@@ -13,9 +13,9 @@ namespace RentIt.Users.Application.Validators
                 .WithMessage("Отсутствуют данные для обновления.");
 
             RuleFor(x => x.FirstName)
-           .NotEmpty().WithMessage("Имя обязательно.")
-           .Must(name => string.IsNullOrEmpty(name) || !Regex.IsMatch(name, @"\d"))
-               .WithMessage("Имя не должно содержать цифр.");
+                .NotEmpty().WithMessage("Имя обязательно.")
+                .Must(name => string.IsNullOrEmpty(name) || !Regex.IsMatch(name, @"\d"))
+                .WithMessage("Имя не должно содержать цифр.");
 
             RuleFor(x => x.LastName)
                 .NotEmpty().WithMessage("Фамилия обязательна.")

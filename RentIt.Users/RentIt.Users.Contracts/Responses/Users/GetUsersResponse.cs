@@ -1,9 +1,9 @@
-﻿using RentIt.Users.Contracts.DTO.Users;
+﻿using RentIt.Users.Contracts.Dto.Users;
 
 namespace RentIt.Users.Contracts.Responses.Users
 {
     public record GetUsersResponse(
-        ICollection<UserDTO> Users,
+        ICollection<UserDto> Users,
         int PageNumber,
         int TotalPages
         );

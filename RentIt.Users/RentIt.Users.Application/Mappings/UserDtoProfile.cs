@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Dto.Users;
 using RentIt.Users.Core.Entities;
 
 namespace RentIt.Users.Application.Mappings
 {
-    public class UserDTOProfile : Profile
+    public class UserDtoProfile : Profile
     {
-        public UserDTOProfile()
+        public UserDtoProfile()
         {
-            CreateMap<User, UserDTO>()
+            CreateMap<User, UserDto>()
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.RoleName))
                 .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.Profile.PhoneNumber))
                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Profile.Country))

@@ -4,10 +4,10 @@ namespace RentIt.Users.Application.Interfaces
 {
     public interface IJwtProvider
     {
-        Task<string> GenerateAccessTokenAsync(User user);
-        Task<string> GenerateRefreshTokenAsync(User? user);
-        Task RevokeAccessTokenAsync(string accessToken);
-        Task RevokeRefreshTokenAsync(string refreshToken);
-        Task<string> GetStoredTokenAsync(string token);
+        Task<string> GenerateAccessTokenAsync(User user, CancellationToken cancellationToken);
+        Task<string> GenerateRefreshTokenAsync(User? user, CancellationToken cancellationToken);
+        Task RevokeAccessTokenAsync(string accessToken, CancellationToken cancellationToken);
+        Task RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+        Task<string> GetStoredTokenAsync(string token, CancellationToken cancellationToken);
     }
 }

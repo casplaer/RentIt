@@ -31,6 +31,8 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 builder.Services.AddRedis(builder.Configuration);
 
 builder.Services.AddJwtAuthentication(builder.Configuration);

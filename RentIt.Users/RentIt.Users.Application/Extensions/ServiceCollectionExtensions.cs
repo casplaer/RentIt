@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using RentIt.Users.Application.Commands.Users.Create;
 using RentIt.Users.Application.Commands.Users.Update;
@@ -13,6 +14,8 @@ namespace RentIt.Users.Application.Extensions
     {
         public static IServiceCollection AddValidators(this IServiceCollection services)
         {
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
             services.AddScoped<IValidator<GetUsersRequest>, GetUsersRequestValidator>();
             services.AddScoped<IValidator<GetFilteredUsersQuery>, GetFilteredUsersQueryValidator>();
             services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
@@ -33,7 +36,7 @@ namespace RentIt.Users.Application.Extensions
 
         public static IServiceCollection MapAllProfiles(this IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(UserDTOProfile));
+            services.AddAutoMapper(typeof(UserDtoProfile));
             services.AddAutoMapper(typeof(UserUpdateProfile));
 
             return services;

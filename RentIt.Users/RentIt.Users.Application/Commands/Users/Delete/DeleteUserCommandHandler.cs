@@ -16,10 +16,13 @@ namespace RentIt.Users.Application.Commands.Users.Delete
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
+            {
                 return false;
+            }
 
             _userRepository.Delete(user);
             await _userRepository.SaveChangesAsync(cancellationToken);
+
             return true;
         }
     }

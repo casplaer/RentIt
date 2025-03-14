@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using MediatR;
-using RentIt.Users.Contracts.DTO.Users;
+using RentIt.Users.Contracts.Dto.Users;
 using RentIt.Users.Contracts.Responses.Users;
 using RentIt.Users.Core.Interfaces.Repositories;
 using RentIt.Users.Application.Specifications.Users;
-using FluentValidation;
 
 namespace RentIt.Users.Application.Queries.Users
 {
@@ -12,22 +11,17 @@ namespace RentIt.Users.Application.Queries.Users
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly IValidator<GetFilteredUsersQuery> _validator;
 
         public GetFilteredUsersQueryHandler(
             IUserRepository userRepository,
-            IMapper mapper,
-            IValidator<GetFilteredUsersQuery> validator)
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-            _validator = validator;
         }
 
         public async Task<GetUsersResponse> Handle(GetFilteredUsersQuery request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request);
-
             var specification = new GetFilteredUsersSpecification(
                 request.FirstName,
                 request.LastName,
@@ -46,7 +40,7 @@ namespace RentIt.Users.Application.Queries.Users
                 cancellationToken);
 
             return new GetUsersResponse(
-                    Users: _mapper.Map<ICollection<UserDTO>>(users.Items),
+                    Users: _mapper.Map<ICollection<UserDto>>(users.Items),
                     PageNumber: users.CurrentPage,
                     TotalPages: users.TotalPages
                 );

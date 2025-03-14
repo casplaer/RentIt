@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RentIt.Users.Core.Interfaces.Specifications;
+﻿using RentIt.Users.Core.Interfaces.Specifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace RentIt.Users.Application.Specifications
 {

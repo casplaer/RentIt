@@ -6,12 +6,12 @@ namespace RentIt.Users.Application.Specifications
     public abstract class Specification<TEntity> : ISpecification<TEntity>
                 where TEntity : class
     {
+        private readonly List<Expression<Func<TEntity, object>>> _includeExpressions = new();
+
         protected Specification(Expression<Func<TEntity, bool>>? criteria) =>
             Criteria = criteria;
 
         public Expression<Func<TEntity, bool>>? Criteria { get; }
-
-        private readonly List<Expression<Func<TEntity, object>>> _includeExpressions = new();
 
         public IReadOnlyList<Expression<Func<TEntity, object>>> IncludeExpressions => _includeExpressions;
 

@@ -15,27 +15,22 @@ namespace RentIt.Users.Application.Commands.Users.Create
         private readonly IRoleRepository _roleRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IEmailNormalizer _emailNormalizer;
-        private readonly IValidator<CreateUserCommand> _validator;
 
         public CreateUserCommandHandler(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             IPasswordHasher passwordHasher,
             IEmailNormalizer emailNormalizer,
-            IMapper mapper,
-            IValidator<CreateUserCommand> validator)
+            IMapper mapper)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _passwordHasher = passwordHasher;
             _emailNormalizer = emailNormalizer;
-            _validator = validator;
         }
 
         public async Task Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            await _validator.ValidateAndThrowAsync(request, cancellationToken);
-
             var normalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
             var defaultRole = await _roleRepository.GetRoleByNameAsync("User", cancellationToken);
 
