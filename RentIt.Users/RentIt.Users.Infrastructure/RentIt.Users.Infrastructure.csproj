@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.70.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.5.0" />
@@ -20,6 +21,12 @@
   <ItemGroup>
     <ProjectReference Include="..\RentIt.Users.Application\RentIt.Users.Application.csproj" />
     <ProjectReference Include="..\RentIt.Users.Core\RentIt.Users.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RentIt.Protos">
+      <HintPath>..\..\RentIt.Protos\RentIt.Protos\bin\Debug\net8.0\RentIt.Protos.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
