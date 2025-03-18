@@ -2,10 +2,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Users.API.Extensions;
+using RentIt.Users.Application.Commands.Users.Account;
 using RentIt.Users.Application.Commands.Users.Create;
 using RentIt.Users.Application.Commands.Users.Delete;
 using RentIt.Users.Application.Commands.Users.Login;
 using RentIt.Users.Application.Commands.Users.Logout;
+using RentIt.Users.Application.Commands.Users.Password;
 using RentIt.Users.Application.Commands.Users.RefreshToken;
 using RentIt.Users.Application.Commands.Users.Role;
 using RentIt.Users.Application.Commands.Users.Status;
@@ -51,6 +53,7 @@ namespace RentIt.Users.API.Endpoints
                     request.LastName,
                     request.Email,
                     request.Role,
+                    request.Status,
                     request.Country,
                     request.City,
                     request.PhoneNumber,
@@ -60,6 +63,17 @@ namespace RentIt.Users.API.Endpoints
                 return Results.Ok(users);
             })
             .RequireAuthorization();
+
+            usersGroup.MapGet("/confirm", async(
+                [FromQuery] Guid userId,
+                [FromQuery] string token,
+                IMediator mediator
+                ) =>
+            {
+                var result = await mediator.Send(new ConfirmAccountCommand(userId, token));
+
+                return Results.Ok(result);
+            });
 
             usersGroup.MapPut("/me", async (
                 UpdateUserRequest request,
@@ -158,6 +172,36 @@ namespace RentIt.Users.API.Endpoints
                 return Results.Ok();
             })
             .RequireAuthorization();
+
+            usersGroup.MapPost("forgot-password", async (
+                [FromBody] PasswordRecoveryRequest request,
+                IMediator mediator,
+                CancellationToken cancellationToken
+                ) =>
+            {
+                var result = await mediator.Send(new ForgotPasswordCommand(request.Email), cancellationToken);
+
+                return Results.Ok(result);
+            });
+
+            usersGroup.MapPost("reset-password", async (
+                [FromBody] ResetPasswordRequest request, 
+                IMediator mediator,
+                CancellationToken cancellationToken
+                ) =>
+            {
+                var command = new ResetPasswordCommand
+                {
+                    Email = request.Email,
+                    Token = request.Token,
+                    NewPassword = request.NewPassword,
+                    ConfirmPassword = request.ConfirmPassword
+                };
+
+                var result = await mediator.Send(command, cancellationToken);
+
+                return Results.Ok(result);
+            });
 
             usersGroup.MapDelete("/{id:guid}", async (
                 Guid id, 

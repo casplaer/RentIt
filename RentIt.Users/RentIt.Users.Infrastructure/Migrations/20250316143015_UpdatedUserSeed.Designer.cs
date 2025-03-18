@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RentIt.Users.Infrastructure.Data;
@@ -11,9 +12,11 @@ using RentIt.Users.Infrastructure.Data;
 namespace RentIt.Users.Infrastructure.Migrations
 {
     [DbContext(typeof(RentItDbContext))]
-    partial class RentItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250316143015_UpdatedUserSeed")]
+    partial class UpdatedUserSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,35 +24,6 @@ namespace RentIt.Users.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("RentIt.Users.Core.Entities.AccountToken", b =>
-                {
-                    b.Property<Guid>("TokenId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Expiration")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<int>("TokenType")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("TokenId");
-
-                    b.HasIndex("Expiration");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AccountTokens");
-                });
 
             modelBuilder.Entity("RentIt.Users.Core.Entities.Role", b =>
                 {
@@ -161,7 +135,7 @@ namespace RentIt.Users.Infrastructure.Migrations
                             FirstName = "Admin",
                             LastName = "Adminov",
                             NormalizedEmail = "admin@example.com",
-                            PasswordHash = "HASHED_testadmin",
+                            PasswordHash = "$2a$11$VkCOxZ3UEmKm7q54hd069uLhehwjFJD753vEAeTwDeB9wkA3MyBNW",
                             RefreshToken = "TEST_REFRESH_TOKEN_ADMIN",
                             RefreshTokenExpiryTime = new DateTime(2025, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = new Guid("11111111-1111-1111-1111-111111111111"),

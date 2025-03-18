@@ -13,6 +13,9 @@ namespace RentIt.Users.Infrastructure.Extensions
             services.AddScoped<IEmailNormalizer, EmailNormalizer>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IAccountTokenGenerator, AccountTokenGenerator>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddTransient<TokenCleanupService>();
 
             return services;
         }
