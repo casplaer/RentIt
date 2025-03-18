@@ -5,6 +5,7 @@ using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.DataAccess.Interfaces.Repositories;
 using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
+using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
 
 namespace RentIt.Housing.Domain.Services
@@ -13,10 +14,12 @@ namespace RentIt.Housing.Domain.Services
     {
         private readonly IHousingRepository _housingRepository;
         private readonly HousingImageService _imageService;
+        private readonly UserIntegrationService _userIntegrationService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateHousingRequest> _createHousingRequestValidator;
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
+        private readonly SpamProfanityFilterService _filterService;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -24,7 +27,9 @@ namespace RentIt.Housing.Domain.Services
             IValidator<CreateHousingRequest> createHousingRequestValidator,
             IValidator<GetFilteredHousingsRequest> getFilteredHousingRequestValidator,
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
-            HousingImageService imageService)
+            HousingImageService imageService,
+            UserIntegrationService userIntegrationService,
+            SpamProfanityFilterService filterService)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;
@@ -32,9 +37,11 @@ namespace RentIt.Housing.Domain.Services
             _getFilteredHousingRequestValidator = getFilteredHousingRequestValidator;
             _updateHousingRequestValidator = updateHousingRequestValidator;
             _imageService = imageService;
+            _userIntegrationService = userIntegrationService;
+            _filterService = filterService;
         }
 
-        public async Task<HousingEntity> GetByIdAsync(
+        public async Task<GetHousingByIdResponse> GetByIdAsync(
             Guid housingId, 
             CancellationToken cancellationToken)
         {
@@ -45,7 +52,13 @@ namespace RentIt.Housing.Domain.Services
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
-            return housing;
+            var ownerInfo = await _userIntegrationService.GetOwnerInfoAsync(housing.OwnerId);
+
+            var housingToReturn = new GetHousingByIdResponse(
+                housing,
+                ownerInfo);
+
+            return housingToReturn;
         }
 
         public async Task<IEnumerable<HousingEntity>> SearchAsync(
@@ -73,10 +86,16 @@ namespace RentIt.Housing.Domain.Services
         }
 
         public async Task AddHousingAsync(
-            CreateHousingRequest request, 
+            CreateHousingRequest request,
+            string ownerId,
             CancellationToken cancellationToken)
         {
             await _createHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+            if (!Guid.TryParse(ownerId, out var ownerGuid))
+            {
+                throw new ArgumentException("Некорректный формат ID.");
+            }
 
             var housing = _mapper.Map<HousingEntity>(request);
 
@@ -85,10 +104,11 @@ namespace RentIt.Housing.Domain.Services
             housing.CreatedAt = DateTime.Now;
             housing.UpdatedAt = DateTime.Now;
             housing.Status = HousingStatus.Unpublished;
+            housing.OwnerId = ownerGuid;
 
             if(request.Images != null && request.Images.Count() != 0)
             {
-                housing.Images = await _imageService.UploadMultipleImagesAsync(housing.HousingId, request.Images, cancellationToken);
+                housing.Images = await _imageService.UploadImagesAsync(housing.HousingId, request.Images, cancellationToken);
             }
 
             await _housingRepository.AddAsync(housing, cancellationToken);
@@ -139,6 +159,29 @@ namespace RentIt.Housing.Domain.Services
             }
 
             await _housingRepository.DeleteAsync(housingId, cancellationToken);
+        }
+
+        public async Task CheckUnpublishedHousingsForSpamAsync(
+            CancellationToken cancellationToken)
+        {
+            var unpublishedHousings = (await _housingRepository.GetAllAsync(cancellationToken))
+                                        .Where(h => h.Status == HousingStatus.Unpublished);
+
+            foreach (var housing in unpublishedHousings)
+            {
+                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description);
+
+                if (isSpam)
+                {
+                    housing.Status = HousingStatus.Rejected;
+                }
+                else
+                {
+                    housing.Status = HousingStatus.Available;
+                }
+
+                await _housingRepository.UpdateAsync(housing, cancellationToken);
+            }
         }
     }
 }

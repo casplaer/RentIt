@@ -22,6 +22,12 @@ namespace RentIt.Housing.DataAccess.Repositories
             return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<IEnumerable<HousingEntity>> GetAllAsync(CancellationToken cancellationToken)
+        {
+            return await _collection.Find(FilterDefinition<HousingEntity>.Empty)
+                .ToListAsync(cancellationToken);
+        }
+
         public async Task<IEnumerable<HousingEntity>> SearchAsync(Specification<HousingEntity> specification, CancellationToken cancellationToken)
         {
             var query = _collection.AsQueryable();

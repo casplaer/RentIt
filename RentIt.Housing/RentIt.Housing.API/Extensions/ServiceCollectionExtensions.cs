@@ -1,43 +1,55 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Hangfire;
+using Hangfire.Redis.StackExchange;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
+using RentIt.Protos.Users;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace RentIt.Users.API.Extensions
+namespace RentIt.Housing.API.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddRedis(
+            this IServiceCollection services, 
+            IConfiguration configuration)
         {
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
-                var connectionString = configuration.GetConnectionString("RedisUsersConnection");
+                var connectionString = configuration.GetConnectionString("RedisConnection");
                 return ConnectionMultiplexer.Connect(connectionString);
             });
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("RedisUsersConnection");
+                options.Configuration = configuration.GetConnectionString("RedisConnection");
                 options.InstanceName = "RentIt";
             });
 
             return services;
         }
 
-        public static IServiceCollection AddCORS(this IServiceCollection services)
+        public static IServiceCollection AddHousingHangfire(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
-            services.AddCors(options =>
+            var redisConnectionString = configuration.GetConnectionString("RedisConnection");
+
+            services.AddHangfire(config =>
             {
-                options.AddPolicy("AllowHousingService", policy =>
-                {
-                    policy.WithOrigins("https://localhost:7175")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                        .UseSimpleAssemblyNameTypeSerializer()
+                        .UseRecommendedSerializerSettings()
+                        .UseRedisStorage(redisConnectionString, new RedisStorageOptions
+                        {
+                            Db = 2,
+                            Prefix = "hangfire:"
+                        });
             });
+
+            services.AddHangfireServer();
 
             return services;
         }
@@ -104,6 +116,16 @@ namespace RentIt.Users.API.Extensions
                     policy.RequireRole("Admin"));
                 options.AddPolicy("LandlordPolicy", policy =>
                     policy.RequireRole("Landlord"));
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddGrpc(this IServiceCollection services)
+        {
+            services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
+            {
+                options.Address = new Uri("https://localhost:7108");
             });
 
             return services;

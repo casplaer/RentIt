@@ -37,6 +37,8 @@ namespace RentIt.Housing.Domain.Extensions
             services.AddScoped<HousingImageService>();
             services.AddScoped<ReviewService>();
             services.AddScoped<AvailabilityService>();
+            services.AddScoped<UserIntegrationService>();
+            services.AddScoped<SpamProfanityFilterService>();
 
             return services;
         }

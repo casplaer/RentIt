@@ -9,6 +9,9 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.30.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.70.0" />
+    <PackageReference Include="Hangfire" Version="1.8.18" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
@@ -21,7 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\Responses\HousingImages\" />
+    <Reference Include="RentIt.Protos">
+      <HintPath>..\..\RentIt.Protos\RentIt.Protos\bin\Debug\net8.0\RentIt.Protos.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

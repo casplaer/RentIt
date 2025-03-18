@@ -21,7 +21,7 @@ namespace RentIt.Housing.Domain.Services
             return await _imageRepository.GetImagesByHousingIdAsync(housingId, cancellationToken);
         }
 
-        public async Task<List<HousingImage>> UploadMultipleImagesAsync(
+        public async Task<List<HousingImage>> UploadImagesAsync(
             Guid housingId,
             IEnumerable<IFormFile> images,
             CancellationToken cancellationToken)
@@ -43,6 +43,22 @@ namespace RentIt.Housing.Domain.Services
             {
                 if (image.Length > 0)
                 {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+                    var fileExtension = Path.GetExtension(image.FileName).ToLower();
+
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new ArgumentException("The uploaded file is not a valid image format.", nameof(images));
+                    }
+
+                    var contentType = image.ContentType.ToLower();
+                    var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/bmp" };
+
+                    if (!allowedMimeTypes.Contains(contentType))
+                    {
+                        throw new ArgumentException("The uploaded file is not a valid image type.", nameof(images));
+                    }
+
                     var imageName = $"{Guid.NewGuid()}_{Path.GetFileName(image.FileName)}";
                     var imagePath = Path.Combine(_uploadPath, imageName);
 
@@ -55,7 +71,7 @@ namespace RentIt.Housing.Domain.Services
                     {
                         ImageId = Guid.NewGuid(),
                         HousingId = housingId,
-                        ImageUrl = $"/uploads/housing_images/{imageName}", 
+                        ImageUrl = $"/uploads/housing_images/{imageName}",
                         Order = order++
                     };
 
@@ -75,17 +91,31 @@ namespace RentIt.Housing.Domain.Services
         {
             List<HousingImage> images = (await _imageRepository.GetImagesByHousingIdAsync(housingId, cancellationToken)).ToList();
 
-            if(addedImages != null && addedImages.Any())
+            if (addedImages != null && addedImages.Any())
             {
                 int order = images.Any() ? images.Max(img => img.Order) : 1;
                 foreach (var file in addedImages)
                 {
+                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+                    var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        throw new ArgumentException("The uploaded file is not a valid image format.", nameof(addedImages));
+                    }
+
+                    var contentType = file.ContentType.ToLower();
+                    var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/bmp" };
+                    if (!allowedMimeTypes.Contains(contentType))
+                    {
+                        throw new ArgumentException("The uploaded file is not a valid image type.", nameof(addedImages));
+                    }
+
                     var fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
                     var filePath = Path.Combine(_uploadPath, fileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        await file.CopyToAsync (stream, cancellationToken);
+                        await file.CopyToAsync(stream, cancellationToken);
                     }
 
                     var newImage = new HousingImage
@@ -101,7 +131,7 @@ namespace RentIt.Housing.Domain.Services
                 }
             }
 
-            if(removedImages != null && removedImages.Any())
+            if (removedImages != null && removedImages.Any())
             {
                 foreach (var relativePath in removedImages)
                 {

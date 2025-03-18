@@ -41,7 +41,6 @@ namespace RentIt.Users.Infrastructure.Services
 
             var token = new JwtSecurityToken(
                 issuer: _jwtOptions.Issuer,
-                audience: _jwtOptions.Audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_jwtOptions.TokenLifetimeMinutes),
                 signingCredentials: signingCreds

@@ -60,9 +60,9 @@ namespace RentIt.Housing.Domain.Services
                 await _availabilityRepository.AddAsync(availability, cancellationToken);
             }
 
-            housing.Availabilities.AddRange(availibilities);
+            housing.Housing.Availabilities.AddRange(availibilities);
 
-            await _housingService.UpdateHousingAsync(housing, cancellationToken);
+            await _housingService.UpdateHousingAsync(housing.Housing, cancellationToken);
         }
 
         public async Task UpdateAvailabilitiesAsync(
@@ -85,14 +85,14 @@ namespace RentIt.Housing.Domain.Services
                 opts.Items["housingId"] = housingId;
             });
 
-            housing.Availabilities = newAvailabilities.ToList();
+            housing.Housing.Availabilities = newAvailabilities.ToList();
 
-            foreach( var a in housing.Availabilities )
+            foreach( var a in housing.Housing.Availabilities )
             {
                 await _availabilityRepository.UpdateAsync(a, cancellationToken);
             }
 
-            await _housingService.UpdateHousingAsync(housing, cancellationToken);
+            await _housingService.UpdateHousingAsync(housing.Housing, cancellationToken);
         }
 
         public async Task DeleteAvailabilityAsync(
@@ -108,10 +108,10 @@ namespace RentIt.Housing.Domain.Services
 
             var housing = await _housingService.GetByIdAsync(availability.HousingId, cancellationToken);
 
-            housing.Availabilities.RemoveAll(a => a.AvailabilityId == availabilityId);
+            housing.Housing.Availabilities.RemoveAll(a => a.AvailabilityId == availabilityId);
 
             await _availabilityRepository.DeleteAsync(availabilityId, cancellationToken);
-            await _housingService.UpdateHousingAsync(housing, cancellationToken);
+            await _housingService.UpdateHousingAsync(housing.Housing, cancellationToken);
         }
 
         public async Task DeleteAllAvailabilities(
@@ -125,7 +125,7 @@ namespace RentIt.Housing.Domain.Services
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
-            housing.Availabilities.Clear();
+            housing.Housing.Availabilities.Clear();
 
             var availabilities = await _availabilityRepository.GetAvailabilitiesByHousingIdAsync(housingId, cancellationToken);
 
@@ -134,7 +134,7 @@ namespace RentIt.Housing.Domain.Services
                 await _availabilityRepository.DeleteAsync(a.AvailabilityId, cancellationToken);
             }
             
-            await _housingService.UpdateHousingAsync(housing, cancellationToken);
+            await _housingService.UpdateHousingAsync(housing.Housing, cancellationToken);
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Services;
+using System.Security.Claims;
 
 namespace RentIt.Housing.API.Controllers
 {
@@ -34,11 +36,14 @@ namespace RentIt.Housing.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateHousing(
             [FromForm] CreateHousingRequest request,
             CancellationToken cancellationToken)
         {
-            await _housingService.AddHousingAsync(request, cancellationToken);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            await _housingService.AddHousingAsync(request, userId, cancellationToken);
             return Ok();
         }
 
