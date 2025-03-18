@@ -15,7 +15,9 @@ namespace RentIt.Users.Application.Commands.Users.Role
             _roleRepository = roleRepository;
         }
 
-        public async Task<bool> Handle(UpdateUserRoleCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(
+            UpdateUserRoleCommand request, 
+            CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)

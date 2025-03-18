@@ -15,7 +15,7 @@ namespace RentIt.Users.Infrastructure.Extensions
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IAccountTokenGenerator, AccountTokenGenerator>();
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<TokenCleanupService>();
+            services.AddTransient<ITokenCleanupService, TokenCleanupService>();
 
             return services;
         }

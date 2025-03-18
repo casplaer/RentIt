@@ -38,7 +38,9 @@ namespace RentIt.Users.Application.Commands.Users.Create
             _accountTokenGenerator = accountTokenGenerator;
         }
 
-        public async Task Handle(CreateUserCommand request, CancellationToken cancellationToken)
+        public async Task Handle(
+            CreateUserCommand request, 
+            CancellationToken cancellationToken)
         {
             var normalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
             var defaultRole = await _roleRepository.GetRoleByNameAsync("User", cancellationToken);

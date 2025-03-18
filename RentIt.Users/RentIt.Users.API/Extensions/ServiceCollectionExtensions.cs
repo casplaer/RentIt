@@ -47,6 +47,7 @@ namespace RentIt.Users.API.Extensions
                             Prefix = "hangfire:"
                         });
             });
+
             services.AddHangfireServer();
 
             return services;

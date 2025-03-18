@@ -19,7 +19,9 @@ namespace RentIt.Users.Application.Commands.Users.Account
             _accountTokenRepository = accountTokenRepository;
         }
 
-        public async Task<bool> Handle(ConfirmAccountCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(
+            ConfirmAccountCommand request, 
+            CancellationToken cancellationToken)
         {
             var tokens = await _accountTokenRepository.GetAllAsync(cancellationToken);
             var tokenEntity = tokens.FirstOrDefault(t =>

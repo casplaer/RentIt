@@ -19,7 +19,9 @@ namespace RentIt.Users.Application.Commands.Users.RefreshToken
             _jwtProvider = jwtProvider;
         }
 
-        public async Task<ValidateRefreshTokenResponse> Handle(ValidateRefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<ValidateRefreshTokenResponse> Handle(
+            ValidateRefreshTokenCommand request, 
+            CancellationToken cancellationToken)
         {
             var storedRefreshToken = await _jwtProvider.GetStoredTokenAsync(request.RefreshToken, cancellationToken);
 

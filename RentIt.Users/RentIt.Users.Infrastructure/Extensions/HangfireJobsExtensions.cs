@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using RentIt.Users.Infrastructure.Services;
+using RentIt.Users.Application.Interfaces;
 
 namespace RentIt.Users.Infrastructure.Extensions
 {
@@ -7,14 +7,14 @@ namespace RentIt.Users.Infrastructure.Extensions
     {
         public static void ConfigureRecurringJobs()
         {
-            RecurringJob.AddOrUpdate<TokenCleanupService>(
+            RecurringJob.AddOrUpdate<ITokenCleanupService>(
                 recurringJobId: "ConfirmationTokenCleanupJob",
                 methodCall: service => service.CleanExpiredConfirmationTokensAsync(CancellationToken.None),
                 cronExpression: () => Cron.Daily(),
                 options: new RecurringJobOptions { TimeZone = TimeZoneInfo.Local }
             );
 
-            RecurringJob.AddOrUpdate<TokenCleanupService>(
+            RecurringJob.AddOrUpdate<ITokenCleanupService>(
                 recurringJobId: "ResetTokenCleanupJob",
                 methodCall: service => service.CleanExpiredResetTokensAsync(CancellationToken.None),
                 cronExpression: () => Cron.Daily(),

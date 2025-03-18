@@ -1,10 +1,11 @@
-﻿using RentIt.Users.Core.Entities;
+﻿using RentIt.Users.Application.Interfaces;
+using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
 
 namespace RentIt.Users.Infrastructure.Services
 {
-    public class TokenCleanupService
+    public class TokenCleanupService : ITokenCleanupService
     {
         private readonly IRepository<AccountToken> _accountTokenRepository;
 
@@ -18,9 +19,9 @@ namespace RentIt.Users.Infrastructure.Services
             var tokens = await _accountTokenRepository.GetAllAsync(cancellationToken);
 
             var expiredTokens = tokens.Where(
-                            t => t.Expiration < DateTime.UtcNow && 
-                            t.TokenType == TokenType.Confirmation)
-                            .ToList();
+                                        t => t.Expiration < DateTime.UtcNow && 
+                                        t.TokenType == TokenType.Confirmation)
+                                        .ToList();
 
             if (expiredTokens.Any())
             {
