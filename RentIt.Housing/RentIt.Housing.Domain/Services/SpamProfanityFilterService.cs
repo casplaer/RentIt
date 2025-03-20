@@ -9,7 +9,7 @@ namespace RentIt.Housing.Domain.Services
 
         public SpamProfanityFilterService(IWebHostEnvironment environment)
         {
-            _spamWordsFilePath = Path.Combine(environment.ContentRootPath, "spam-and-profanity.txt");
+            _spamWordsFilePath = Path.Combine(environment.ContentRootPath, "wwwroot", "spam-and-profanity.txt");
 
             _spamAndProfanityWords = LoadSpamAndProfanityWords(_spamWordsFilePath);
         }

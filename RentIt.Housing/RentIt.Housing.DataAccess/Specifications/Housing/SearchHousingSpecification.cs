@@ -28,11 +28,14 @@ namespace RentIt.Housing.DataAccess.Specifications.Housing
                 (!rating.HasValue || p.Rating >= rating.Value) &&
                 (!status.HasValue || p.Status == status.Value) &&
                 (
-                    !startDate.HasValue || !endDate.HasValue ||
-                    p.Availabilities.Any(a =>
+                    (!startDate.HasValue && !endDate.HasValue) ||
+                    (startDate.HasValue && endDate.HasValue && p.Availabilities.Any(a =>
                         a.StartDate <= startDate.Value &&
-                        a.EndDate >= endDate.Value
-                    )
+                        a.EndDate >= endDate.Value)) ||
+                    (startDate.HasValue && !endDate.HasValue && p.Availabilities.Any(a =>
+                        a.StartDate <= startDate.Value)) ||
+                    (!startDate.HasValue && endDate.HasValue && p.Availabilities.Any(a =>
+                        a.EndDate >= endDate.Value))
                 )
             )
         {

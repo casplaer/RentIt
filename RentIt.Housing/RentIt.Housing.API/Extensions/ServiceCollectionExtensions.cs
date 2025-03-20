@@ -19,12 +19,14 @@ namespace RentIt.Housing.API.Extensions
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
                 var connectionString = configuration.GetConnectionString("RedisConnection");
+
                 return ConnectionMultiplexer.Connect(connectionString);
             });
 
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = configuration.GetConnectionString("RedisConnection");
+
                 options.InstanceName = "RentIt";
             });
 
@@ -100,6 +102,7 @@ namespace RentIt.Housing.API.Extensions
                             {
                                 throw new SecurityTokenException("Токен не содержит уникального идентификатора (jti).");
                             }
+
                             var storedToken = await cache.GetStringAsync($"access:{jti}");
                             if (string.IsNullOrEmpty(storedToken) || storedToken != token)
                             {

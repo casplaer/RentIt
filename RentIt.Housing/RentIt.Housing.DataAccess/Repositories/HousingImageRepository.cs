@@ -17,12 +17,14 @@ namespace RentIt.Housing.DataAccess.Repositories
         public async Task<IEnumerable<HousingImage>> GetImagesByHousingIdAsync(Guid housingId, CancellationToken cancellationToken)
         {
             var filter = Builders<HousingImage>.Filter.Eq(pi => pi.HousingId, housingId);
+           
             return await _collection.Find(filter).ToListAsync(cancellationToken);
         }
 
         public async Task<HousingImage> GetHousingImageByIdAsync(Guid housingImageId, CancellationToken cancellationToken)
         {
             var filter = Builders<HousingImage>.Filter.Eq(hi => hi.ImageId, housingImageId);
+
             return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -34,12 +36,14 @@ namespace RentIt.Housing.DataAccess.Repositories
         public async Task UpdateAsync(HousingImage image, CancellationToken cancellationToken)
         {
             var filter = Builders<HousingImage>.Filter.Eq(pi => pi.ImageId, image.ImageId);
+
             await _collection.ReplaceOneAsync(filter, image, cancellationToken: cancellationToken);
         }
 
         public async Task DeleteAsync(Guid imageId, CancellationToken cancellationToken)
         {
             var filter = Builders<HousingImage>.Filter.Eq(pi => pi.ImageId, imageId);
+
             await _collection.DeleteOneAsync(filter, cancellationToken);
         }
     }

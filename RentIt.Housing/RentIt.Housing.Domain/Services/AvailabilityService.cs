@@ -75,7 +75,7 @@ namespace RentIt.Housing.Domain.Services
             var housing = await _housingService.GetByIdAsync(housingId, cancellationToken);
             if (housing == null)
             {
-                throw new NotFoundException($"Жильё с ID {housingId} не найдено.");
+                throw new NotFoundException($"Собственность с таким ID не найдено.");
             }
 
             var newAvailabilities = await _availabilityRepository.GetAvailabilitiesByHousingIdAsync(housingId, cancellationToken);
@@ -111,6 +111,7 @@ namespace RentIt.Housing.Domain.Services
             housing.Housing.Availabilities.RemoveAll(a => a.AvailabilityId == availabilityId);
 
             await _availabilityRepository.DeleteAsync(availabilityId, cancellationToken);
+
             await _housingService.UpdateHousingAsync(housing.Housing, cancellationToken);
         }
 

@@ -52,7 +52,7 @@ namespace RentIt.Housing.Domain.Services
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
-            var ownerInfo = await _userIntegrationService.GetOwnerInfoAsync(housing.OwnerId);
+            var ownerInfo = await _userIntegrationService.GetUserInfoAsync(housing.OwnerId);
 
             var housingToReturn = new GetHousingByIdResponse(
                 housing,
@@ -86,8 +86,8 @@ namespace RentIt.Housing.Domain.Services
         }
 
         public async Task AddHousingAsync(
-            CreateHousingRequest request,
             string ownerId,
+            CreateHousingRequest request,
             CancellationToken cancellationToken)
         {
             await _createHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
@@ -97,14 +97,10 @@ namespace RentIt.Housing.Domain.Services
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
-            var housing = _mapper.Map<HousingEntity>(request);
-
-            housing.HousingId = Guid.NewGuid();
-
-            housing.CreatedAt = DateTime.Now;
-            housing.UpdatedAt = DateTime.Now;
-            housing.Status = HousingStatus.Unpublished;
-            housing.OwnerId = ownerGuid;
+            var housing = _mapper.Map<HousingEntity>(request, opt =>
+            {
+                opt.Items["ownerId"] = ownerGuid;
+            });
 
             if(request.Images != null && request.Images.Count() != 0)
             {
@@ -169,7 +165,7 @@ namespace RentIt.Housing.Domain.Services
 
             foreach (var housing in unpublishedHousings)
             {
-                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description);
+                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description) && _filterService.ContainsSpamOrProfanity(housing.Title);
 
                 if (isSpam)
                 {

@@ -12,9 +12,9 @@ namespace RentIt.Housing.Domain.Services
             _usersClient = usersClient;
         }
 
-        public async Task<UserInfoDto> GetOwnerInfoAsync(Guid ownerId)
+        public async Task<UserInfoDto> GetUserInfoAsync(Guid userId)
         {
-            var request = new GetUserRequest { UserId = ownerId.ToString() };
+            var request = new GetUserRequest { UserId = userId.ToString() };
 
             var response = await _usersClient.GetUserAsync(request);
 

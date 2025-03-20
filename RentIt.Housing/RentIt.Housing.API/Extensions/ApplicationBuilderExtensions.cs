@@ -7,6 +7,7 @@ namespace RentIt.Housing.API.Extensions
         public static IApplicationBuilder UseCustomMiddlewares(this IApplicationBuilder app)
         {
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             return app;
         }
     }

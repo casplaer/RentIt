@@ -1,5 +1,4 @@
-﻿using RentIt.Housing.DataAccess.Entities;
-using RentIt.Availabilities.Domain.Contracts.Dto.Availabilities;
+﻿using RentIt.Availabilities.Domain.Contracts.Dto.Availabilities;
 
 namespace RentIt.Housing.Domain.Contracts.Dto.Housing
 {

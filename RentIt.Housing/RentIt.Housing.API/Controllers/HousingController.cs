@@ -23,6 +23,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             var housing = await _housingService.GetByIdAsync(housingId, cancellationToken);
+
             return Ok(housing);
         }
 
@@ -32,6 +33,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             var housings = await _housingService.SearchAsync(request, cancellationToken);
+
             return Ok(housings);
         }
 
@@ -43,7 +45,7 @@ namespace RentIt.Housing.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            await _housingService.AddHousingAsync(request, userId, cancellationToken);
+            await _housingService.AddHousingAsync(userId, request, cancellationToken);
             return Ok();
         }
 
@@ -54,6 +56,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             await _housingService.UpdateHousingAsync(housingId, request, cancellationToken);
+
             return NoContent();
         }
 
@@ -63,6 +66,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             await _housingService.DeleteHousingAsync(housingId, cancellationToken);
+
             return NoContent();
         }
     }

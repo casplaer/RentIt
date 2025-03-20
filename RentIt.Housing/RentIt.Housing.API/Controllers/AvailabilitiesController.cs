@@ -33,6 +33,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             await _availabilityService.AddAvailabilitiesAsync(housingId, request, cancellationToken);
+
             return Ok();
         }
 
@@ -43,6 +44,7 @@ namespace RentIt.Housing.API.Controllers
             CancellationToken cancellationToken)
         {
             await _availabilityService.UpdateAvailabilitiesAsync(housingId, request, cancellationToken);
+
             return Ok();
         }
 

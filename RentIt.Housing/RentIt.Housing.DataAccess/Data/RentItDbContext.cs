@@ -22,9 +22,12 @@ namespace RentIt.Housing.DataAccess.Data
                 where TEntity : class
         {
             if (_database == null)
+            {
                 throw new InvalidOperationException("Database is not initialized.");
+            }
 
             collectionName ??= typeof(TEntity).Name;
+
             return _database.GetCollection<TEntity>(collectionName);
         }
 

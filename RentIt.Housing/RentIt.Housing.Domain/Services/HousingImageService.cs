@@ -127,6 +127,7 @@ namespace RentIt.Housing.Domain.Services
                     };
 
                     await _imageRepository.AddAsync(newImage, cancellationToken);
+
                     images.Add(newImage);
                 }
             }
@@ -140,6 +141,7 @@ namespace RentIt.Housing.Domain.Services
                     if (imageRecord != null)
                     {
                         await DeleteImageAsync(imageRecord.ImageId, cancellationToken);
+
                         images.Remove(imageRecord);
                     }
                 }
