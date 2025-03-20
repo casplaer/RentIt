@@ -7,10 +7,19 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using RentIt.Protos.Users;
 using Hangfire;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(GuidRepresentation.Standard));
+
+var configuration = builder.Configuration;
+
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 
@@ -21,9 +30,9 @@ builder.Services.AddDomainServices();
 builder.Services.AddMappingProfiles();
 builder.Services.AddValidators();
 
-builder.Services.AddRedis(builder.Configuration);
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddHousingHangfire(builder.Configuration);
+builder.Services.AddRedis(configuration);
+builder.Services.AddJwtAuthentication(configuration);
+builder.Services.AddHousingHangfire(configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,6 +57,8 @@ HangfireJobsExtensions.ConfigureRecurringJobs();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+Log.Information("Проверка отправки лога {Time}", DateTime.Now);
 
 app.Run();
 

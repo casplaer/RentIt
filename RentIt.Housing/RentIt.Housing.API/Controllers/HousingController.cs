@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Services;
+using Serilog;
 using System.Security.Claims;
 
 namespace RentIt.Housing.API.Controllers
@@ -22,6 +23,8 @@ namespace RentIt.Housing.API.Controllers
             [FromRoute] Guid housingId, 
             CancellationToken cancellationToken)
         {
+            Log.Information("Запрос на получение жилья с ID {HousingId} в {Time}", housingId, DateTime.UtcNow);
+
             var housing = await _housingService.GetByIdAsync(housingId, cancellationToken);
 
             return Ok(housing);

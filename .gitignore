@@ -43,6 +43,8 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
+esdata/
+logstash/
 postgres_data/
 mongo_data_housing/
 postgres_data_booking/
