@@ -14,8 +14,7 @@ namespace RentIt.Housing.DataAccess.Specifications.Housing
             int? numberOfRooms,
             double? rating,
             HousingStatus? status,
-            DateOnly? startDate,
-            DateOnly? endDate,
+            DateOnly? estimatedEndDate,
             int page,
             int pageSize)
             : base(p =>
@@ -28,18 +27,11 @@ namespace RentIt.Housing.DataAccess.Specifications.Housing
                 (!rating.HasValue || p.Rating >= rating.Value) &&
                 (!status.HasValue || p.Status == status.Value) &&
                 (
-                    (!startDate.HasValue && !endDate.HasValue) ||
-                    (startDate.HasValue && endDate.HasValue && p.Availabilities.Any(a =>
-                        a.StartDate <= startDate.Value &&
-                        a.EndDate >= endDate.Value)) ||
-                    (startDate.HasValue && !endDate.HasValue && p.Availabilities.Any(a =>
-                        a.StartDate <= startDate.Value)) ||
-                    (!startDate.HasValue && endDate.HasValue && p.Availabilities.Any(a =>
-                        a.EndDate >= endDate.Value))
+                    (!estimatedEndDate.HasValue || p.EstimatedEndDate.HasValue && p.EstimatedEndDate == estimatedEndDate) ||
+                    (estimatedEndDate.HasValue && p.EstimatedEndDate.HasValue && p.EstimatedEndDate <= estimatedEndDate)
                 )
             )
         {
-            AddInclude(p => p.Availabilities);
             AddInclude(p => p.Images);
             AddInclude(p => p.Reviews);
 

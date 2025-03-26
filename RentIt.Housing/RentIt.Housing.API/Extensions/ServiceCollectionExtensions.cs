@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using RentIt.Protos.Users;
+using Serilog;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -130,6 +131,19 @@ namespace RentIt.Housing.API.Extensions
             {
                 options.Address = new Uri("https://localhost:7108");
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddLogging(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+            services.AddSingleton<Serilog.ILogger>(Log.Logger);
 
             return services;
         }

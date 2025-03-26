@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using RentIt.Housing.DataAccess.Entities;
 using RentIt.Housing.DataAccess.Enums;
 
 namespace RentIt.Housing.Domain.Contracts.Requests.Housing
@@ -14,6 +13,7 @@ namespace RentIt.Housing.Domain.Contracts.Requests.Housing
         int? NumberOfRooms,
         List<string>? Amenities,
         HousingStatus? Status,
+        DateOnly? EstimatedEndDate,
         List<IFormFile>? AddedImages,
         List<string>? RemovedImages
         );

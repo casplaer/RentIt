@@ -1,9 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using RentIt.Housing.Domain.Contracts.Requests.Availabilities;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Reviews;
-using RentIt.Housing.Domain.Mappings.Availabilities;
 using RentIt.Housing.Domain.Mappings.Housing;
 using RentIt.Housing.Domain.Mappings.Reviews;
 using RentIt.Housing.Domain.Services;
@@ -17,7 +15,6 @@ namespace RentIt.Housing.Domain.Extensions
         {
             services.AddAutoMapper(typeof(HousingProfile));
             services.AddAutoMapper(typeof(UpdateHousingRequestProfile));
-            services.AddAutoMapper(typeof(AvailabilityProfile));
             services.AddAutoMapper(typeof(CreateReviewRequestProfile));
             services.AddAutoMapper(typeof(UpdateReviewRequestProfile));
 
@@ -29,8 +26,6 @@ namespace RentIt.Housing.Domain.Extensions
             services.AddScoped<IValidator<CreateHousingRequest>, CreateHousingRequestValidator>();
             services.AddScoped<IValidator<GetFilteredHousingsRequest>, GetFilteredHousingsRequestValidator>();
             services.AddScoped<IValidator<UpdateHousingRequest>, UpdateHousingRequestValidator>();
-            services.AddScoped<IValidator<CreateAvailabilitiesRequest>, CreateAvailabilitiesRequestValidator>();
-            services.AddScoped<IValidator<UpdateAvailabilitiesRequest>, UpdateAvailabilitiesRequestValidator>();
             services.AddScoped<IValidator<CreateReviewRequest>, CreateReviewRequestValidator>();
             services.AddScoped<IValidator<UpdateReviewRequest>, UpdateReviewRequestValidator>();
 
@@ -42,7 +37,6 @@ namespace RentIt.Housing.Domain.Extensions
             services.AddScoped<HousingService>();
             services.AddScoped<HousingImageService>();
             services.AddScoped<ReviewsService>();
-            services.AddScoped<AvailabilityService>();
             services.AddScoped<UserIntegrationService>();
             services.AddScoped<SpamProfanityFilterService>();
 

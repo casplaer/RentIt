@@ -11,7 +11,6 @@ namespace RentIt.Housing.DataAccess.Extensions
             services.AddScoped<IHousingRepository, HousingRepository>();
             services.AddScoped<IHousingImageRepository, HousingImageRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
-            services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
 
             return services;
         }

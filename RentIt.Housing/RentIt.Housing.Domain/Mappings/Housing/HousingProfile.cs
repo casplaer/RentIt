@@ -17,7 +17,6 @@ namespace RentIt.Housing.Domain.Mappings.Housing
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => HousingStatus.Unpublished))
                 .ForMember(dest => dest.Images, opt => opt.Ignore())
                 .ForMember(dest => dest.Reviews, opt => opt.Ignore())
-                .ForMember(dest => dest.Availabilities, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
         }

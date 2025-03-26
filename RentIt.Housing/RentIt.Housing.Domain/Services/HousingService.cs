@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DnsClient.Internal;
 using FluentValidation;
 using RentIt.Housing.DataAccess.Entities;
 using RentIt.Housing.DataAccess.Enums;
@@ -7,6 +8,7 @@ using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
+using Serilog;
 
 namespace RentIt.Housing.Domain.Services
 {
@@ -20,6 +22,7 @@ namespace RentIt.Housing.Domain.Services
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
         private readonly SpamProfanityFilterService _filterService;
+        private readonly Serilog.ILogger _logger;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -29,7 +32,8 @@ namespace RentIt.Housing.Domain.Services
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
             HousingImageService imageService,
             UserIntegrationService userIntegrationService,
-            SpamProfanityFilterService filterService)
+            SpamProfanityFilterService filterService,
+            Serilog.ILogger logger)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;
@@ -39,16 +43,20 @@ namespace RentIt.Housing.Domain.Services
             _imageService = imageService;
             _userIntegrationService = userIntegrationService;
             _filterService = filterService;
+            _logger = logger;
         }
 
         public async Task<GetHousingByIdResponse> GetByIdAsync(
             Guid housingId, 
             CancellationToken cancellationToken)
         {
+            _logger.Information("Получение собственности с ID {HousingId}", housingId);
+
             var housing = await _housingRepository.GetByIdAsync(housingId, cancellationToken);
 
-            if(housing == null)
+            if (housing == null)
             {
+                _logger.Warning("Собственность с ID {HousingId} не найдена", housingId);
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
@@ -58,6 +66,8 @@ namespace RentIt.Housing.Domain.Services
                 housing,
                 ownerInfo);
 
+            _logger.Information("Собственность с ID {HousingId} успешно получена", housingId);
+
             return housingToReturn;
         }
 
@@ -65,6 +75,23 @@ namespace RentIt.Housing.Domain.Services
             GetFilteredHousingsRequest request, 
             CancellationToken cancellationToken)
         {
+            _logger.Information("Поиск недвижимости с параметрами: " +
+                "Название: {Title}, Адрес: {Address}, Город: {City}, Страна: {Country}, " +
+                "Цена за ночь: {PricePerNight}, Количество комнат: {NumberOfRooms}, " +
+                "Рейтинг: {Rating}, Статус: {Status}, Дата начала: {StartDate}, Дата окончания: {EndDate}, " +
+                "Страница: {Page}, Размер страницы: {PageSize}",
+                request.Title ?? "Не задано",
+                request.Address ?? "Не задано",
+                request.City ?? "Не задано",
+                request.Country ?? "Не задано",
+                request.PricePerNight?.ToString() ?? "Не задано",
+                request.NumberOfRooms?.ToString() ?? "Не задано",
+                request.Rating?.ToString() ?? "Не задано",
+                request.Status?.ToString() ?? "Не задано",
+                request.EstimatedEndDate?.ToString("yyyy-MM-dd") ?? "Не задано",
+                request.Page,
+                request.PageSize);
+
             await _getFilteredHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
             var specification = new SearchHousingSpecification(
@@ -76,13 +103,16 @@ namespace RentIt.Housing.Domain.Services
                 numberOfRooms: request.NumberOfRooms,
                 rating: request.Rating,
                 status: request.Status,
-                startDate: request.StartDate,
-                endDate: request.EndDate,
+                estimatedEndDate: request.EstimatedEndDate,
                 page: request.Page,
                 pageSize: request.PageSize
             );
 
-            return await _housingRepository.SearchAsync(specification, cancellationToken);
+            var housings = await _housingRepository.SearchAsync(specification, cancellationToken);
+
+            _logger.Information("Найдено {HousingCount} объектов недвижимости, соответствующих критериям поиска", housings.Count());
+
+            return housings;
         }
 
         public async Task AddHousingAsync(
@@ -90,10 +120,13 @@ namespace RentIt.Housing.Domain.Services
             CreateHousingRequest request,
             CancellationToken cancellationToken)
         {
+            _logger.Information("Добавление новой собственности для владельца {OwnerId}", ownerId);
+
             await _createHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
             if (!Guid.TryParse(ownerId, out var ownerGuid))
             {
+                _logger.Error("Некорректный формат ID владельца: {OwnerId}", ownerId);
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
@@ -104,10 +137,13 @@ namespace RentIt.Housing.Domain.Services
 
             if(request.Images != null && request.Images.Count() != 0)
             {
+                _logger.Information("Загрузка {ImageCount} изображений для собственности", request.Images.Count());
                 housing.Images = await _imageService.UploadImagesAsync(housing.HousingId, request.Images, cancellationToken);
             }
 
             await _housingRepository.AddAsync(housing, cancellationToken);
+
+            _logger.Information("Собственность с ID {HousingId} успешно добавлена", housing.HousingId);
         }
 
         public async Task UpdateHousingAsync(
@@ -115,12 +151,15 @@ namespace RentIt.Housing.Domain.Services
             UpdateHousingRequest request, 
             CancellationToken cancellationToken)
         {
+            _logger.Information("Обновление собственности с ID {HousingId}", housingId);
+
             await _updateHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
             var housingToUpdate = await _housingRepository.GetByIdAsync(housingId, cancellationToken);
 
             if(housingToUpdate == null )
             {
+                _logger.Warning("Собственность с ID {HousingId} не найдена для обновления", housingId);
                 throw new NotFoundException($"Собственность с ID {housingId} не найдена.");
             }
 
@@ -131,6 +170,8 @@ namespace RentIt.Housing.Domain.Services
             housingToUpdate.UpdatedAt = DateTime.UtcNow;
 
             await _housingRepository.UpdateAsync(housingToUpdate, cancellationToken);
+
+            _logger.Information("Собственность с ID {HousingId} успешно обновлена", housingId);
         }
 
         public async Task UpdateHousingAsync(
@@ -138,28 +179,39 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken
             )
         {
+            _logger.Information("Обновление собственности с ID {HousingId}", housing.HousingId);
+
             housing.UpdatedAt = DateTime.UtcNow;
 
             await _housingRepository.UpdateAsync(housing, cancellationToken);
+
+            _logger.Information("Собственность с ID {HousingId} успешно обновлена", housing.HousingId);
         }
 
         public async Task DeleteHousingAsync(
             Guid housingId, 
             CancellationToken cancellationToken)
         {
+            _logger.Information("Удаление собственности с ID {HousingId}", housingId);
+
             var housingToDelete = await _housingRepository.GetByIdAsync(housingId, cancellationToken);
 
             foreach(var img in housingToDelete.Images)
             {
+                _logger.Information("Удаление изображения с ID {ImageId}", img.ImageId);
                 await _imageService.DeleteImageAsync(img.ImageId, cancellationToken);
             }
 
             await _housingRepository.DeleteAsync(housingId, cancellationToken);
+
+            _logger.Information("Собственность с ID {HousingId} успешно удалена", housingId);
         }
 
         public async Task CheckUnpublishedHousingsForSpamAsync(
             CancellationToken cancellationToken)
         {
+            _logger.Information("Проверка неподтвержденных объектов недвижимости на наличие спама");
+
             var unpublishedHousings = (await _housingRepository.GetAllAsync(cancellationToken))
                                         .Where(h => h.Status == HousingStatus.Unpublished);
 
@@ -170,13 +222,17 @@ namespace RentIt.Housing.Domain.Services
                 if (isSpam)
                 {
                     housing.Status = HousingStatus.Rejected;
+                    _logger.Warning("Собственность с ID {HousingId} помечена как спам", housing.HousingId);
                 }
                 else
                 {
                     housing.Status = HousingStatus.Available;
+                    _logger.Information("Собственность с ID {HousingId} помечена как доступная", housing.HousingId);
                 }
 
                 await _housingRepository.UpdateAsync(housing, cancellationToken);
+
+                _logger.Information("Проверка неподтвержденных объектов недвижимости на спам завершена");
             }
         }
     }

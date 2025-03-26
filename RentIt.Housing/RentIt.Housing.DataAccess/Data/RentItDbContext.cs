@@ -23,7 +23,7 @@ namespace RentIt.Housing.DataAccess.Data
         {
             if (_database == null)
             {
-                throw new InvalidOperationException("Database is not initialized.");
+                throw new InvalidOperationException("База данных не инициализирована.");
             }
 
             collectionName ??= typeof(TEntity).Name;

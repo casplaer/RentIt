@@ -52,10 +52,6 @@ namespace RentIt.Housing.Domain.Validators
             RuleFor(x => x.Rating)
                 .InclusiveBetween(0.0, 5.0).When(x => x.Rating.HasValue)
                 .WithMessage("Рейтинг должен быть в диапазоне от 0 до 5.");
-
-            RuleFor(x => x)
-                .Must(x => !x.StartDate.HasValue || !x.EndDate.HasValue || x.StartDate.Value <= x.EndDate.Value)
-                .WithMessage("Дата начала должна быть раньше или равна дате окончания, если обе указаны.");
         }
     }
 }

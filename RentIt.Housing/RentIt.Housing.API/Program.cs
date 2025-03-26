@@ -15,9 +15,7 @@ BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(GuidRepresent
 
 var configuration = builder.Configuration;
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.Services.AddLogging(configuration);
 
 builder.Host.UseSerilog();
 
@@ -58,7 +56,4 @@ HangfireJobsExtensions.ConfigureRecurringJobs();
 app.UseHttpsRedirection();
 app.MapControllers();
 
-Log.Information("Проверка отправки лога {Time}", DateTime.Now);
-
 app.Run();
-
