@@ -1,0 +1,554 @@
+2025-03-26 00:29:27.692 +03:00 [INF] Проверка отправки лога "2025-03-26T00:29:27.6914009+03:00"
+2025-03-26 00:29:27.800 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:29:28.215 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:29:28.217 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:29:28.226 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:29:28.229 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:29:28.266 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:29:28.268 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:29:28.269 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:29:28.279 +03:00 [INF] Server desktop-4q5t726:40832:4087aac2 successfully announced in 11,6968 ms
+2025-03-26 00:29:28.287 +03:00 [INF] Server desktop-4q5t726:40832:4087aac2 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:29:28.325 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:29:28.378 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 00:29:28.401 +03:00 [INF] Removing 1 expired jobs from 'succeeded' list...
+2025-03-26 00:29:28.414 +03:00 [INF] Server desktop-4q5t726:40832:4087aac2 all the dispatchers started
+2025-03-26 00:32:58.532 +03:00 [INF] Проверка отправки лога "2025-03-26T00:32:58.5311806+03:00"
+2025-03-26 00:32:58.619 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:32:58.827 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:32:58.829 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:32:58.838 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:32:58.839 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:32:58.868 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:32:58.871 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:32:58.873 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:32:58.877 +03:00 [INF] Server desktop-4q5t726:50128:531385ce successfully announced in 8,9053 ms
+2025-03-26 00:32:58.883 +03:00 [INF] Server desktop-4q5t726:50128:531385ce is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:32:58.917 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:32:58.987 +03:00 [INF] Server desktop-4q5t726:50128:531385ce all the dispatchers started
+2025-03-26 00:37:21.484 +03:00 [INF] Проверка отправки лога "2025-03-26T00:37:21.4826201+03:00"
+2025-03-26 00:37:21.671 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:37:21.974 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:37:21.977 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:37:21.989 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:37:21.992 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:37:22.035 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:37:22.039 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:37:22.042 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:37:22.049 +03:00 [INF] Server desktop-4q5t726:36840:301aa707 successfully announced in 14,0713 ms
+2025-03-26 00:37:22.060 +03:00 [INF] Server desktop-4q5t726:36840:301aa707 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:37:22.106 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:37:22.237 +03:00 [INF] Server desktop-4q5t726:36840:301aa707 all the dispatchers started
+2025-03-26 00:42:06.841 +03:00 [INF] Проверка отправки лога "2025-03-26T00:42:06.8398390+03:00"
+2025-03-26 00:42:07.001 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:42:07.344 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:42:07.348 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:42:07.366 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:42:07.370 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:42:07.412 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:42:07.414 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:42:07.416 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:42:07.425 +03:00 [INF] Server desktop-4q5t726:44992:b238aa42 successfully announced in 13,5352 ms
+2025-03-26 00:42:07.433 +03:00 [INF] Server desktop-4q5t726:44992:b238aa42 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:42:07.474 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:42:07.549 +03:00 [INF] 2 servers were removed due to timeout
+2025-03-26 00:42:07.567 +03:00 [INF] Server desktop-4q5t726:44992:b238aa42 all the dispatchers started
+2025-03-26 00:42:55.204 +03:00 [INF] Проверка отправки лога "2025-03-26T00:42:55.2034101+03:00"
+2025-03-26 00:42:55.306 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:42:55.523 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:42:55.525 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:42:55.536 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:42:55.538 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:42:55.566 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:42:55.567 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:42:55.568 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:42:55.576 +03:00 [INF] Server desktop-4q5t726:44996:6fc95b2c successfully announced in 10,212 ms
+2025-03-26 00:42:55.582 +03:00 [INF] Server desktop-4q5t726:44996:6fc95b2c is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:42:55.642 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:42:55.729 +03:00 [INF] Server desktop-4q5t726:44996:6fc95b2c all the dispatchers started
+2025-03-26 00:43:39.543 +03:00 [INF] Проверка отправки лога "2025-03-26T00:43:39.5422164+03:00"
+2025-03-26 00:43:39.665 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:43:39.929 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:43:39.931 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:43:39.942 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:43:39.943 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:43:39.976 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:43:39.978 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:43:39.979 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:43:39.987 +03:00 [INF] Server desktop-4q5t726:28980:807a604e successfully announced in 11,4298 ms
+2025-03-26 00:43:39.993 +03:00 [INF] Server desktop-4q5t726:28980:807a604e is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:43:40.026 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:43:40.102 +03:00 [INF] Server desktop-4q5t726:28980:807a604e all the dispatchers started
+2025-03-26 00:48:40.056 +03:00 [INF] 3 servers were removed due to timeout
+2025-03-26 00:54:01.145 +03:00 [INF] Проверка отправки лога "2025-03-26T00:54:01.1450108+03:00"
+2025-03-26 00:54:01.225 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:54:01.401 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:54:01.402 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:54:01.411 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:54:01.412 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:54:01.439 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:54:01.441 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:54:01.442 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:54:01.449 +03:00 [INF] Server desktop-4q5t726:25684:28893970 successfully announced in 9,7555 ms
+2025-03-26 00:54:01.454 +03:00 [INF] Server desktop-4q5t726:25684:28893970 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:54:01.489 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:54:01.570 +03:00 [INF] Server desktop-4q5t726:25684:28893970 all the dispatchers started
+2025-03-26 00:57:12.484 +03:00 [INF] Проверка отправки лога "2025-03-26T00:57:12.4832601+03:00"
+2025-03-26 00:57:12.572 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 00:57:12.764 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 00:57:12.767 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 00:57:12.779 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 00:57:12.786 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 00:57:12.820 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 00:57:12.823 +03:00 [INF] Hosting environment: Development
+2025-03-26 00:57:12.825 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 00:57:12.829 +03:00 [INF] Server desktop-4q5t726:44956:1d934c36 successfully announced in 9,9118 ms
+2025-03-26 00:57:12.836 +03:00 [INF] Server desktop-4q5t726:44956:1d934c36 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 00:57:12.875 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 00:57:12.949 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 00:57:13.011 +03:00 [INF] Server desktop-4q5t726:44956:1d934c36 all the dispatchers started
+2025-03-26 01:02:15.623 +03:00 [INF] Проверка отправки лога "2025-03-26T01:02:15.6228424+03:00"
+2025-03-26 01:02:15.720 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 01:02:15.929 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 01:02:15.932 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 01:02:15.944 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 01:02:15.946 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 01:02:15.978 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 01:02:15.982 +03:00 [INF] Hosting environment: Development
+2025-03-26 01:02:15.986 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 01:02:15.989 +03:00 [INF] Server desktop-4q5t726:42036:2e70acd7 successfully announced in 9,7842 ms
+2025-03-26 01:02:15.998 +03:00 [INF] Server desktop-4q5t726:42036:2e70acd7 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 01:02:16.077 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 01:02:16.123 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 01:02:16.168 +03:00 [INF] Server desktop-4q5t726:42036:2e70acd7 all the dispatchers started
+2025-03-26 01:07:16.155 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 01:09:31.432 +03:00 [INF] Проверка отправки лога "2025-03-26T01:09:31.4310677+03:00"
+2025-03-26 01:09:31.526 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 01:09:31.781 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 01:09:31.783 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 01:09:31.793 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 01:09:31.794 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 01:09:31.824 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 01:09:31.825 +03:00 [INF] Hosting environment: Development
+2025-03-26 01:09:31.827 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 01:09:31.832 +03:00 [INF] Server desktop-4q5t726:15668:3765d810 successfully announced in 8,4505 ms
+2025-03-26 01:09:31.837 +03:00 [INF] Server desktop-4q5t726:15668:3765d810 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 01:09:31.871 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 01:09:31.936 +03:00 [INF] Server desktop-4q5t726:15668:3765d810 all the dispatchers started
+2025-03-26 01:11:21.220 +03:00 [INF] Проверка отправки лога "2025-03-26T01:11:21.2198696+03:00"
+2025-03-26 01:11:21.323 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 01:11:21.567 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 01:11:21.575 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 01:11:21.594 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 01:11:21.596 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 01:11:21.629 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 01:11:21.631 +03:00 [INF] Hosting environment: Development
+2025-03-26 01:11:21.633 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 01:11:21.639 +03:00 [INF] Server desktop-4q5t726:3400:58e491b0 successfully announced in 10,9755 ms
+2025-03-26 01:11:21.647 +03:00 [INF] Server desktop-4q5t726:3400:58e491b0 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 01:11:21.683 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 01:11:21.763 +03:00 [INF] Server desktop-4q5t726:3400:58e491b0 all the dispatchers started
+2025-03-26 01:13:18.478 +03:00 [INF] Проверка отправки лога "2025-03-26T01:13:18.4770742+03:00"
+2025-03-26 01:13:18.620 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 01:13:18.939 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 01:13:18.942 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 01:13:18.962 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 01:13:18.966 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 01:13:19.011 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 01:13:19.015 +03:00 [INF] Hosting environment: Development
+2025-03-26 01:13:19.017 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 01:13:19.024 +03:00 [INF] Server desktop-4q5t726:38900:6d7336e2 successfully announced in 14,5981 ms
+2025-03-26 01:13:19.040 +03:00 [INF] Server desktop-4q5t726:38900:6d7336e2 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 01:13:19.115 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 01:13:19.458 +03:00 [INF] Server desktop-4q5t726:38900:6d7336e2 all the dispatchers started
+2025-03-26 01:18:19.239 +03:00 [INF] 3 servers were removed due to timeout
+2025-03-26 02:51:24.948 +03:00 [INF] Проверка отправки лога "2025-03-26T02:51:24.9479037+03:00"
+2025-03-26 02:51:25.036 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 02:51:25.353 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 02:51:25.355 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 02:51:25.364 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 02:51:25.365 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 02:51:25.394 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 02:51:25.396 +03:00 [INF] Hosting environment: Development
+2025-03-26 02:51:25.398 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 02:51:25.405 +03:00 [INF] Server desktop-4q5t726:49688:f8ad6763 successfully announced in 11,867 ms
+2025-03-26 02:51:25.413 +03:00 [INF] Server desktop-4q5t726:49688:f8ad6763 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 02:51:25.454 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 02:51:25.502 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 02:51:25.546 +03:00 [INF] Server desktop-4q5t726:49688:f8ad6763 all the dispatchers started
+2025-03-26 02:53:02.098 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 02:53:02.341 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 02:53:02.343 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 02:53:02.353 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 02:53:02.355 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 02:53:02.384 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 02:53:02.386 +03:00 [INF] Hosting environment: Development
+2025-03-26 02:53:02.387 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 02:53:02.391 +03:00 [INF] Server desktop-4q5t726:47704:f90f8b51 successfully announced in 8,2514 ms
+2025-03-26 02:53:02.395 +03:00 [INF] Server desktop-4q5t726:47704:f90f8b51 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 02:53:02.431 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 02:53:02.496 +03:00 [INF] Server desktop-4q5t726:47704:f90f8b51 all the dispatchers started
+2025-03-26 02:53:07.157 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.html - null null
+2025-03-26 02:53:08.729 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:08.753 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+2025-03-26 02:53:08.847 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.html - 200 null text/html;charset=utf-8 1696.9564ms
+2025-03-26 02:53:08.913 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/swagger-ui.css - null null
+2025-03-26 02:53:08.917 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.css - null null
+2025-03-26 02:53:08.918 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.js - null null
+2025-03-26 02:53:08.928 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - null null
+2025-03-26 02:53:08.929 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_vs/browserLink - null null
+2025-03-26 02:53:08.945 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:08.976 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+2025-03-26 02:53:08.987 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - 200 13772 application/javascript; charset=utf-8 62.4141ms
+2025-03-26 02:53:08.992 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:09.024 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:09.039 +03:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-03-26 02:53:09.067 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:08'.
+2025-03-26 02:53:09.083 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+2025-03-26 02:53:09.090 +03:00 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2025-03-26 02:53:09.095 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_vs/browserLink - 200 null text/javascript; charset=UTF-8 166.4628ms
+2025-03-26 02:53:09.102 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.js - 200 null application/javascript;charset=utf-8 183.96ms
+2025-03-26 02:53:09.103 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.css - 200 202 text/css 186.1574ms
+2025-03-26 02:53:09.112 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/swagger-ui.css - 200 154948 text/css 200.0359ms
+2025-03-26 02:53:09.448 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/favicon-32x32.png - null null
+2025-03-26 02:53:09.454 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:09.462 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - null null
+2025-03-26 02:53:09.469 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+2025-03-26 02:53:09.474 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:09.481 +03:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2025-03-26 02:53:09.495 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:09'.
+2025-03-26 02:53:09.499 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/favicon-32x32.png - 200 628 image/png 50.1336ms
+2025-03-26 02:53:09.741 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 279.3895ms
+2025-03-26 02:53:34.107 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings?Status=Booked&Page=1&PageSize=10 - null null
+2025-03-26 02:53:34.117 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:34'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:34.125 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:34'.
+2025-03-26 02:53:34.132 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:34.166 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 02:53:35.295 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Booked, Дата начала: Не задано, Дата окончания: 1, Страница: 10, Размер страницы: {PageSize}
+2025-03-26 02:53:35.941 +03:00 [INF] Найдено 0 объектов недвижимости, соответствующих критериям поиска
+2025-03-26 02:53:35.949 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[RentIt.Housing.DataAccess.Entities.HousingEntity, RentIt.Housing.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-03-26 02:53:35.989 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 1811.1213ms
+2025-03-26 02:53:35.992 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:35.993 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings?Status=Booked&Page=1&PageSize=10 - 200 null application/json; charset=utf-8 1887.6643ms
+2025-03-26 02:53:39.132 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings?Status=Available&Page=1&PageSize=10 - null null
+2025-03-26 02:53:39.138 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:39'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:39.148 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:39'.
+2025-03-26 02:53:39.150 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:39.152 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 02:53:39.164 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Available, Дата начала: Не задано, Дата окончания: 1, Страница: 10, Размер страницы: {PageSize}
+2025-03-26 02:53:39.418 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 260.9169ms
+2025-03-26 02:53:39.422 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:39.508 +03:00 [ERR] An error occurred
+System.FormatException: Element 'Availabilities' does not match any field or property of class RentIt.Housing.DataAccess.Entities.HousingEntity.
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.DeserializeClass(BsonDeserializationContext context)
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Bson.Serialization.Serializers.EnumerableSerializerBase`2.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.CursorDeserializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.AggregateResultDeserializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.ProcessResponse(ConnectionId connectionId, CommandMessage responseMessage)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.SendMessageAndProcessResponseAsync(CommandRequestMessage message, Int32 responseTo, IConnection connection, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.ExecuteAsync(IConnection connection, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Servers.Server.ServerChannel.ExecuteProtocolAsync[TResult](IWireProtocol`1 protocol, ICoreSession session, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.RetryableReadOperationExecutor.ExecuteAsync[TResult](IRetryableReadOperation`1 operation, RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.ReadCommandOperation`1.ExecuteAsync(RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.ExecuteAsync(RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.ExecuteAsync(IReadBinding binding, CancellationToken cancellationToken)
+   at MongoDB.Driver.OperationExecutor.ExecuteReadOperationAsync[TResult](IReadBinding binding, IReadOperation`1 operation, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.ExecuteReadOperationAsync[TResult](IClientSessionHandle session, IReadOperation`1 operation, ReadPreference readPreference, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.AggregateAsync[TResult](IClientSessionHandle session, PipelineDefinition`2 pipeline, AggregateOptions options, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.UsingImplicitSessionAsync[TResult](Func`2 funcAsync, CancellationToken cancellationToken)
+   at MongoDB.Driver.Linq.Linq3Implementation.Translators.ExpressionToExecutableQueryTranslators.ExecutableQuery`3.ExecuteAsync(IClientSessionHandle session, CancellationToken cancellationToken)
+   at MongoDB.Driver.IAsyncCursorSourceExtensions.ToListAsync[TDocument](IAsyncCursorSource`1 source, CancellationToken cancellationToken)
+   at RentIt.Housing.DataAccess.Repositories.HousingRepository.SearchAsync(Specification`1 specification, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.DataAccess\Repositories\HousingRepository.cs:line 38
+   at RentIt.Housing.Domain.Services.HousingService.SearchAsync(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.Domain\Services\HousingService.cs:line 111
+   at RentIt.Housing.API.Controllers.HousingController.GetHousings(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Controllers\HousingController.cs:line 38
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at RentIt.Housing.API.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Middleware\ExceptionHandlingMiddleware.cs:line 21
+2025-03-26 02:53:39.607 +03:00 [WRN] Unhandled exception type: System.FormatException
+2025-03-26 02:53:39.621 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings?Status=Available&Page=1&PageSize=10 - 500 null application/json; charset=utf-8 489.3911ms
+2025-03-26 02:53:42.700 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - null null
+2025-03-26 02:53:42.705 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:42'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:53:42.725 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:53:42'.
+2025-03-26 02:53:42.734 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:42.741 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 02:53:42.768 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Не задано, Дата начала: Не задано, Дата окончания: 1, Страница: 10, Размер страницы: {PageSize}
+2025-03-26 02:53:42.976 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 216.3285ms
+2025-03-26 02:53:42.985 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:53:43.084 +03:00 [ERR] An error occurred
+System.FormatException: Element 'Availabilities' does not match any field or property of class RentIt.Housing.DataAccess.Entities.HousingEntity.
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.DeserializeClass(BsonDeserializationContext context)
+   at MongoDB.Bson.Serialization.BsonClassMapSerializer`1.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Bson.Serialization.Serializers.EnumerableSerializerBase`2.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.CursorDeserializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.AggregateResultDeserializer.Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+   at MongoDB.Bson.Serialization.IBsonSerializerExtensions.Deserialize[TValue](IBsonSerializer`1 serializer, BsonDeserializationContext context)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.ProcessResponse(ConnectionId connectionId, CommandMessage responseMessage)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.SendMessageAndProcessResponseAsync(CommandRequestMessage message, Int32 responseTo, IConnection connection, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.WireProtocol.CommandUsingCommandMessageWireProtocol`1.ExecuteAsync(IConnection connection, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Servers.Server.ServerChannel.ExecuteProtocolAsync[TResult](IWireProtocol`1 protocol, ICoreSession session, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.RetryableReadOperationExecutor.ExecuteAsync[TResult](IRetryableReadOperation`1 operation, RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.ReadCommandOperation`1.ExecuteAsync(RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.ExecuteAsync(RetryableReadContext context, CancellationToken cancellationToken)
+   at MongoDB.Driver.Core.Operations.AggregateOperation`1.ExecuteAsync(IReadBinding binding, CancellationToken cancellationToken)
+   at MongoDB.Driver.OperationExecutor.ExecuteReadOperationAsync[TResult](IReadBinding binding, IReadOperation`1 operation, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.ExecuteReadOperationAsync[TResult](IClientSessionHandle session, IReadOperation`1 operation, ReadPreference readPreference, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.AggregateAsync[TResult](IClientSessionHandle session, PipelineDefinition`2 pipeline, AggregateOptions options, CancellationToken cancellationToken)
+   at MongoDB.Driver.MongoCollectionImpl`1.UsingImplicitSessionAsync[TResult](Func`2 funcAsync, CancellationToken cancellationToken)
+   at MongoDB.Driver.Linq.Linq3Implementation.Translators.ExpressionToExecutableQueryTranslators.ExecutableQuery`3.ExecuteAsync(IClientSessionHandle session, CancellationToken cancellationToken)
+   at MongoDB.Driver.IAsyncCursorSourceExtensions.ToListAsync[TDocument](IAsyncCursorSource`1 source, CancellationToken cancellationToken)
+   at RentIt.Housing.DataAccess.Repositories.HousingRepository.SearchAsync(Specification`1 specification, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.DataAccess\Repositories\HousingRepository.cs:line 38
+   at RentIt.Housing.Domain.Services.HousingService.SearchAsync(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.Domain\Services\HousingService.cs:line 111
+   at RentIt.Housing.API.Controllers.HousingController.GetHousings(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Controllers\HousingController.cs:line 38
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at RentIt.Housing.API.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Middleware\ExceptionHandlingMiddleware.cs:line 21
+2025-03-26 02:53:43.150 +03:00 [WRN] Unhandled exception type: System.FormatException
+2025-03-26 02:53:43.151 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - 500 null application/json; charset=utf-8 451.9375ms
+2025-03-26 02:56:41.193 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - null null
+2025-03-26 02:56:41.198 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:56:41'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 02:56:41.210 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '25.03.2025 23:56:41'.
+2025-03-26 02:56:41.214 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:56:41.218 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 02:56:41.228 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Не задано, Дата начала: Не задано, Дата окончания: 1, Страница: 10, Размер страницы: {PageSize}
+2025-03-26 02:56:41.244 +03:00 [INF] Найдено 3 объектов недвижимости, соответствующих критериям поиска
+2025-03-26 02:56:41.246 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[RentIt.Housing.DataAccess.Entities.HousingEntity, RentIt.Housing.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-03-26 02:56:41.259 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 34.1995ms
+2025-03-26 02:56:41.262 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 02:56:41.264 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - 200 null application/json; charset=utf-8 71.2586ms
+2025-03-26 02:58:02.450 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 03:13:32.521 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-26 03:13:32.816 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-26 03:13:32.817 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-26 03:13:32.825 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-26 03:13:32.826 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-26 03:13:32.854 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-26 03:13:32.856 +03:00 [INF] Hosting environment: Development
+2025-03-26 03:13:32.857 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-26 03:13:32.862 +03:00 [INF] Server desktop-4q5t726:42888:84321948 successfully announced in 7,9589 ms
+2025-03-26 03:13:32.867 +03:00 [INF] Server desktop-4q5t726:42888:84321948 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-26 03:13:32.906 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-26 03:13:32.949 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-26 03:13:32.989 +03:00 [INF] Server desktop-4q5t726:42888:84321948 all the dispatchers started
+2025-03-26 03:14:29.298 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.html - null null
+2025-03-26 03:14:29.554 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:29'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:14:29.576 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:29'.
+2025-03-26 03:14:29.660 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.html - 200 null text/html;charset=utf-8 368.0411ms
+2025-03-26 03:14:30.009 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - null null
+2025-03-26 03:14:30.009 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.js - null null
+2025-03-26 03:14:30.009 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_vs/browserLink - null null
+2025-03-26 03:14:30.029 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:30'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:14:30.045 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - 200 13772 application/javascript; charset=utf-8 36.1277ms
+2025-03-26 03:14:30.051 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:30'.
+2025-03-26 03:14:30.061 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.js - 200 null application/javascript;charset=utf-8 52.4688ms
+2025-03-26 03:14:30.086 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_vs/browserLink - 200 null text/javascript; charset=UTF-8 77.2577ms
+2025-03-26 03:14:30.339 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - null null
+2025-03-26 03:14:30.350 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:30'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:14:30.359 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:14:30'.
+2025-03-26 03:14:30.511 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 172.3569ms
+2025-03-26 03:15:53.396 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings - null null
+2025-03-26 03:15:53.405 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:15:53'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:15:53.419 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:15:53'.
+2025-03-26 03:15:53.424 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 03:15:53.461 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 03:15:53.891 +03:00 [INF] Путь к файлу спам-слов: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:15:53.894 +03:00 [INF] Начинается загрузка слов для фильтрации из файла: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:15:53.899 +03:00 [INF] Успешно загружено 7278 слов
+2025-03-26 03:15:53.900 +03:00 [INF] Загружено 7278 слов для фильтрации спама и нецензурщины
+2025-03-26 03:15:53.933 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Не задано, Дата начала: Не задано, Дата окончания: 0, Страница: 0, Размер страницы: {PageSize}
+2025-03-26 03:15:54.063 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 594.7904ms
+2025-03-26 03:15:54.067 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 03:15:54.088 +03:00 [ERR] An error occurred
+FluentValidation.ValidationException: Validation failed: 
+ -- Page: Номер страницы должен быть больше или равен 1. Severity: Error
+ -- PageSize: Размер страницы должен быть больше 0. Severity: Error
+   at FluentValidation.AbstractValidator`1.RaiseValidationException(ValidationContext`1 context, ValidationResult result) in /_/src/FluentValidation/AbstractValidator.cs:line 531
+   at FluentValidation.AbstractValidator`1.ValidateInternalAsync(ValidationContext`1 context, Boolean useAsync, CancellationToken cancellation) in /_/src/FluentValidation/AbstractValidator.cs:line 258
+   at FluentValidation.AbstractValidator`1.ValidateAsync(ValidationContext`1 context, CancellationToken cancellation) in /_/src/FluentValidation/AbstractValidator.cs:line 220
+   at FluentValidation.DefaultValidatorExtensions.ValidateAndThrowAsync[T](IValidator`1 validator, T instance, CancellationToken cancellationToken) in /_/src/FluentValidation/DefaultValidatorExtensions_Validate.cs:line 72
+   at RentIt.Housing.Domain.Services.HousingService.SearchAsync(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.Domain\Services\HousingService.cs:line 95
+   at RentIt.Housing.API.Controllers.HousingController.GetHousings(GetFilteredHousingsRequest request, CancellationToken cancellationToken) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Controllers\HousingController.cs:line 38
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|7_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at RentIt.Housing.API.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\Middleware\ExceptionHandlingMiddleware.cs:line 21
+2025-03-26 03:15:54.180 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings - 400 null application/json; charset=utf-8 784.3484ms
+2025-03-26 03:15:57.909 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - null null
+2025-03-26 03:15:57.914 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:15:57'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:15:57.921 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:15:57'.
+2025-03-26 03:15:57.924 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 03:15:57.925 +03:00 [INF] Route matched with {action = "GetHousings", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetHousings(RentIt.Housing.Domain.Contracts.Requests.Housing.GetFilteredHousingsRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 03:15:57.939 +03:00 [INF] Путь к файлу спам-слов: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:15:57.940 +03:00 [INF] Начинается загрузка слов для фильтрации из файла: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:15:57.943 +03:00 [INF] Успешно загружено 7278 слов
+2025-03-26 03:15:57.945 +03:00 [INF] Загружено 7278 слов для фильтрации спама и нецензурщины
+2025-03-26 03:15:57.952 +03:00 [INF] Поиск недвижимости с параметрами: Название: Не задано, Адрес: Не задано, Город: Не задано, Страна: Не задано, Цена за ночь: Не задано, Количество комнат: Не задано, Рейтинг: Не задано, Статус: Не задано, Дата начала: Не задано, Дата окончания: 1, Страница: 10, Размер страницы: {PageSize}
+2025-03-26 03:15:58.303 +03:00 [INF] Найдено 3 объектов недвижимости, соответствующих критериям поиска
+2025-03-26 03:15:58.315 +03:00 [INF] Executing OkObjectResult, writing value of type 'System.Collections.Generic.List`1[[RentIt.Housing.DataAccess.Entities.HousingEntity, RentIt.Housing.DataAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+2025-03-26 03:15:58.372 +03:00 [INF] Executed action RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API) in 437.2875ms
+2025-03-26 03:15:58.376 +03:00 [INF] Executed endpoint 'RentIt.Housing.API.Controllers.HousingController.GetHousings (RentIt.Housing.API)'
+2025-03-26 03:15:58.378 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/api/housings?Page=1&PageSize=10 - 200 null application/json; charset=utf-8 469.1085ms
+2025-03-26 03:16:15.633 +03:00 [INF] Request starting HTTP/2 PUT https://localhost:7175/api/housings/410280ff-601a-46a5-b7c3-f6ddd9b4a777 - multipart/form-data; boundary=----WebKitFormBoundarytiXaC2ylTpsktIQM 1063
+2025-03-26 03:16:15.640 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:16:15'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-26 03:16:15.647 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '26.03.2025 0:16:15'.
+2025-03-26 03:16:15.649 +03:00 [INF] Executing endpoint 'RentIt.Housing.API.Controllers.HousingController.UpdateHousing (RentIt.Housing.API)'
+2025-03-26 03:16:15.659 +03:00 [INF] Route matched with {action = "UpdateHousing", controller = "Housing"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] UpdateHousing(System.Guid, RentIt.Housing.Domain.Contracts.Requests.Housing.UpdateHousingRequest, System.Threading.CancellationToken) on controller RentIt.Housing.API.Controllers.HousingController (RentIt.Housing.API).
+2025-03-26 03:16:15.669 +03:00 [INF] Путь к файлу спам-слов: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:16:15.671 +03:00 [INF] Начинается загрузка слов для фильтрации из файла: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API\wwwroot\spam-and-profanity.txt
+2025-03-26 03:16:15.676 +03:00 [INF] Успешно загружено 7278 слов
+2025-03-26 03:16:15.677 +03:00 [INF] Загружено 7278 слов для фильтрации спама и нецензурщины

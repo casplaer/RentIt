@@ -1,0 +1,110 @@
+2025-03-24 23:20:04.174 +03:00 [INF] Проверка отправки лога "2025-03-24T23:20:04.1736062+03:00"
+2025-03-24 23:20:04.272 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-24 23:20:04.534 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-24 23:20:04.539 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-24 23:20:04.560 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-24 23:20:04.563 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-24 23:20:04.621 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-24 23:20:04.623 +03:00 [INF] Hosting environment: Development
+2025-03-24 23:20:04.625 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-24 23:20:04.635 +03:00 [INF] Server desktop-4q5t726:47020:3f860d58 successfully announced in 15,584 ms
+2025-03-24 23:20:04.645 +03:00 [INF] Server desktop-4q5t726:47020:3f860d58 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-24 23:20:04.696 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-24 23:20:04.714 +03:00 [INF] 1 servers were removed due to timeout
+2025-03-24 23:20:04.746 +03:00 [INF] Removing 1 expired jobs from 'succeeded' list...
+2025-03-24 23:20:04.792 +03:00 [INF] Server desktop-4q5t726:47020:3f860d58 all the dispatchers started
+2025-03-24 23:20:17.803 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.html - null null
+2025-03-24 23:20:19.365 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.391 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.477 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.html - 200 null text/html;charset=utf-8 1681.7575ms
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.css - null null
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/swagger-ui.css - null null
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/index.js - null null
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/swagger-ui-bundle.js - null null
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - null null
+2025-03-24 23:20:19.646 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/swagger-ui-standalone-preset.js - null null
+2025-03-24 23:20:19.656 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/_vs/browserLink - null null
+2025-03-24 23:20:19.707 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.711 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.713 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.724 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.737 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_framework/aspnetcore-browser-refresh.js - 200 13772 application/javascript; charset=utf-8 90.8513ms
+2025-03-24 23:20:19.743 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.757 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.768 +03:00 [INF] Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-03-24 23:20:19.773 +03:00 [INF] Sending file. Request path: '/index.css'. Physical path: 'N/A'
+2025-03-24 23:20:19.781 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.784 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.css - 200 202 text/css 138.9433ms
+2025-03-24 23:20:19.793 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.816 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:19.818 +03:00 [INF] Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2025-03-24 23:20:19.830 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/swagger-ui-standalone-preset.js - 200 229223 text/javascript 185.1981ms
+2025-03-24 23:20:19.835 +03:00 [INF] Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2025-03-24 23:20:19.851 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:19'.
+2025-03-24 23:20:19.858 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/swagger-ui-bundle.js - 200 1466324 text/javascript 212.6943ms
+2025-03-24 23:20:19.893 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/index.js - 200 null application/javascript;charset=utf-8 247.0987ms
+2025-03-24 23:20:19.897 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/swagger-ui.css - 200 154948 text/css 251.5499ms
+2025-03-24 23:20:19.943 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/_vs/browserLink - 200 null text/javascript; charset=UTF-8 287.5964ms
+2025-03-24 23:20:20.226 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - null null
+2025-03-24 23:20:20.232 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:20'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:20.252 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:20'.
+2025-03-24 23:20:20.259 +03:00 [INF] Request starting HTTP/2 GET https://localhost:7175/swagger/favicon-32x32.png - null null
+2025-03-24 23:20:20.267 +03:00 [INF] Failed to validate the token.
+Microsoft.IdentityModel.Tokens.SecurityTokenExpiredException: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:20'.
+   at Microsoft.IdentityModel.Tokens.Validators.ValidateLifetime(Nullable`1 notBefore, Nullable`1 expires, SecurityToken securityToken, TokenValidationParameters validationParameters)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateTokenPayloadAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+   at Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler.ValidateJWSAsync(JsonWebToken jsonWebToken, TokenValidationParameters validationParameters, BaseConfiguration configuration)
+2025-03-24 23:20:20.276 +03:00 [INF] Bearer was not authenticated. Failure message: IDX10223: Lifetime validation failed. The token is expired. ValidTo (UTC): '21.03.2025 9:39:53', Current time (UTC): '24.03.2025 20:20:20'.
+2025-03-24 23:20:20.282 +03:00 [INF] Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2025-03-24 23:20:20.285 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/favicon-32x32.png - 200 628 image/png 25.523ms
+2025-03-24 23:20:20.425 +03:00 [INF] Request finished HTTP/2 GET https://localhost:7175/swagger/v1/swagger.json - 200 null application/json;charset=utf-8 198.8122ms
+2025-03-24 23:25:48.862 +03:00 [INF] Проверка отправки лога "2025-03-24T23:25:48.8616841+03:00"
+2025-03-24 23:25:48.952 +03:00 [INF] User profile is available. Using 'C:\Users\dinsi\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-03-24 23:25:49.145 +03:00 [INF] Now listening on: https://localhost:7175
+2025-03-24 23:25:49.147 +03:00 [INF] Now listening on: http://localhost:5047
+2025-03-24 23:25:49.156 +03:00 [INF] Starting Hangfire Server using job storage: 'redis://localhost:6379/2'
+2025-03-24 23:25:49.158 +03:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-03-24 23:25:49.188 +03:00 [INF] Application started. Press Ctrl+C to shut down.
+2025-03-24 23:25:49.190 +03:00 [INF] Hosting environment: Development
+2025-03-24 23:25:49.191 +03:00 [INF] Content root path: S:\MODSEN\RentIt\RentIt.Housing\RentIt.Housing.API
+2025-03-24 23:25:49.197 +03:00 [INF] Server desktop-4q5t726:38472:ae5a90f1 successfully announced in 8,9878 ms
+2025-03-24 23:25:49.204 +03:00 [INF] Server desktop-4q5t726:38472:ae5a90f1 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, FetchedJobsWatcher, ExpiredJobsWatcher, RedisSubscription, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-03-24 23:25:49.238 +03:00 [INF] Removing expired records from the 'succeeded' list...
+2025-03-24 23:25:49.323 +03:00 [INF] Server desktop-4q5t726:38472:ae5a90f1 all the dispatchers started
+2025-03-24 23:30:49.269 +03:00 [INF] 1 servers were removed due to timeout

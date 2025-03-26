@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using RentIt.Users.Infrastructure.Options;
 using RentIt.Users.Application.Extensions;
 using RentIt.Users.Infrastructure.Extensions;
+using RentIt.Users.Infrastructure.Services.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseConnection");
@@ -14,7 +15,7 @@ var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseC
 builder.Services.AddDbContext<RentItDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
+builder.Services.AddGrpc();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddApplicationUtilities();
 builder.Services.AddMediatR();
@@ -34,7 +35,6 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 builder.Services.AddRedis(builder.Configuration);
-
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
@@ -55,6 +55,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCustomMiddlewares();
+
+app.MapGrpcService<UsersServiceImpl>();
 
 app.UseHttpsRedirection();
 

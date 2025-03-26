@@ -42,15 +42,15 @@ services:
 
   housing_mongo:
     image: mongo:6
-    container_name: rentit_properties_mongo
+    container_name: rentit_housing_mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: properties_db
+      MONGO_INITDB_DATABASE: housing_db
     ports:
       - "27018:27017"  
     volumes:
-      - ./mongo_data:/data/db
+      - ./mongo_data_housing:/data/db
 
   redis:
     image: redis:latest
@@ -59,3 +59,62 @@ services:
       - "6379:6379"
     volumes:
       - ./redis_data:/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.3
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.17.3
+    container_name: logstash
+    ports:
+      - 5044:5044
+    volumes:
+      - ./logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.17.3
+    container_name: filebeat
+    command: ["filebeat", "-e", "--strict.perms=false"]
+    volumes:
+      - "./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
+      - "./RentIt.Housing/RentIt.Housing.API/Logs:/var/log/RentIt.Housing.API/Logs"
+    depends_on:
+      - logstash
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    networks:
+      - elastic
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
+
+volumes:
+  esdata:    

@@ -21,7 +21,7 @@ namespace RentIt.Users.Infrastructure.Data
                     LastName = "Adminov",
                     Email = "admin@example.com",
                     NormalizedEmail = "admin@example.com".ToLowerInvariant(),
-                    PasswordHash = "HASHED_testadmin",
+                    PasswordHash = "$2a$11$VkCOxZ3UEmKm7q54hd069uLhehwjFJD753vEAeTwDeB9wkA3MyBNW",
                     RoleId = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                     CreatedAt = fixedDate,
                     UpdatedAt = fixedDate,

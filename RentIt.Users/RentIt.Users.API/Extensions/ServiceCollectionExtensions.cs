@@ -13,14 +13,30 @@ namespace RentIt.Users.API.Extensions
         {
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
-                var connectionString = configuration.GetConnectionString("RedisConnection");
+                var connectionString = configuration.GetConnectionString("RedisUsersConnection");
                 return ConnectionMultiplexer.Connect(connectionString);
             });
 
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("RedisConnection");
+                options.Configuration = configuration.GetConnectionString("RedisUsersConnection");
                 options.InstanceName = "RentIt";
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddCORS(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowHousingService", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7175")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
 
             return services;

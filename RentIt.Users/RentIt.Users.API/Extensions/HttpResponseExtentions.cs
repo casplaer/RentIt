@@ -6,6 +6,8 @@
         {
             var cookieOptions = new CookieOptions
             {
+                Domain = "localhost",
+                Path = "/",
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None
