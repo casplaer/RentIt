@@ -2,7 +2,7 @@
 
 namespace RentIt.Users.Application.Commands.Users.Password
 {
-    public class ResetPasswordCommand : IRequest<string>
+    public class ResetPasswordCommand : IRequest<bool>
     {
         public string Email { get; set; }
         public string Token { get; set; }

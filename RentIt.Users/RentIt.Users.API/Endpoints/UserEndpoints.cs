@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Users.API.Extensions;
@@ -46,19 +46,12 @@ namespace RentIt.Users.API.Endpoints
             usersGroup.MapGet("/search", async (
                 [AsParameters] GetUsersRequest request,
                 IMediator mediator,
+                IMapper mapper,
                 CancellationToken cancellationToken) =>
             {
-                var users = await mediator.Send(new GetFilteredUsersQuery(
-                    request.FirstName,
-                    request.LastName,
-                    request.Email,
-                    request.Role,
-                    request.Status,
-                    request.Country,
-                    request.City,
-                    request.PhoneNumber,
-                    request.Page,
-                    request.PageSize), cancellationToken);
+                var query = mapper.Map<GetFilteredUsersQuery>(request);
+
+                var users = await mediator.Send(query, cancellationToken);
 
                 return Results.Ok(users);
             })
@@ -173,7 +166,7 @@ namespace RentIt.Users.API.Endpoints
             })
             .RequireAuthorization();
 
-            usersGroup.MapPost("forgot-password", async (
+            usersGroup.MapPost("password-recovery", async (
                 [FromBody] PasswordRecoveryRequest request,
                 IMediator mediator,
                 CancellationToken cancellationToken
@@ -184,19 +177,14 @@ namespace RentIt.Users.API.Endpoints
                 return Results.Ok(result);
             });
 
-            usersGroup.MapPost("reset-password", async (
+            usersGroup.MapPost("password-reset", async (
                 [FromBody] ResetPasswordRequest request, 
                 IMediator mediator,
+                IMapper mapper,
                 CancellationToken cancellationToken
                 ) =>
             {
-                var command = new ResetPasswordCommand
-                {
-                    Email = request.Email,
-                    Token = request.Token,
-                    NewPassword = request.NewPassword,
-                    ConfirmPassword = request.ConfirmPassword
-                };
+                var command = mapper.Map<ResetPasswordCommand>(request);
 
                 var result = await mediator.Send(command, cancellationToken);
 

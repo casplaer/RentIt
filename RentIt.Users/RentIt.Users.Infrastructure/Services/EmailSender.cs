@@ -15,7 +15,11 @@ namespace RentIt.Users.Infrastructure.Services
             _smtpOptions = smtpOptions.Value;
         }
 
-        public async Task SendEmailAsync(string to, string subject, string htmlMessage)
+        public async Task SendEmailAsync(
+            string to, 
+            string subject, 
+            string htmlMessage, 
+            CancellationToken cancellationToken)
         {
             using (var smtpClient = new SmtpClient(_smtpOptions.Host, _smtpOptions.Port))
             {
@@ -32,7 +36,7 @@ namespace RentIt.Users.Infrastructure.Services
 
                 mailMessage.To.Add(to);
 
-                await smtpClient.SendMailAsync(mailMessage);
+                await smtpClient.SendMailAsync(mailMessage, cancellationToken);
             }
         }
     }

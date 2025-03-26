@@ -7,29 +7,33 @@ using RentIt.Users.Core.Interfaces.Repositories;
 
 namespace RentIt.Users.Application.Commands.Users.Password
 {
-    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, string>
+    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, bool>
     {
+        private const int _tokenSize = 64;
         private readonly IUserRepository _userRepository;
         private readonly IRepository<AccountToken> _accountTokenRepository;
         private readonly IEmailNormalizer _emailNormalizer;
         private readonly IEmailSender _emailSender;
         private readonly IAccountTokenGenerator _accountTokenGenerator;
+        private readonly ILinkGenerator _linkGenerator;
 
         public ForgotPasswordCommandHandler(
             IUserRepository userRepository,
             IRepository<AccountToken> accountTokenRepository,
             IEmailSender emailSender,
             IEmailNormalizer emailNormalizer,
-            IAccountTokenGenerator accountTokenGenerator)
+            IAccountTokenGenerator accountTokenGenerator,
+            ILinkGenerator linkGenerator)
         {
             _userRepository = userRepository;
             _accountTokenRepository = accountTokenRepository;
             _emailSender = emailSender;
             _emailNormalizer = emailNormalizer;
             _accountTokenGenerator = accountTokenGenerator;
+            _linkGenerator = linkGenerator;
         }
 
-        public async Task<string> Handle(
+        public async Task<bool> Handle(
             ForgotPasswordCommand request, 
             CancellationToken cancellationToken)
         {
@@ -41,7 +45,7 @@ namespace RentIt.Users.Application.Commands.Users.Password
                 throw new NotFoundException("Пользователь с таким Email не найден.");
             }
 
-            var token = _accountTokenGenerator.GenerateToken(64);
+            var token = _accountTokenGenerator.GenerateToken(_tokenSize);
             var accountToken = new AccountToken
             {
                 TokenId = Guid.NewGuid(),
@@ -54,14 +58,14 @@ namespace RentIt.Users.Application.Commands.Users.Password
             await _accountTokenRepository.AddAsync(accountToken, cancellationToken);
             await _accountTokenRepository.SaveChangesAsync(cancellationToken);
 
-            var resetLink = $"https://renit.com/reset-password?email={request.Email}&token={token}";
+            var resetLink = _linkGenerator.GenerateResetPasswordLink(request.Email, token);
             var subject = "Восстановление пароля";
             var body = $"Если вы не запрашивали восстановление пароля просто проигнорируйте это сообщение. <br/> " +
                 $"Для восстановления пароля перейдите по следующей ссылке: <a href='{resetLink}'>Восстановить пароль</a>";
 
-            await _emailSender.SendEmailAsync(request.Email, subject, body);
+            await _emailSender.SendEmailAsync(request.Email, subject, body, cancellationToken);
 
-            return "Ссылка для восстановления пароля отправлена на ваш Email.";
+            return true;
         }
     }
 }

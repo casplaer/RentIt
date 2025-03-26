@@ -11,6 +11,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand>
     {
+        private const int _tokenSize = 64;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IPasswordHasher _passwordHasher;
@@ -18,6 +19,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
         private readonly IRepository<AccountToken> _accountTokenRepository;
         private readonly IEmailSender _emailSender;
         private readonly IAccountTokenGenerator _accountTokenGenerator;
+        private readonly ILinkGenerator _linkGenerator;
 
         public CreateUserCommandHandler(
             IUserRepository userRepository,
@@ -27,7 +29,8 @@ namespace RentIt.Users.Application.Commands.Users.Create
             IRepository<AccountToken> accountTokenRepository,
             IMapper mapper,
             IEmailSender emailSender,
-            IAccountTokenGenerator accountTokenGenerator)
+            IAccountTokenGenerator accountTokenGenerator,
+            ILinkGenerator linkGenerator)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
@@ -36,6 +39,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
             _accountTokenRepository = accountTokenRepository;
             _emailSender = emailSender;
             _accountTokenGenerator = accountTokenGenerator;
+            _linkGenerator = linkGenerator;
         }
 
         public async Task Handle(
@@ -68,7 +72,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
                 RefreshToken = string.Empty,
             };
 
-            var confirmationToken = _accountTokenGenerator.GenerateToken(64);
+            var confirmationToken = _accountTokenGenerator.GenerateToken(_tokenSize);
             var accountToken = new AccountToken
             {
                 TokenId = Guid.NewGuid(),
@@ -83,12 +87,12 @@ namespace RentIt.Users.Application.Commands.Users.Create
             await _userRepository.AddAsync(user, cancellationToken);
             await _userRepository.SaveChangesAsync(cancellationToken);
 
-            var confirmationLink = $"https://localhost:7108/users/confirm?userId={user.UserId}&token={confirmationToken}";
+            var confirmationLink = _linkGenerator.GenerateConfirmationLink(user.UserId, confirmationToken);
 
             BackgroundJob.Enqueue(() =>
                 _emailSender.SendEmailAsync(user.Email,
                     "Подтверждение учётной записи",
-                    $"Для подтверждения учётной записи нажмите <a href='{confirmationLink}'>здесь</a>."));
+                    $"Для подтверждения учётной записи нажмите <a href='{confirmationLink}'>здесь</a>.", cancellationToken));
         }
     }
 }

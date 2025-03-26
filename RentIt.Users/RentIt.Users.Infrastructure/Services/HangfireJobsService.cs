@@ -1,11 +1,11 @@
 ﻿using Hangfire;
 using RentIt.Users.Application.Interfaces;
 
-namespace RentIt.Users.Infrastructure.Extensions
+namespace RentIt.Users.Infrastructure.Services
 {
-    public static class HangfireJobsExtensions
+    public static class HangfireJobsService
     {
-        public static void ConfigureRecurringJobs()
+        public static void ConfigureHangfireJobs()
         {
             RecurringJob.AddOrUpdate<ITokenCleanupService>(
                 recurringJobId: "ConfirmationTokenCleanupJob",

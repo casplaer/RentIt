@@ -13,6 +13,7 @@ namespace RentIt.Users.Infrastructure.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<UserProfile> Profiles { get; set; }
         public DbSet<AccountToken> AccountTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());

@@ -28,8 +28,11 @@ namespace RentIt.Users.Application.Validators
 
             RuleFor(u => u.Password)
                 .NotEmpty().WithMessage("Пароль обязателен.")
-                .MinimumLength(6).WithMessage("Пароль должен содержать минимум 6 символов.")
-                .Equal(u => u.ConfirmPassword).WithMessage("Пароли не совпадают.");
+                .MinimumLength(8).WithMessage("Пароль должен содержать минимум 8 символов.")
+                .Equal(u => u.ConfirmPassword).WithMessage("Пароли не совпадают.")
+                .Matches(@"^[a-zA-Z]+$").WithMessage("Пароль должен содержать только латиницу.") 
+                .Matches(@"(?=.*[a-z])").WithMessage("Пароль должен содержать хотя бы одну строчную латинскую букву.")
+                .Matches(@"(?=.*[A-Z])").WithMessage("Пароль должен содержать хотя бы одну заглавную латинскую букву.");
         }
     }
 }
