@@ -1,21 +1,18 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using RentIt.Users.Application.Exceptions;
-using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
-using System.Data.Entity;
 
 namespace RentIt.Users.Application.Commands.Users.Account
 {
     public class ConfirmAccountCommandHandler : IRequestHandler<ConfirmAccountCommand, bool>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IRepository<AccountToken> _accountTokenRepository;
+        private readonly IAccountTokenRepository _accountTokenRepository;
 
         public ConfirmAccountCommandHandler(
             IUserRepository userRepository,
-            IRepository<AccountToken> accountTokenRepository)
+            IAccountTokenRepository accountTokenRepository)
         {
             _userRepository = userRepository;
             _accountTokenRepository = accountTokenRepository;
@@ -25,16 +22,16 @@ namespace RentIt.Users.Application.Commands.Users.Account
             ConfirmAccountCommand request, 
             CancellationToken cancellationToken)
         {
-            var tokenEntity = (await _accountTokenRepository.GetAllAsync(cancellationToken))
-                .Where(t => t.UserId == request.UserId &&
-                            t.Token == request.Token &&
-                            t.TokenType == TokenType.Confirmation &&
-                            t.Expiration > DateTime.UtcNow)
-                .FirstOrDefault();
+            var tokenEntity = await _accountTokenRepository.GetTokenAsync(
+                request.UserId,
+                request.Token,
+                TokenType.Confirmation,
+                cancellationToken
+            );
 
             if (tokenEntity == null || tokenEntity.Expiration < DateTime.UtcNow)
             {
-                throw new NotFoundException("Ссылка устарела.");
+                throw new NotFoundException("Неверная или просроченная ссылка для восстановления пароля.");
             }
 
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);

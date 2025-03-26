@@ -25,5 +25,15 @@ namespace RentIt.Users.Infrastructure.Repositories
                 .Where(token => token.TokenType == TokenType.PasswordReset && token.Expiration < DateTime.UtcNow)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<AccountToken> GetTokenAsync(Guid userId, string token, TokenType tokenType, CancellationToken cancellationToken)
+        {
+            return await _context.AccountTokens
+                .Where(t => t.UserId == userId &&
+                            t.Token == token &&
+                            t.TokenType == tokenType &&
+                            t.Expiration > DateTime.UtcNow)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

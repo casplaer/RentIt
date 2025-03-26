@@ -25,7 +25,7 @@ namespace RentIt.Users.Application.Services
 
         public async Task CleanExpiredResetTokensAsync(CancellationToken cancellationToken)
         {
-            var expiredTokens = await _accountTokenRepository.GetExpiredConfirmationTokensAsync(cancellationToken);
+            var expiredTokens = await _accountTokenRepository.GetExpiredResetTokensAsync(cancellationToken);
 
             if (expiredTokens.Any())
             {

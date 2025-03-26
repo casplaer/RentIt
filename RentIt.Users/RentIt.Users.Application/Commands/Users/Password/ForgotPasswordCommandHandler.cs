@@ -10,8 +10,9 @@ namespace RentIt.Users.Application.Commands.Users.Password
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, bool>
     {
         private const int _tokenSize = 64;
+
         private readonly IUserRepository _userRepository;
-        private readonly IRepository<AccountToken> _accountTokenRepository;
+        private readonly IAccountTokenRepository _accountTokenRepository;
         private readonly IEmailNormalizer _emailNormalizer;
         private readonly IEmailSender _emailSender;
         private readonly IAccountTokenGenerator _accountTokenGenerator;
@@ -19,7 +20,7 @@ namespace RentIt.Users.Application.Commands.Users.Password
 
         public ForgotPasswordCommandHandler(
             IUserRepository userRepository,
-            IRepository<AccountToken> accountTokenRepository,
+            IAccountTokenRepository accountTokenRepository,
             IEmailSender emailSender,
             IEmailNormalizer emailNormalizer,
             IAccountTokenGenerator accountTokenGenerator,
@@ -59,13 +60,18 @@ namespace RentIt.Users.Application.Commands.Users.Password
             await _accountTokenRepository.SaveChangesAsync(cancellationToken);
 
             var resetLink = _linkGenerator.GenerateResetPasswordLink(request.Email, token);
-            var subject = "Восстановление пароля";
-            var body = $"Если вы не запрашивали восстановление пароля просто проигнорируйте это сообщение. <br/> " +
-                $"Для восстановления пароля перейдите по следующей ссылке: <a href='{resetLink}'>Восстановить пароль</a>";
-
-            await _emailSender.SendEmailAsync(request.Email, subject, body, cancellationToken);
+            await SendPasswordRecoveryEmailAsync(request.Email, resetLink, cancellationToken);
 
             return true;
+        }
+
+        private async Task SendPasswordRecoveryEmailAsync(string email, string resetLink, CancellationToken cancellationToken)
+        {
+            var subject = "Восстановление пароля";
+            var body = $"Если вы не запрашивали восстановление пароля просто проигнорируйте это сообщение. <br/> " +
+                       $"Для восстановления пароля перейдите по следующей ссылке: <a href='{resetLink}'>Восстановить пароль</a>";
+
+            await _emailSender.SendEmailAsync(email, subject, body, cancellationToken);
         }
     }
 }
