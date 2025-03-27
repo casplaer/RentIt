@@ -1,9 +1,8 @@
 ﻿using Hangfire;
-using RentIt.Housing.Domain.Services;
 
-namespace RentIt.Housing.Domain.Extensions
+namespace RentIt.Housing.Domain.Services
 {
-    public static class HangfireJobsExtensions
+    public static class HangfireJobsService
     {
         public static void ConfigureRecurringJobs()
         {

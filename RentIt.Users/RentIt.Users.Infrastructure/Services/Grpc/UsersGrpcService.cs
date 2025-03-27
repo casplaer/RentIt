@@ -5,11 +5,11 @@ using RentIt.Users.Application.Queries.Users;
 
 namespace RentIt.Users.Infrastructure.Services.Grpc
 {
-    public class UsersServiceImpl : UsersService.UsersServiceBase
+    public class UsersGrpcService : UsersService.UsersServiceBase
     {
         private readonly IMediator _mediator;
 
-        public UsersServiceImpl(IMediator mediator)
+        public UsersGrpcService(IMediator mediator)
         {
             _mediator = mediator;
         }

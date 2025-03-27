@@ -20,6 +20,7 @@ namespace RentIt.Housing.Domain.Services
             if (!Directory.Exists(_uploadPath))
             {
                 Directory.CreateDirectory(_uploadPath);
+            
                 _logger.Information("Создана директория для загрузки изображений: {UploadPath}", _uploadPath);
             }
         }
@@ -29,8 +30,11 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Получение изображений для собственности с ID {HousingId}", housingId);
+
             var images = await _imageRepository.GetImagesByHousingIdAsync(housingId, cancellationToken);
+
             _logger.Information("Найдено {ImageCount} изображений для собственности с ID {HousingId}", images.Count(), housingId);
+
             return images;
         }
 
@@ -44,6 +48,7 @@ namespace RentIt.Housing.Domain.Services
             if (images == null || !images.Any())
             {
                 _logger.Warning("Попытка загрузки изображений для собственности с ID {HousingId}: изображения не предоставлены", housingId);
+                
                 throw new ArgumentException("Не были загружены изображения.", nameof(images));
             }
 
@@ -60,6 +65,7 @@ namespace RentIt.Housing.Domain.Services
                     if (!allowedExtensions.Contains(fileExtension))
                     {
                         _logger.Error("Попытка загрузки файла с неподдерживаемым расширением: {FileName}", image.FileName);
+                        
                         throw new ArgumentException("Загруженный файл не является изображением допустимого формата.", nameof(images));
                     }
 
@@ -69,6 +75,7 @@ namespace RentIt.Housing.Domain.Services
                     if (!allowedMimeTypes.Contains(contentType))
                     {
                         _logger.Error("Попытка загрузки файла с неподдерживаемым MIME-типом: {ContentType}", contentType);
+                      
                         throw new ArgumentException("Загруженный файл не является изображением допустимого типа.", nameof(images));
                     }
 
@@ -89,12 +96,15 @@ namespace RentIt.Housing.Domain.Services
                     };
 
                     await _imageRepository.AddAsync(housingImage, cancellationToken);
+                    
                     _logger.Information("Изображение успешно добавлено с ID {ImageId} для собственности с ID {HousingId}", housingImage.ImageId, housingId);
+
                     uploadedImages.Add(housingImage);
                 }
             }
 
             _logger.Information("Загрузка изображений завершена для собственности с ID {HousingId}. Загружено изображений: {Count}", housingId, uploadedImages.Count);
+            
             return uploadedImages;
         }
 
@@ -114,10 +124,12 @@ namespace RentIt.Housing.Domain.Services
                 foreach (var file in addedImages)
                 {
                     var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
                     var fileExtension = Path.GetExtension(file.FileName).ToLower();
                     if (!allowedExtensions.Contains(fileExtension))
                     {
                         _logger.Error("Добавление изображения не выполнено. Неподдерживаемое расширение файла: {FileName}", file.FileName);
+                       
                         throw new ArgumentException("Загруженный файл не является изображением допустимого формата.", nameof(addedImages));
                     }
 
@@ -126,6 +138,7 @@ namespace RentIt.Housing.Domain.Services
                     if (!allowedMimeTypes.Contains(contentType))
                     {
                         _logger.Error("Добавление изображения не выполнено. Неподдерживаемый MIME-тип файла: {ContentType}", file.ContentType);
+                        
                         throw new ArgumentException("Загруженный файл не является изображением допустимого типа.", nameof(addedImages));
                     }
 
@@ -133,6 +146,7 @@ namespace RentIt.Housing.Domain.Services
                     var filePath = Path.Combine(_uploadPath, fileName);
 
                     _logger.Information("Сохранение нового изображения {FileName} по пути {FilePath}", file.FileName, filePath);
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream, cancellationToken);
@@ -159,10 +173,12 @@ namespace RentIt.Housing.Domain.Services
                 foreach (var relativePath in removedImages)
                 {
                     var fileName = Path.GetFileName(relativePath);
+
                     var imageRecord = images.FirstOrDefault(img => Path.GetFileName(img.ImageUrl) == fileName);
                     if (imageRecord != null)
                     {
                         _logger.Information("Удаление изображения с ID {ImageId} для собственности с ID {HousingId}", imageRecord.ImageId, housingId);
+                        
                         await DeleteImageAsync(imageRecord.ImageId, cancellationToken);
 
                         images.Remove(imageRecord);
@@ -175,6 +191,7 @@ namespace RentIt.Housing.Domain.Services
             }
 
             _logger.Information("Обновление изображений завершено для собственности с ID {HousingId}. Текущее количество изображений: {Count}", housingId, images.Count);
+            
             return images;
         }
 
@@ -183,11 +200,13 @@ namespace RentIt.Housing.Domain.Services
            CancellationToken cancellationToken)
         {
             _logger.Information("Попытка удаления изображения с ID {ImageId}", imageId);
+            
             var imageToDelete = await _imageRepository.GetHousingImageByIdAsync(imageId, cancellationToken);
 
             if (imageToDelete == null)
             {
                 _logger.Error("Изображение с ID {ImageId} не найдено", imageId);
+               
                 throw new ArgumentException("Изображение не найдено.", nameof(imageId));
             }
 
@@ -197,6 +216,7 @@ namespace RentIt.Housing.Domain.Services
             if (File.Exists(filePath))
             {
                 File.Delete(filePath);
+                
                 _logger.Information("Файл изображения удален с диска: {FilePath}", filePath);
             }
             else
@@ -205,6 +225,7 @@ namespace RentIt.Housing.Domain.Services
             }
 
             await _imageRepository.DeleteAsync(imageId, cancellationToken);
+
             _logger.Information("Запись изображения с ID {ImageId} удалена из базы данных", imageId);
         }
     }

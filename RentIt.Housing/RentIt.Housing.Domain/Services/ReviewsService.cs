@@ -42,8 +42,11 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Получение отзывов для собственности с ID {HousingId}", housingId);
+
             var reviews = await _reviewRepository.GetReviewsByHousingIdAsync(housingId, cancellationToken);
+
             _logger.Information("Найдено {Count} отзывов для собственности с ID {HousingId}", reviews.Count(), housingId);
+
             return reviews;
         }
 
@@ -52,8 +55,11 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Получение отзывов для пользователя с ID {UserId}", userId);
+
             var reviews = (await _reviewRepository.GetAllReviewsAsync(cancellationToken)).Where(r => r.UserId == userId);
+
             _logger.Information("Найдено {Count} отзывов для пользователя с ID {UserId}", reviews.Count(), userId);
+
             return reviews;
         }
 
@@ -64,6 +70,7 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Попытка добавления отзыва для собственности с ID {HousingId} от пользователя {UserId}", housingId, userId);
+
             await _createReviewRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
             if (!Guid.TryParse(userId, out var userGuid))
@@ -109,12 +116,14 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Попытка обновления отзыва с ID {ReviewId}", reviewId);
+
             await _updateReviewRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
             var reviewToUpdate = await _reviewRepository.GetReviewByIdAsync(reviewId, cancellationToken);
             if (reviewToUpdate == null)
             {
                 _logger.Warning("Отзыв с ID {ReviewId} не найден", reviewId);
+
                 throw new NotFoundException("Отзыва с таким ID не найдено.");
             }
 
@@ -123,6 +132,7 @@ namespace RentIt.Housing.Domain.Services
             if (housing == null)
             {
                 _logger.Warning("Собственность с ID {HousingId} не найдена при обновлении отзыва с ID {ReviewId}", reviewToUpdate.HousingId, reviewId);
+
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
@@ -132,6 +142,7 @@ namespace RentIt.Housing.Domain.Services
             if (existingReview == null)
             {
                 _logger.Warning("Отзыв с ID {ReviewId} не найден в коллекции собственности с ID {HousingId}", reviewId, housing.HousingId);
+
                 throw new NotFoundException("Отзыв не найден в коллекции этого жилья.");
             }
 
@@ -150,10 +161,12 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken)
         {
             _logger.Information("Попытка удаления отзыва с ID {ReviewId}", reviewId);
+
             var reviewToDelete = await _reviewRepository.GetReviewByIdAsync(reviewId, cancellationToken);
             if (reviewToDelete == null)
             {
                 _logger.Warning("Отзыв с ID {ReviewId} не найден для удаления", reviewId);
+
                 throw new NotFoundException("Отзыва с таким ID не найдено.");
             }
 
@@ -162,6 +175,7 @@ namespace RentIt.Housing.Domain.Services
             if (housing == null)
             {
                 _logger.Warning("Собственность с ID {HousingId} не найдена при удалении отзыва с ID {ReviewId}", reviewToDelete.HousingId, reviewId);
+
                 throw new NotFoundException($"Собственности с таким ID не найдено.");
             }
 

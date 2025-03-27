@@ -119,7 +119,7 @@ namespace RentIt.Housing.API.Extensions
                 options.AddPolicy("AdminPolicy", policy =>
                     policy.RequireRole("Admin"));
                 options.AddPolicy("LandlordPolicy", policy =>
-                    policy.RequireRole("Landlord"));
+                    policy.RequireRole("Landlord", "Admin"));
             });
 
             return services;

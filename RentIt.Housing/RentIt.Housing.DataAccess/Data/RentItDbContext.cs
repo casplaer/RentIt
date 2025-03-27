@@ -1,22 +1,19 @@
-﻿using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
 namespace RentIt.Housing.DataAccess.Data
 {
     public class RentItDbContext
     {
-        private readonly IConfiguration _configuration;
+        private readonly IMongoClient _mongoClient;
         private readonly IMongoDatabase? _database;
 
-        public RentItDbContext(IConfiguration configuration)
+        public RentItDbContext(IMongoClient mongoClient)
         {
-            _configuration = configuration;
-
-            var connectionString = _configuration.GetConnectionString("HousingDatabaseConnection");
-            var mongoUrl = MongoUrl.Create(connectionString);
-            var mongoClient = new MongoClient(mongoUrl);
-            _database = mongoClient.GetDatabase(mongoUrl.DatabaseName);
+            _mongoClient = mongoClient;
+            _database = _mongoClient.GetDatabase("housing_db");
         }
+
+        public IMongoDatabase? Database => _database;
 
         public IMongoCollection<TEntity> Set<TEntity>(string? collectionName = null)
                 where TEntity : class
@@ -30,7 +27,5 @@ namespace RentIt.Housing.DataAccess.Data
 
             return _database.GetCollection<TEntity>(collectionName);
         }
-
-        public IMongoDatabase? Database => _database;
     }
 }

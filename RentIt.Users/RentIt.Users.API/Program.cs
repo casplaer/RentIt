@@ -56,7 +56,7 @@ app.UseAuthorization();
 
 app.UseCustomMiddlewares();
 
-app.MapGrpcService<UsersServiceImpl>();
+app.MapGrpcService<UsersGrpcService>();
 
 app.UseHttpsRedirection();
 

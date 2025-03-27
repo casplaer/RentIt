@@ -138,6 +138,7 @@ namespace RentIt.Housing.Domain.Services
             if(request.Images != null && request.Images.Count() != 0)
             {
                 _logger.Information("Загрузка {ImageCount} изображений для собственности", request.Images.Count());
+
                 housing.Images = await _imageService.UploadImagesAsync(housing.HousingId, request.Images, cancellationToken);
             }
 
@@ -160,6 +161,7 @@ namespace RentIt.Housing.Domain.Services
             if(housingToUpdate == null )
             {
                 _logger.Warning("Собственность с ID {HousingId} не найдена для обновления", housingId);
+
                 throw new NotFoundException($"Собственность с ID {housingId} не найдена.");
             }
 
@@ -199,6 +201,7 @@ namespace RentIt.Housing.Domain.Services
             foreach(var img in housingToDelete.Images)
             {
                 _logger.Information("Удаление изображения с ID {ImageId}", img.ImageId);
+
                 await _imageService.DeleteImageAsync(img.ImageId, cancellationToken);
             }
 
@@ -217,16 +220,18 @@ namespace RentIt.Housing.Domain.Services
 
             foreach (var housing in unpublishedHousings)
             {
-                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description) && _filterService.ContainsSpamOrProfanity(housing.Title);
+                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description) || _filterService.ContainsSpamOrProfanity(housing.Title);
 
                 if (isSpam)
                 {
                     housing.Status = HousingStatus.Rejected;
+
                     _logger.Warning("Собственность с ID {HousingId} помечена как спам", housing.HousingId);
                 }
                 else
                 {
                     housing.Status = HousingStatus.Available;
+
                     _logger.Information("Собственность с ID {HousingId} помечена как доступная", housing.HousingId);
                 }
 

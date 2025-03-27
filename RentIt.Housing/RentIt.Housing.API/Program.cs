@@ -8,8 +8,13 @@ using MongoDB.Bson.Serialization.Serializers;
 using RentIt.Protos.Users;
 using Hangfire;
 using Serilog;
+using MongoDB.Driver;
+using Microsoft.Extensions.Configuration;
+using RentIt.Housing.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("HousingDatabaseConnection");
 
 BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(GuidRepresentation.Standard));
 
@@ -20,6 +25,12 @@ builder.Services.AddLogging(configuration);
 builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
+
+builder.Services.AddSingleton<IMongoClient>(options =>
+{
+    var mongoUrl = MongoUrl.Create(connectionString);
+    return new MongoClient(mongoUrl);
+});
 
 builder.Services.AddSingleton<RentItDbContext>();
 
@@ -51,7 +62,7 @@ if (app.Environment.IsDevelopment())
 app.UseCustomMiddlewares();
 
 app.UseHangfireDashboard("/hangfire");
-HangfireJobsExtensions.ConfigureRecurringJobs();
+HangfireJobsService.ConfigureRecurringJobs();
 
 app.UseHttpsRedirection();
 app.MapControllers();
