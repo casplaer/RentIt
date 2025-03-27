@@ -11,7 +11,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand>
     {
-        private const int _tokenSize = 64;
+        private const int TokenSize = 64;
 
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
@@ -73,7 +73,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
                 RefreshToken = string.Empty,
             };
 
-            var confirmationToken = _accountTokenGenerator.GenerateToken(_tokenSize);
+            var confirmationToken = _accountTokenGenerator.GenerateToken(TokenSize);
             var accountToken = new AccountToken
             {
                 TokenId = Guid.NewGuid(),

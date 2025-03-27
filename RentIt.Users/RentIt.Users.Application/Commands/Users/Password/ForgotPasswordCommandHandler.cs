@@ -9,7 +9,7 @@ namespace RentIt.Users.Application.Commands.Users.Password
 {
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, bool>
     {
-        private const int _tokenSize = 64;
+        private const int TokenSize = 64;
 
         private readonly IUserRepository _userRepository;
         private readonly IAccountTokenRepository _accountTokenRepository;
@@ -46,7 +46,7 @@ namespace RentIt.Users.Application.Commands.Users.Password
                 throw new NotFoundException("Пользователь с таким Email не найден.");
             }
 
-            var token = _accountTokenGenerator.GenerateToken(_tokenSize);
+            var token = _accountTokenGenerator.GenerateToken(TokenSize);
             var accountToken = new AccountToken
             {
                 TokenId = Guid.NewGuid(),
