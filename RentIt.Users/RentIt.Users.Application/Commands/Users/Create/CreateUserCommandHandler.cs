@@ -17,7 +17,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
         private readonly IRoleRepository _roleRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IEmailNormalizer _emailNormalizer;
-        private readonly IRepository<AccountToken> _accountTokenRepository;
+        private readonly IAccountTokenRepository _accountTokenRepository;
         private readonly IEmailSender _emailSender;
         private readonly IAccountTokenGenerator _accountTokenGenerator;
         private readonly ILinkGenerator _linkGenerator;
@@ -27,7 +27,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
             IRoleRepository roleRepository,
             IPasswordHasher passwordHasher,
             IEmailNormalizer emailNormalizer,
-            IRepository<AccountToken> accountTokenRepository,
+            IAccountTokenRepository accountTokenRepository,
             IMapper mapper,
             IEmailSender emailSender,
             IAccountTokenGenerator accountTokenGenerator,

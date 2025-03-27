@@ -11,14 +11,14 @@ namespace RentIt.Users.Application.Commands.Users.Password
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, bool>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IRepository<AccountToken> _accountTokenRepository;
+        private readonly IAccountTokenRepository _accountTokenRepository;
         private readonly IEmailNormalizer _emailNormalizer;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IValidator<ResetPasswordCommand> _resetPasswordCommandValidator;
 
         public ResetPasswordCommandHandler(
             IUserRepository userRepository, 
-            IRepository<AccountToken> accountTokenRepository, 
+            IAccountTokenRepository accountTokenRepository, 
             IPasswordHasher passwordHasher,
             IEmailNormalizer emailNormalizer,
             IValidator<ResetPasswordCommand> resetPasswordCommandValidator)
@@ -43,10 +43,10 @@ namespace RentIt.Users.Application.Commands.Users.Password
                 throw new NotFoundException("Пользователь не найден.");
             }
 
-            var accountToken = (await _accountTokenRepository.GetAllAsync(cancellationToken))
-                .FirstOrDefault(t =>
-                t.TokenId == Guid.Parse(request.Token) &&
-                t.TokenType == TokenType.PasswordReset);
+            var accountToken = await _accountTokenRepository.GetTokenAsync(
+                                               request.Token, 
+                                               TokenType.PasswordReset, 
+                                               cancellationToken);
 
             bool isInvalidPasswordResetToken = accountToken == null ||
                                                accountToken.UserId != user.UserId ||

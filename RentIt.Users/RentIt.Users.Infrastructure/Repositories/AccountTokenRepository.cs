@@ -35,5 +35,13 @@ namespace RentIt.Users.Infrastructure.Repositories
                             t.Expiration > DateTime.UtcNow)
                 .FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<AccountToken> GetTokenAsync(string token, TokenType type, CancellationToken cancellationToken)
+        {
+            return await _context.AccountTokens
+                .Where(t => t.TokenType == type &&
+                            t.Token == token)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

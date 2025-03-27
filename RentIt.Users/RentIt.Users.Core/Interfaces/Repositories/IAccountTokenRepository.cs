@@ -8,5 +8,6 @@ namespace RentIt.Users.Core.Interfaces.Repositories
         Task<IEnumerable<AccountToken>> GetExpiredConfirmationTokensAsync(CancellationToken cancellationToken);
         Task<IEnumerable<AccountToken>> GetExpiredResetTokensAsync(CancellationToken cancellationToken);
         Task<AccountToken> GetTokenAsync(Guid userId, string token, TokenType type, CancellationToken cancellationToken);
+        Task<AccountToken> GetTokenAsync(string token, TokenType type, CancellationToken cancellationToken);
     }
 }
