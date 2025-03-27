@@ -7,15 +7,16 @@ namespace RentIt.Users.Application.Commands.Users.Logout
     public class LogoutUserCommandHandler : IRequestHandler<LogoutUserCommand, string>
     {
         private readonly IJwtProvider _jwtProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LogoutUserCommandHandler(IJwtProvider jwtProvider, IHttpContextAccessor httpContextAccessor)
+        public LogoutUserCommandHandler(
+            IJwtProvider jwtProvider)
         {
             _jwtProvider = jwtProvider ?? throw new ArgumentNullException(nameof(jwtProvider));
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
-        public async Task<string> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(
+            LogoutUserCommand request, 
+            CancellationToken cancellationToken)
         {
             if (!string.IsNullOrEmpty(request.RefreshToken))
             {

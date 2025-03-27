@@ -1,11 +1,13 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Users.API.Extensions;
+using RentIt.Users.Application.Commands.Users.Account;
 using RentIt.Users.Application.Commands.Users.Create;
 using RentIt.Users.Application.Commands.Users.Delete;
 using RentIt.Users.Application.Commands.Users.Login;
 using RentIt.Users.Application.Commands.Users.Logout;
+using RentIt.Users.Application.Commands.Users.Password;
 using RentIt.Users.Application.Commands.Users.RefreshToken;
 using RentIt.Users.Application.Commands.Users.Role;
 using RentIt.Users.Application.Commands.Users.Status;
@@ -44,22 +46,27 @@ namespace RentIt.Users.API.Endpoints
             usersGroup.MapGet("/search", async (
                 [AsParameters] GetUsersRequest request,
                 IMediator mediator,
+                IMapper mapper,
                 CancellationToken cancellationToken) =>
             {
-                var users = await mediator.Send(new GetFilteredUsersQuery(
-                    request.FirstName,
-                    request.LastName,
-                    request.Email,
-                    request.Role,
-                    request.Country,
-                    request.City,
-                    request.PhoneNumber,
-                    request.Page,
-                    request.PageSize), cancellationToken);
+                var query = mapper.Map<GetFilteredUsersQuery>(request);
+
+                var users = await mediator.Send(query, cancellationToken);
 
                 return Results.Ok(users);
             })
             .RequireAuthorization();
+
+            usersGroup.MapGet("/confirm", async(
+                [FromQuery] Guid userId,
+                [FromQuery] string token,
+                IMediator mediator
+                ) =>
+            {
+                var result = await mediator.Send(new ConfirmAccountCommand(userId, token));
+
+                return Results.Ok(result);
+            });
 
             usersGroup.MapPut("/me", async (
                 UpdateUserRequest request,
@@ -158,6 +165,31 @@ namespace RentIt.Users.API.Endpoints
                 return Results.Ok();
             })
             .RequireAuthorization();
+
+            usersGroup.MapPost("password-recovery", async (
+                [FromBody] PasswordRecoveryRequest request,
+                IMediator mediator,
+                CancellationToken cancellationToken
+                ) =>
+            {
+                var result = await mediator.Send(new ForgotPasswordCommand(request.Email), cancellationToken);
+
+                return Results.Ok(result);
+            });
+
+            usersGroup.MapPost("password-reset", async (
+                [FromBody] ResetPasswordRequest request, 
+                IMediator mediator,
+                IMapper mapper,
+                CancellationToken cancellationToken
+                ) =>
+            {
+                var command = mapper.Map<ResetPasswordCommand>(request);
+
+                var result = await mediator.Send(command, cancellationToken);
+
+                return Results.Ok(result);
+            });
 
             usersGroup.MapDelete("/{id:guid}", async (
                 Guid id, 

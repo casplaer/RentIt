@@ -22,6 +22,35 @@ namespace RentIt.Users.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("RentIt.Users.Core.Entities.AccountToken", b =>
+                {
+                    b.Property<Guid>("TokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("TokenType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TokenId");
+
+                    b.HasIndex("Expiration");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AccountTokens");
+                });
+
             modelBuilder.Entity("RentIt.Users.Core.Entities.Role", b =>
                 {
                     b.Property<Guid>("RoleId")

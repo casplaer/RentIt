@@ -3,8 +3,10 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using RentIt.Users.Application.Commands.Users.Create;
 using RentIt.Users.Application.Commands.Users.Update;
+using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Application.Mappings;
 using RentIt.Users.Application.Queries.Users;
+using RentIt.Users.Application.Services;
 using RentIt.Users.Application.Validators;
 using RentIt.Users.Contracts.Requests.Users;
 
@@ -38,6 +40,13 @@ namespace RentIt.Users.Application.Extensions
         {
             services.AddAutoMapper(typeof(UserDtoProfile));
             services.AddAutoMapper(typeof(UserUpdateProfile));
+
+            return services;
+        }
+
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddTransient<ITokenCleanupService, TokenCleanupService>();
 
             return services;
         }
