@@ -9,10 +9,10 @@ namespace RentIt.Users.Application.Mappings
         public ResetPasswordCommandProfile()
         {
             CreateMap<ResetPasswordRequest, ResetPasswordCommand>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
-            .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword))
-            .ForMember(dest => dest.ConfirmPassword, opt => opt.MapFrom(src => src.ConfirmPassword));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Token, opt => opt.MapFrom(src => src.Token))
+                .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword))
+                .ForMember(dest => dest.ConfirmPassword, opt => opt.MapFrom(src => src.ConfirmPassword));
         }
     }
 }
