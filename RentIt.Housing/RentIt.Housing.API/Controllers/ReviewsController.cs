@@ -8,7 +8,7 @@ using System.Security.Claims;
 namespace RentIt.Housing.API.Controllers
 {
     [ApiController]
-    [Route("api/reviews")]
+    [Route("api")]
     public class ReviewsController : Controller
     {
         private readonly ReviewsService _reviewService;
@@ -19,7 +19,7 @@ namespace RentIt.Housing.API.Controllers
             _reviewService = reviewService;
         }
 
-        [HttpGet("housing/{housingId}/reviews")]
+        [HttpGet("housings/{housingId}/reviews")]
         public async Task<IActionResult> GetReviewsByHousingId(
             [FromRoute] Guid housingId, 
             CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ namespace RentIt.Housing.API.Controllers
             return Ok(reviews);
         }
 
-        [HttpPost("housings/{housingId}")]
+        [HttpPost("housings/{housingId}/reviews")]
         [Authorize]
         public async Task<IActionResult> CreateReview(
             [FromRoute] Guid housingId,
@@ -66,7 +66,7 @@ namespace RentIt.Housing.API.Controllers
             return Ok();
         }
 
-        [HttpPut("{reviewId}")]
+        [HttpPut("reviews/{reviewId}")]
         [Authorize]
         public async Task<IActionResult> UpdateReview(
             [FromRoute] Guid reviewId,
@@ -82,7 +82,7 @@ namespace RentIt.Housing.API.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{reviewId}")]
+        [HttpDelete("reviews/{reviewId}")]
         [Authorize]
         public async Task<IActionResult> DeleteReview(
             [FromRoute]Guid reviewId, 

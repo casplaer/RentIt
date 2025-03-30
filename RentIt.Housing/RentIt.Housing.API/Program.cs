@@ -9,7 +9,6 @@ using RentIt.Protos.Users;
 using Hangfire;
 using Serilog;
 using MongoDB.Driver;
-using Microsoft.Extensions.Configuration;
 using RentIt.Housing.Domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
