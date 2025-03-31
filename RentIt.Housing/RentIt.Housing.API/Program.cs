@@ -10,6 +10,7 @@ using Hangfire;
 using Serilog;
 using MongoDB.Driver;
 using RentIt.Housing.Domain.Services;
+using RentIt.Housing.Domain.Services.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,8 @@ builder.Services.AddLogging(configuration);
 builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
+
+builder.Services.AddGrpc();
 
 builder.Services.AddSingleton<IMongoClient>(options =>
 {
@@ -62,6 +65,8 @@ app.UseCustomMiddlewares();
 
 app.UseHangfireDashboard("/hangfire");
 HangfireJobsService.ConfigureRecurringJobs();
+
+app.MapGrpcService<HousingGrpcService>();
 
 app.UseHttpsRedirection();
 app.MapControllers();

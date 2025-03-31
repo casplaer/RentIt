@@ -125,16 +125,6 @@ namespace RentIt.Housing.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddGrpc(this IServiceCollection services)
-        {
-            services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
-            {
-                options.Address = new Uri("https://localhost:7108");
-            });
-
-            return services;
-        }
-
         public static IServiceCollection AddLogging(
             this IServiceCollection services,
             IConfiguration configuration)

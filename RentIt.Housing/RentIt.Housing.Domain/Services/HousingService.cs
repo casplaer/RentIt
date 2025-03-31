@@ -8,6 +8,7 @@ using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
+using RentIt.Housing.Domain.Services.Grpc;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services
