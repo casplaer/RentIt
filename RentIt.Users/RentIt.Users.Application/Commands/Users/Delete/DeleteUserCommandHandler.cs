@@ -12,7 +12,9 @@ namespace RentIt.Users.Application.Commands.Users.Delete
             _userRepository = userRepository;
         }
 
-        public async Task<bool> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(
+            DeleteUserCommand request, 
+            CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)

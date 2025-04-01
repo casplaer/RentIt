@@ -13,7 +13,9 @@ namespace RentIt.Users.Application.Commands.Users.Status
             _userRepository = userRepository;    
         }
 
-        public async Task<bool> Handle(StatusUpdateCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(
+            StatusUpdateCommand request, 
+            CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
