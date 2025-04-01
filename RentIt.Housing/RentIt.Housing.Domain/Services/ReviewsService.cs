@@ -76,6 +76,7 @@ namespace RentIt.Housing.Domain.Services
             if (!Guid.TryParse(userId, out var userGuid))
             {
                 _logger.Error("Некорректный формат ID пользователя: {UserId}", userId);
+
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
@@ -85,12 +86,14 @@ namespace RentIt.Housing.Domain.Services
             if (housing == null)
             {
                 _logger.Warning("Собственность с ID {HousingId} не найдена", housingId);
+
                 throw new NotFoundException("Собственности с таким ID не найдено.");
             }
 
             if (housing.Status == HousingStatus.Unpublished || housing.Status == HousingStatus.Rejected)
             {
                 _logger.Warning("Невозможно добавить отзыв для собственности с ID {HousingId}, так как статус {Status}", housingId, housing.Status);
+
                 throw new ArgumentException("Нельзя добавить отзыв к неопубликованной собственности.");
             }
 
@@ -112,6 +115,7 @@ namespace RentIt.Housing.Domain.Services
 
         public async Task UpdateReviewAsync(
             Guid reviewId,
+            string userId,
             UpdateReviewRequest request,
             CancellationToken cancellationToken)
         {
@@ -126,6 +130,8 @@ namespace RentIt.Housing.Domain.Services
 
                 throw new NotFoundException("Отзыва с таким ID не найдено.");
             }
+
+            CheckForUnathorizedAccess(reviewToUpdate, userId);
 
             var housingResponse = await _housingService.GetByIdAsync(reviewToUpdate.HousingId, cancellationToken);
             var housing = housingResponse?.Housing;
@@ -158,6 +164,7 @@ namespace RentIt.Housing.Domain.Services
 
         public async Task DeleteReviewAsync(
             Guid reviewId,
+            string userId,
             CancellationToken cancellationToken)
         {
             _logger.Information("Попытка удаления отзыва с ID {ReviewId}", reviewId);
@@ -169,6 +176,8 @@ namespace RentIt.Housing.Domain.Services
 
                 throw new NotFoundException("Отзыва с таким ID не найдено.");
             }
+
+            CheckForUnathorizedAccess(reviewToDelete, userId);
 
             var housingResponse = await _housingService.GetByIdAsync(reviewToDelete.HousingId, cancellationToken);
             var housing = housingResponse?.Housing;
@@ -186,6 +195,25 @@ namespace RentIt.Housing.Domain.Services
             await _housingService.UpdateHousingAsync(housing, cancellationToken);
 
             _logger.Information("Отзыв с ID {ReviewId} успешно удален для собственности с ID {HousingId}", reviewId, housing.HousingId);
+        }
+
+        private void CheckForUnathorizedAccess(Review reviewToCheck, string userId)
+        {
+            var parseAttempt = Guid.TryParse(userId, out var userGuid);
+
+            if (!parseAttempt)
+            {
+                _logger.Warning("Некорректный формат ID комментатора: {UserId}.", userId);
+
+                throw new ArgumentException("Некорректный формат ID комментатора.");
+            }
+
+            if (reviewToCheck.UserId != userGuid)
+            {
+                _logger.Warning("Попытка неавторизованного доступа к комментарию.");
+
+                throw new ArgumentException("Попытка неавторизованного доступа к комментарию.");
+            }
         }
     }
 }

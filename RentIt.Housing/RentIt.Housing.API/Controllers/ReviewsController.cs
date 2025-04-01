@@ -55,7 +55,7 @@ namespace RentIt.Housing.API.Controllers
             [FromBody] CreateReviewRequest request, 
             CancellationToken cancellationToken)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             Log.Information("Попытка создания отзыва для жилья с ID {HousingId} пользователем {UserId} в {Time}", housingId, userId, DateTime.UtcNow);
 
@@ -73,9 +73,11 @@ namespace RentIt.Housing.API.Controllers
             [FromBody] UpdateReviewRequest request,
             CancellationToken cancellationToken)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             Log.Information("Запрос на обновление отзыва с ID {ReviewId} в {Time}", reviewId, DateTime.UtcNow);
 
-            await _reviewService.UpdateReviewAsync(reviewId, request, cancellationToken);
+            await _reviewService.UpdateReviewAsync(reviewId, userId, request, cancellationToken);
 
             Log.Information("Отзыва с ID {ReviewId} успешно обновлён", reviewId);
 
@@ -85,12 +87,14 @@ namespace RentIt.Housing.API.Controllers
         [HttpDelete("reviews/{reviewId}")]
         [Authorize]
         public async Task<IActionResult> DeleteReview(
-            [FromRoute]Guid reviewId, 
+            [FromRoute] Guid reviewId, 
             CancellationToken cancellationToken)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             Log.Information("Запрос на удаление отзыва с ID {ReviewId} в {Time}", reviewId, DateTime.UtcNow);
 
-            await _reviewService.DeleteReviewAsync(reviewId, cancellationToken);
+            await _reviewService.DeleteReviewAsync(reviewId, userId, cancellationToken);
 
             Log.Information("Отзыв с ID {ReviewId} успешно удалён", reviewId);
 

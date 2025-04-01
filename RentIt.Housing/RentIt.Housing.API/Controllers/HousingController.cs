@@ -69,9 +69,11 @@ namespace RentIt.Housing.API.Controllers
             [FromForm] UpdateHousingRequest request, 
             CancellationToken cancellationToken)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             Log.Information("Запрос на обновление собственности с ID {HousingId} в {Time}", housingId, DateTime.UtcNow);
 
-            await _housingService.UpdateHousingAsync(housingId, request, cancellationToken);
+            await _housingService.UpdateHousingAsync(housingId, userId, request, cancellationToken);
 
             Log.Information("Собственность с ID {HousingId} успешно обновлена", housingId);
 
@@ -84,9 +86,11 @@ namespace RentIt.Housing.API.Controllers
             [FromRoute] Guid housingId, 
             CancellationToken cancellationToken)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             Log.Information("Запрос на удаление собственности с ID {HousingId} в {Time}", housingId, DateTime.UtcNow);
 
-            await _housingService.DeleteHousingAsync(housingId, cancellationToken);
+            await _housingService.DeleteHousingAsync(housingId, userId, cancellationToken);
 
             Log.Information("Собственность с ID {HousingId} успешно удалена", housingId);
 

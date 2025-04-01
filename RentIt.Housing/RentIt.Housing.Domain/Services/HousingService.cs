@@ -110,7 +110,7 @@ namespace RentIt.Housing.Domain.Services
 
             var housings = await _housingRepository.SearchAsync(specification, cancellationToken);
 
-            _logger.Information("Найдено {HousingCount} объектов недвижимости, соответствующих критериям поиска", housings.Count());
+            _logger.Information("Найдено {HousingCount} объектов недвижимости, соответствующих критериям поиска.", housings.Count());
 
             return housings;
         }
@@ -120,13 +120,16 @@ namespace RentIt.Housing.Domain.Services
             CreateHousingRequest request,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Добавление новой собственности для владельца {OwnerId}", ownerId);
+            _logger.Information("Добавление новой собственности для владельца {OwnerId}.", ownerId);
 
             await _createHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
-            if (!Guid.TryParse(ownerId, out var ownerGuid))
+            var parseAttempt = Guid.TryParse(ownerId, out var ownerGuid);
+
+            if (!parseAttempt)
             {
-                _logger.Error("Некорректный формат ID владельца: {OwnerId}", ownerId);
+                _logger.Error("Некорректный формат ID владельца: {OwnerId}.", ownerId);
+
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
@@ -135,24 +138,27 @@ namespace RentIt.Housing.Domain.Services
                 opt.Items["ownerId"] = ownerGuid;
             });
 
-            if(request.Images != null && request.Images.Count() != 0)
+            var imagesUploaded = request.Images != null && request.Images.Count() != 0;
+
+            if (imagesUploaded)
             {
-                _logger.Information("Загрузка {ImageCount} изображений для собственности", request.Images.Count());
+                _logger.Information("Загрузка {ImageCount} изображений для собственности.", request.Images.Count());
 
                 housing.Images = await _imageService.UploadImagesAsync(housing.HousingId, request.Images, cancellationToken);
             }
 
             await _housingRepository.AddAsync(housing, cancellationToken);
 
-            _logger.Information("Собственность с ID {HousingId} успешно добавлена", housing.HousingId);
+            _logger.Information("Собственность с ID {HousingId} успешно добавлена.", housing.HousingId);
         }
 
         public async Task UpdateHousingAsync(
             Guid housingId,
+            string userId,
             UpdateHousingRequest request, 
             CancellationToken cancellationToken)
         {
-            _logger.Information("Обновление собственности с ID {HousingId}", housingId);
+            _logger.Information("Обновление собственности с ID {HousingId}.", housingId);
 
             await _updateHousingRequestValidator.ValidateAndThrowAsync(request, cancellationToken);
 
@@ -160,10 +166,12 @@ namespace RentIt.Housing.Domain.Services
 
             if(housingToUpdate == null )
             {
-                _logger.Warning("Собственность с ID {HousingId} не найдена для обновления", housingId);
+                _logger.Warning("Собственность с ID {HousingId} не найдена для обновления.", housingId);
 
                 throw new NotFoundException($"Собственность с ID {housingId} не найдена.");
             }
+
+            CheckForUnathorizedAccess(housingToUpdate, userId);
 
             _mapper.Map(request, housingToUpdate);
 
@@ -173,7 +181,7 @@ namespace RentIt.Housing.Domain.Services
 
             await _housingRepository.UpdateAsync(housingToUpdate, cancellationToken);
 
-            _logger.Information("Собственность с ID {HousingId} успешно обновлена", housingId);
+            _logger.Information("Собственность с ID {HousingId} успешно обновлена.", housingId);
         }
 
         public async Task UpdateHousingAsync(
@@ -181,63 +189,90 @@ namespace RentIt.Housing.Domain.Services
             CancellationToken cancellationToken
             )
         {
-            _logger.Information("Обновление собственности с ID {HousingId}", housing.HousingId);
+            _logger.Information("Обновление собственности с ID {HousingId}.", housing.HousingId);
 
             housing.UpdatedAt = DateTime.UtcNow;
 
             await _housingRepository.UpdateAsync(housing, cancellationToken);
 
-            _logger.Information("Собственность с ID {HousingId} успешно обновлена", housing.HousingId);
+            _logger.Information("Собственность с ID {HousingId} успешно обновлена.", housing.HousingId);
         }
 
         public async Task DeleteHousingAsync(
             Guid housingId, 
+            string userId,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Удаление собственности с ID {HousingId}", housingId);
+            _logger.Information("Удаление собственности с ID {HousingId}.", housingId);
 
             var housingToDelete = await _housingRepository.GetByIdAsync(housingId, cancellationToken);
 
-            foreach(var img in housingToDelete.Images)
+            if (housingToDelete == null)
             {
-                _logger.Information("Удаление изображения с ID {ImageId}", img.ImageId);
+                _logger.Warning("Собственность для удаления с ID {housingId} не найдена.", housingId);
 
-                await _imageService.DeleteImageAsync(img.ImageId, cancellationToken);
+                throw new NotFoundException("Собственность для удаления не найдена.");
             }
+
+            CheckForUnathorizedAccess(housingToDelete, userId);
+
+            await _imageService.ClearImagesAsync(housingToDelete.Images, cancellationToken);
 
             await _housingRepository.DeleteAsync(housingId, cancellationToken);
 
-            _logger.Information("Собственность с ID {HousingId} успешно удалена", housingId);
+            _logger.Information("Собственность с ID {HousingId} успешно удалена.", housingId);
         }
 
         public async Task CheckUnpublishedHousingsForSpamAsync(
             CancellationToken cancellationToken)
         {
-            _logger.Information("Проверка неподтвержденных объектов недвижимости на наличие спама");
+            _logger.Information("Проверка неподтвержденных объектов недвижимости на наличие спама.");
 
-            var unpublishedHousings = (await _housingRepository.GetAllAsync(cancellationToken))
-                                        .Where(h => h.Status == HousingStatus.Unpublished);
+            var unpublishedHousings = await _housingRepository.GetAllUnpublishedAsync(cancellationToken);
 
-            foreach (var housing in unpublishedHousings)
+            var tasks = unpublishedHousings.Select(housing => ProcessHousingForSpamAsync(housing, cancellationToken));
+
+            await Task.WhenAll(tasks);
+
+            _logger.Information("Проверка неподтвержденных объектов недвижимости на спам завершена.");
+        }
+
+        private async Task ProcessHousingForSpamAsync(HousingEntity housing, CancellationToken cancellationToken)
+        {
+            var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description) || _filterService.ContainsSpamOrProfanity(housing.Title);
+
+            if (isSpam)
             {
-                var isSpam = _filterService.ContainsSpamOrProfanity(housing.Description) || _filterService.ContainsSpamOrProfanity(housing.Title);
+                housing.Status = HousingStatus.Rejected;
 
-                if (isSpam)
-                {
-                    housing.Status = HousingStatus.Rejected;
+                _logger.Warning("Собственность с ID {HousingId} помечена как спам.", housing.HousingId);
+            }
+            else
+            {
+                housing.Status = HousingStatus.Available;
 
-                    _logger.Warning("Собственность с ID {HousingId} помечена как спам", housing.HousingId);
-                }
-                else
-                {
-                    housing.Status = HousingStatus.Available;
+                _logger.Information("Собственность с ID {HousingId} помечена как доступная.", housing.HousingId);
+            }
 
-                    _logger.Information("Собственность с ID {HousingId} помечена как доступная", housing.HousingId);
-                }
+            await _housingRepository.UpdateAsync(housing, cancellationToken);
+        }
 
-                await _housingRepository.UpdateAsync(housing, cancellationToken);
+        private void CheckForUnathorizedAccess(HousingEntity housingToCheck, string userId)
+        {
+            var parseAttempt = Guid.TryParse(userId, out var userGuid);
 
-                _logger.Information("Проверка неподтвержденных объектов недвижимости на спам завершена");
+            if (!parseAttempt)
+            {
+                _logger.Warning("Некорректный формат ID комментатора: {UserId}.", userId);
+
+                throw new ArgumentException("Некорректный формат ID владельца.");
+            }
+
+            if (housingToCheck.OwnerId != userGuid)
+            {
+                _logger.Warning("Попытка неавторизованного доступа к комментарию.");
+
+                throw new ArgumentException("Попытка неавторизованного доступа к собственности.");
             }
         }
     }

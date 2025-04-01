@@ -20,12 +20,21 @@ namespace RentIt.Housing.DataAccess.Repositories
         {
             var filter = Builders<HousingEntity>.Filter.Eq(p => p.HousingId, housingId);
             
-            return await _collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+            return await _collection.Find(filter)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<HousingEntity>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _collection.Find(FilterDefinition<HousingEntity>.Empty)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<HousingEntity>> GetAllUnpublishedAsync(CancellationToken cancellationToken)
+        {
+            var filter = Builders<HousingEntity>.Filter.Eq(p => p.Status, Enums.HousingStatus.Unpublished);
+
+            return await _collection.Find(filter)
                 .ToListAsync(cancellationToken);
         }
 
