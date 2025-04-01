@@ -24,4 +24,10 @@
     <ProjectReference Include="..\RentIt.Users.Core\RentIt.Users.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="RentIt.Protos">
+      <HintPath>..\..\RentIt.Protos\RentIt.Protos\bin\Debug\net8.0\RentIt.Protos.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

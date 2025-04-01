@@ -2,7 +2,6 @@
 using MediatR;
 using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
-using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
 

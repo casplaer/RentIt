@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using RentIt.Users.Application.Commands.Users.Create;
+using RentIt.Users.Application.Commands.Users.Password;
 using RentIt.Users.Application.Commands.Users.Update;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Application.Mappings;
@@ -22,6 +23,7 @@ namespace RentIt.Users.Application.Extensions
             services.AddScoped<IValidator<GetFilteredUsersQuery>, GetFilteredUsersQueryValidator>();
             services.AddScoped<IValidator<CreateUserCommand>, CreateUserCommandValidator>();
             services.AddScoped<IValidator<UpdateUserCommand>, UpdateUserCommandValidator>();
+            services.AddScoped<IValidator<ResetPasswordCommand>, ResetPasswordCommandValidator>();
 
             return services;
         }
