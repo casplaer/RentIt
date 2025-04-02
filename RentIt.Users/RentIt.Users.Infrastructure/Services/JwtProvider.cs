@@ -32,7 +32,8 @@ namespace RentIt.Users.Infrastructure.Services
                 new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new(ClaimTypes.Email, user.Email),
-                new(ClaimTypes.Role, user.Role.RoleName.ToString())
+                new(ClaimTypes.Role, user.Role.RoleName.ToString()),
+                new("status", user.Status.ToString())
             };
 
             var signingCreds = new SigningCredentials(

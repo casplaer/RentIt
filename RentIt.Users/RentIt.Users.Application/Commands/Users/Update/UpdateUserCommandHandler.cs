@@ -23,7 +23,9 @@ namespace RentIt.Users.Application.Commands.Users.Update
             _mapper = mapper;
         }
 
-        public async Task<bool> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(
+            UpdateUserCommand request, 
+            CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
