@@ -8,7 +8,6 @@ namespace RentIt.Users.Application.Queries.Users
         string? LastName,
         string? Email,
         string? Role,
-        string? Status,
         string? Country,
         string? City,
         string? PhoneNumber,

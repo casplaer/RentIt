@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using Hangfire.Redis.StackExchange;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
@@ -11,9 +9,7 @@ namespace RentIt.Users.API.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRedis(
-            this IServiceCollection services, 
-            IConfiguration configuration)
+        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IConnectionMultiplexer>(sp =>
             {
@@ -30,25 +26,18 @@ namespace RentIt.Users.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddUsersHangfire(
-            this IServiceCollection services, 
-            IConfiguration configuration)
+        public static IServiceCollection AddCORS(this IServiceCollection services)
         {
-            var redisConnectionString = configuration.GetConnectionString("RedisConnection");
-
-            services.AddHangfire(config =>
+            services.AddCors(options =>
             {
-                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UseRedisStorage(redisConnectionString, new RedisStorageOptions
-                        {
-                            Db = 1,
-                            Prefix = "hangfire:"
-                        });
+                options.AddPolicy("AllowHousingService", policy =>
+                {
+                    policy.WithOrigins("https://localhost:7175")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
-
-            services.AddHangfireServer();
 
             return services;
         }
@@ -112,15 +101,9 @@ namespace RentIt.Users.API.Extensions
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminPolicy", policy =>
-                {
-                    policy.RequireRole("Admin");
-                    policy.RequireClaim("status", "Active");
-                });
+                    policy.RequireRole("Admin"));
                 options.AddPolicy("LandlordPolicy", policy =>
-                {
-                    policy.RequireRole("Landlord");
-                    policy.RequireClaim("status", "Active");
-                });
+                    policy.RequireRole("Landlord"));
             });
 
             return services;

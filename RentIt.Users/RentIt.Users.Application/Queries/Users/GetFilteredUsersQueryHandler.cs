@@ -27,7 +27,6 @@ namespace RentIt.Users.Application.Queries.Users
                 request.LastName,
                 request.Email,
                 request.Role,
-                request.Status,
                 request.Country,
                 request.City,
                 request.PhoneNumber,

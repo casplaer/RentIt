@@ -6,7 +6,6 @@ namespace RentIt.Users.Application.Commands.Users.Create
         string FirstName,
         string LastName,
         string Email,
-        string Password,
-        string ConfirmPassword
+        string Password
         ) : IRequest;
 } 
