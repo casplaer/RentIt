@@ -270,7 +270,7 @@ namespace RentIt.Housing.Domain.Services
 
             if (housingToCheck.OwnerId != userGuid)
             {
-                _logger.Warning("Попытка неавторизованного доступа к комментарию.");
+                _logger.Warning("Попытка неавторизованного доступа к собственности.");
 
                 throw new ArgumentException("Попытка неавторизованного доступа к собственности.");
             }

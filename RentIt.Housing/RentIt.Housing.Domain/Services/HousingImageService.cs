@@ -180,7 +180,7 @@ namespace RentIt.Housing.Domain.Services
             {
                 _logger.Information("Удаление изображения с ID {ImageId}", img.ImageId);
 
-                await DeleteImageAsync(img.ImageId, cancellationToken);
+                DeleteImageAsync(img.ImageId, cancellationToken);
             }).ToList();
 
             await Task.WhenAll(tasks);
