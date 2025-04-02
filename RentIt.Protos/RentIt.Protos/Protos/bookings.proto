@@ -1,0 +1,19 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "RentIt.Protos.Housing";
+
+package housing;
+
+message GetHousingRequest {
+  string housing_id = 1;
+}
+
+message GetHousingResponse {
+  string housing_id = 1;
+  string housing_name = 2;
+  double price_per_night = 3;
+}
+
+service HousingService {
+  rpc GetHousing(GetHousingRequest) returns (GetHousingResponse);
+}

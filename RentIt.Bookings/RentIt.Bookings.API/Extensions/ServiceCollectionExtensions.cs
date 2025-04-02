@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using Hangfire.Redis.StackExchange;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -8,12 +6,12 @@ using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace RentIt.Housing.API.Extensions
+namespace RentIt.Bookings.API.Extensions
 {
     public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddRedis(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddSingleton<IConnectionMultiplexer>(sp =>
@@ -29,29 +27,6 @@ namespace RentIt.Housing.API.Extensions
 
                 options.InstanceName = "RentIt";
             });
-
-            return services;
-        }
-
-        public static IServiceCollection AddHousingHangfire(
-            this IServiceCollection services,
-            IConfiguration configuration)
-        {
-            var redisConnectionString = configuration.GetConnectionString("RedisConnection");
-
-            services.AddHangfire(config =>
-            {
-                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
-                        .UseSimpleAssemblyNameTypeSerializer()
-                        .UseRecommendedSerializerSettings()
-                        .UseRedisStorage(redisConnectionString, new RedisStorageOptions
-                        {
-                            Db = 2,
-                            Prefix = "hangfire:"
-                        });
-            });
-
-            services.AddHangfireServer();
 
             return services;
         }

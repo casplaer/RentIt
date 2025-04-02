@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.Core.Api" Version="2.70.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RentIt.Bookings.Contracts\RentIt.Bookings.Contracts.csproj" />
     <ProjectReference Include="..\RentIt.Bookings.Core\RentIt.Bookings.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RentIt.Protos">
+      <HintPath>..\..\RentIt.Protos\RentIt.Protos\bin\Debug\net8.0\RentIt.Protos.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
