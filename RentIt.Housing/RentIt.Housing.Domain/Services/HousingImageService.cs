@@ -9,7 +9,6 @@ namespace RentIt.Housing.Domain.Services
     {
         private readonly IHousingImageRepository _imageRepository;
         private readonly FileStorageService _fileStorageService;
-        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "housing_images");
         private readonly ILogger _logger;
 
         public HousingImageService(
@@ -52,48 +51,33 @@ namespace RentIt.Housing.Domain.Services
 
             foreach (var image in images)
             {
-                if (image.Length > 0)
+                if (image.Length <= 0)
                 {
-                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
-                    var fileExtension = Path.GetExtension(image.FileName).ToLower();
-
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        _logger.Error("Попытка загрузки файла с неподдерживаемым расширением: {FileName}", image.FileName);
-
-                        throw new ArgumentException("Загруженный файл не является изображением допустимого формата.", nameof(images));
-                    }
-
-                    var contentType = image.ContentType.ToLower();
-                    var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/bmp" };
-
-                    if (!allowedMimeTypes.Contains(contentType))
-                    {
-                        _logger.Error("Попытка загрузки файла с неподдерживаемым MIME-типом: {ContentType}", contentType);
-
-                        throw new ArgumentException("Загруженный файл не является изображением допустимого типа.", nameof(images));
-                    }
-
-                    var savedFileName = await _fileStorageService.SaveFileAsync(image, _uploadPath, cancellationToken);
-                    var imageUrl = $"/uploads/housing_images/{savedFileName}";
-
-                    var housingImage = new HousingImage
-                    {
-                        ImageId = Guid.NewGuid(),
-                        HousingId = housingId,
-                        ImageUrl = imageUrl,
-                        Order = order++
-                    };
-
-                    await _imageRepository.AddAsync(housingImage, cancellationToken);
-
-                    _logger.Information("Изображение успешно добавлено с ID {ImageId} для собственности с ID {HousingId}", housingImage.ImageId, housingId);
-
-                    uploadedImages.Add(housingImage);
+                    continue;
                 }
+
+                _fileStorageService.ValidateImageFile(image);
+
+                var imageUrl = await _fileStorageService.SaveFileAsync(image, cancellationToken);
+
+                var housingImage = new HousingImage
+                {
+                    ImageId = Guid.NewGuid(),
+                    HousingId = housingId,
+                    ImageUrl = imageUrl,
+                    Order = order++
+                };
+
+                await _imageRepository.AddAsync(housingImage, cancellationToken);
+
+                _logger.Information("Изображение успешно добавлено с ID {ImageId} для собственности с ID {HousingId}", housingImage.ImageId, housingId);
+
+                uploadedImages.Add(housingImage);
+
             }
 
             _logger.Information("Загрузка изображений завершена для собственности с ID {HousingId}. Загружено изображений: {Count}", housingId, uploadedImages.Count);
+
             return uploadedImages;
         }
 
@@ -112,27 +96,9 @@ namespace RentIt.Housing.Domain.Services
                 int order = images.Any() ? images.Max(img => img.Order) : 1;
                 foreach (var file in addedImages)
                 {
-                    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
-                    var fileExtension = Path.GetExtension(file.FileName).ToLower();
+                    _fileStorageService.ValidateImageFile(file);
 
-                    if (!allowedExtensions.Contains(fileExtension))
-                    {
-                        _logger.Error("Добавление изображения не выполнено. Неподдерживаемое расширение файла: {FileName}", file.FileName);
-                        throw new ArgumentException("Загруженный файл не является изображением допустимого формата.", nameof(addedImages));
-                    }
-
-                    var contentType = file.ContentType.ToLower();
-                    var allowedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/bmp" };
-
-                    if (!allowedMimeTypes.Contains(contentType))
-                    {
-                        _logger.Error("Добавление изображения не выполнено. Неподдерживаемый MIME-тип файла: {ContentType}", file.ContentType);
-                        throw new ArgumentException("Загруженный файл не является изображением допустимого типа.", nameof(addedImages));
-                    }
-
-                    var savedFileName = await _fileStorageService.SaveFileAsync(file, _uploadPath, cancellationToken);
-                    var fileName = savedFileName;
-                    var imageUrl = $"/uploads/housing_images/{fileName}";
+                    var imageUrl = await _fileStorageService.SaveFileAsync(file, cancellationToken);
 
                     var newImage = new HousingImage
                     {
@@ -157,17 +123,17 @@ namespace RentIt.Housing.Domain.Services
                     var fileName = Path.GetFileName(relativePath);
                     var imageRecord = images.FirstOrDefault(img => Path.GetFileName(img.ImageUrl) == fileName);
 
-                    if (imageRecord != null)
+                    if (imageRecord == null)
+                    {
+                        _logger.Warning("Изображение для удаления не найдено по пути: {RelativePath}", relativePath);
+                    }
+                    else
                     {
                         _logger.Information("Удаление изображения с ID {ImageId} для собственности с ID {HousingId}", imageRecord.ImageId, housingId);
 
                         await DeleteImageAsync(imageRecord.ImageId, cancellationToken);
 
                         images.Remove(imageRecord);
-                    }
-                    else
-                    {
-                        _logger.Warning("Изображение для удаления не найдено по пути: {RelativePath}", relativePath);
                     }
                 }
             }
@@ -180,7 +146,7 @@ namespace RentIt.Housing.Domain.Services
         public async Task DeleteImageAsync(Guid imageId, CancellationToken cancellationToken)
         {
             _logger.Information("Попытка удаления изображения с ID {ImageId}", imageId);
-            
+
             var imageToDelete = await _imageRepository.GetHousingImageByIdAsync(imageId, cancellationToken);
 
             if (imageToDelete == null)
@@ -191,22 +157,33 @@ namespace RentIt.Housing.Domain.Services
             }
 
             var fileName = Path.GetFileName(imageToDelete.ImageUrl);
-            var filePath = Path.Combine(_uploadPath, fileName);
 
-            bool fileDeleted = _fileStorageService.DeleteFile(filePath);
+            var fileDeleted = _fileStorageService.DeleteFile(fileName);
 
             if (fileDeleted)
             {
-                _logger.Information("Файл изображения удален с диска: {FilePath}", filePath);
+                _logger.Information("Файл изображения удален с диска: {FilePath}", fileName);
             }
             else
             {
-                _logger.Warning("Файл изображения не найден на диске: {FilePath}", filePath);
+                _logger.Warning("Файл изображения не найден на диске: {FilePath}", fileName);
             }
 
             await _imageRepository.DeleteAsync(imageId, cancellationToken);
 
             _logger.Information("Запись изображения с ID {ImageId} удалена из базы данных", imageId);
+        }
+
+        public async Task ClearImagesAsync(IEnumerable<HousingImage> images, CancellationToken cancellationToken)
+        {
+            var tasks = images.Select(async img =>
+            {
+                _logger.Information("Удаление изображения с ID {ImageId}", img.ImageId);
+
+                await DeleteImageAsync(img.ImageId, cancellationToken);
+            }).ToList();
+
+            await Task.WhenAll(tasks);
         }
     }
 }

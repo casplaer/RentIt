@@ -29,7 +29,9 @@ namespace RentIt.Users.Application.Commands.Users.Login
             _emailNormalizer = emailNormalizer;
         }
 
-        public async Task<LoginUserResponse> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<LoginUserResponse> Handle(
+            LoginUserCommand request, 
+            CancellationToken cancellationToken)
         {
             var normalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
 
