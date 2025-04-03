@@ -161,7 +161,7 @@ namespace RentIt.Users.Infrastructure.Migrations
                             FirstName = "Admin",
                             LastName = "Adminov",
                             NormalizedEmail = "admin@example.com",
-                            PasswordHash = "HASHED_testadmin",
+                            PasswordHash = "$2a$11$VkCOxZ3UEmKm7q54hd069uLhehwjFJD753vEAeTwDeB9wkA3MyBNW",
                             RefreshToken = "TEST_REFRESH_TOKEN_ADMIN",
                             RefreshTokenExpiryTime = new DateTime(2025, 3, 9, 0, 0, 0, 0, DateTimeKind.Utc),
                             RoleId = new Guid("11111111-1111-1111-1111-111111111111"),

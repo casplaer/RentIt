@@ -8,6 +8,8 @@ using RentIt.Users.Infrastructure.Options;
 using RentIt.Users.Application.Extensions;
 using RentIt.Users.Infrastructure.Extensions;
 using Hangfire;
+using RentIt.Users.Infrastructure.Services.Grpc;
+using RentIt.Users.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseConnection");
@@ -15,7 +17,7 @@ var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseC
 builder.Services.AddDbContext<RentItDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
+builder.Services.AddGrpc();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddApplicationUtilities();
 builder.Services.AddMediatR();
@@ -59,7 +61,9 @@ app.UseAuthorization();
 app.UseCustomMiddlewares();
 app.UseHangfireDashboard("/hangfire");
 
-HangfireJobsExtensions.ConfigureRecurringJobs();
+HangfireJobsService.ConfigureHangfireJobs();
+
+app.MapGrpcService<UsersGrpcService>();
 
 app.UseHttpsRedirection();
 

@@ -1,5 +1,6 @@
 ﻿using RentIt.Users.Application.Exceptions;
 using FluentValidation;
+using Grpc.Core;
 
 namespace RentIt.Users.API.Middleware
 {
@@ -68,6 +69,11 @@ namespace RentIt.Users.API.Middleware
                     message = userAlreadyExistsException.Message;
                     break;
 
+                case RpcException rpcException:
+                    statusCode = ConvertGrpcStatusCodeToHttp(rpcException.StatusCode);
+                    message = rpcException.Message;
+                    break;
+
                 default:
                     _logger.LogWarning("Unhandled exception type: {ExceptionType}", exception.GetType());
                     break;
@@ -82,5 +88,19 @@ namespace RentIt.Users.API.Middleware
                 Message = message
             });
         }
+
+        private int ConvertGrpcStatusCodeToHttp(StatusCode grpcStatus)
+        {
+            return grpcStatus switch
+            {
+                StatusCode.InvalidArgument => StatusCodes.Status400BadRequest,
+                StatusCode.NotFound => StatusCodes.Status404NotFound,
+                StatusCode.Unauthenticated => StatusCodes.Status401Unauthorized,
+                StatusCode.PermissionDenied => StatusCodes.Status403Forbidden,
+                StatusCode.AlreadyExists => StatusCodes.Status409Conflict,
+                _ => StatusCodes.Status500InternalServerError
+            };
+        }
+
     }
 }
