@@ -20,7 +20,7 @@ namespace RentIt.Bookings.Application.Services.Grpc
 
             return new HousingInfoDto
             (
-                Guid.Parse(response.HousingId),
+                Guid.Parse(response.OwnerId),
                 response.HousingName,
                 (decimal) response.PricePerNight
             );

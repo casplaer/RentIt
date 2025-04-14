@@ -4,6 +4,8 @@
     {
         Pending,
         Confirmed,
+        Paid,
+        Active,
         Cancelled,
         Completed,
         Rejected

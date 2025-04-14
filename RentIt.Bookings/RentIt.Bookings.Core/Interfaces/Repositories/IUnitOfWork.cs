@@ -4,6 +4,6 @@
     {
         IBookingRepository Bookings { get; }
         IPaymentRepository Payments { get; }
-        Task<int> SaveChangesAsync();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

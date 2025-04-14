@@ -1,8 +1,13 @@
 ﻿using Hangfire;
 using Hangfire.Redis.StackExchange;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using RentIt.Housing.Domain.Options;
+using RentIt.Housing.Domain.Services.MessageBroker.Consumers;
+using RentIt.MessageBroker.Contracts.Events;
 using Serilog;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
@@ -133,6 +138,35 @@ namespace RentIt.Housing.API.Extensions
                 .CreateLogger();
 
             services.AddSingleton<Serilog.ILogger>(Log.Logger);
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitMq(
+            this IServiceCollection services)
+        {
+            services.AddMassTransit(busConfigurator =>
+            {
+                busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+                busConfigurator.AddConsumer<BookingCreatedEventConsumer>();
+
+                busConfigurator.UsingRabbitMq((context, configurator) =>
+                {
+                    MessageBrokerOptions options = context.GetRequiredService<MessageBrokerOptions>();
+
+                    configurator.Host(new Uri(options.Host), h =>
+                    {
+                        h.Username(options.Username);
+                        h.Password(options.Password);
+                    });
+
+                    configurator.ReceiveEndpoint("booking-created-queue", e =>
+                    {
+                        e.ConfigureConsumer<BookingCreatedEventConsumer>(context);
+                    });
+                });
+            });
 
             return services;
         }

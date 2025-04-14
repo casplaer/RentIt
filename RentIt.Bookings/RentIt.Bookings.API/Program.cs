@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using RentIt.Bookings.API.Extensions;
 using RentIt.Bookings.Application.Extensions;
 using RentIt.Bookings.Infrastructure.Data;
 using RentIt.Bookings.Infrastructure.Extensions;
+using RentIt.Bookings.Infrastructure.Options;
 using RentIt.Protos.Housing;
 using Serilog;
 
@@ -28,13 +30,26 @@ builder.Services.AddRedis(configuration);
 builder.Services.AddJwtAuthentication(configuration);
 
 builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationUseCases();
 builder.Services.AddApplicationRepositories();
+
+builder.Services.Configure<MessageBrokerOptions>(
+    configuration.GetSection("MessageBroker"));
+
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<MessageBrokerOptions>>().Value);
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+
+builder.Services.AddRabbitMq();
 
 builder.Services.AddGrpcClient<HousingService.HousingServiceClient>(options =>
 {
     options.Address = new Uri("https://localhost:7175");
 });
+
+builder.Services.MapAllProfiles();
+builder.Services.AddValidators();
 
 var app = builder.Build();
 

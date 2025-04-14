@@ -11,6 +11,8 @@ using Serilog;
 using MongoDB.Driver;
 using RentIt.Housing.Domain.Services;
 using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Options;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +49,14 @@ builder.Services.AddHousingHangfire(configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.Configure<MessageBrokerOptions>(
+    configuration.GetSection("MessageBroker"));
+
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<MessageBrokerOptions>>().Value);
+
+builder.Services.AddRabbitMq();
 
 builder.Services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
 {

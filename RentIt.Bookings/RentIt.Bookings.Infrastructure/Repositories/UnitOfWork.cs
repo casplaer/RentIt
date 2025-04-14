@@ -22,9 +22,9 @@ namespace RentIt.Bookings.Infrastructure.Repositories
         public IBookingRepository Bookings => _bookingRepository;
         public IPaymentRepository Payments => _paymentRepository;
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
-            return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

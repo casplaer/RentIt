@@ -40,7 +40,7 @@ namespace RentIt.Housing.Domain.Services.Grpc
 
             return new GetHousingResponse
             {
-                HousingId = housing.Housing.HousingId.ToString(),
+                OwnerId = housing.Housing.OwnerId.ToString(),
                 HousingName = housing.Housing.Title.ToString(),
                 PricePerNight = (double) housing.Housing.PricePerNight
             };

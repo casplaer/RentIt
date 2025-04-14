@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
+using RentIt.Bookings.Infrastructure.MessageBroker.Consumers;
+using RentIt.Bookings.Infrastructure.Options;
 using Serilog;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
@@ -107,7 +110,36 @@ namespace RentIt.Bookings.API.Extensions
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
-            services.AddSingleton<Serilog.ILogger>(Log.Logger);
+            services.AddSingleton(Log.Logger);
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitMq(
+            this IServiceCollection services)
+        {
+            services.AddMassTransit(busConfigurator =>
+            {
+                busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+                busConfigurator.AddConsumer<HousingUpdatedEventConsumer>();
+
+                busConfigurator.UsingRabbitMq((context, configurator) =>
+                {
+                    MessageBrokerOptions options = context.GetRequiredService<MessageBrokerOptions>();
+
+                    configurator.Host(new Uri(options.Host), h =>
+                    {
+                        h.Username(options.Username);
+                        h.Password(options.Password);
+                    });
+
+                    configurator.ReceiveEndpoint("housing-updated-queue", e =>
+                    {
+                        e.ConfigureConsumer<HousingUpdatedEventConsumer>(context);
+                    });
+                });
+            });
 
             return services;
         }

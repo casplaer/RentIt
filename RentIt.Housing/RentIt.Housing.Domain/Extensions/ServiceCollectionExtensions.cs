@@ -6,6 +6,7 @@ using RentIt.Housing.Domain.Mappings.Housing;
 using RentIt.Housing.Domain.Mappings.Reviews;
 using RentIt.Housing.Domain.Services;
 using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Services.MessageBroker;
 using RentIt.Housing.Domain.Validators;
 
 namespace RentIt.Housing.Domain.Extensions
@@ -42,6 +43,7 @@ namespace RentIt.Housing.Domain.Extensions
             services.AddScoped<UserIntegrationService>();
             services.AddScoped<HousingGrpcService>();
             services.AddScoped<SpamProfanityFilterService>();
+            services.AddTransient<EventBus>();
 
             return services;
         }

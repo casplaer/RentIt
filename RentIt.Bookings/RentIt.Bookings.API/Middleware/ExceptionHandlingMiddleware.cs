@@ -28,10 +28,10 @@ namespace RentIt.Bookings.API.Middleware
 
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            _logger.LogError(exception, "An error occurred");
+            _logger.LogError(exception, "Возникла ошибка.");
 
             int statusCode = StatusCodes.Status500InternalServerError;
-            string message = "An unexpected error occurred.";
+            string message = "Возникла непредвиденная ошибка.";
 
             switch (exception)
             {
@@ -64,7 +64,7 @@ namespace RentIt.Bookings.API.Middleware
                     break;
 
                 default:
-                    _logger.LogWarning("Unhandled exception type: {ExceptionType}", exception.GetType());
+                    _logger.LogWarning("Необработанное исключение: {ExceptionType}", exception.GetType());
                     break;
             }
 

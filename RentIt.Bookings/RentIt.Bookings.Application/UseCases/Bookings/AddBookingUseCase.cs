@@ -1,10 +1,11 @@
-﻿using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+﻿using AutoMapper;
+using FluentValidation;
+using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
-using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using RentIt.Protos.Housing;
+using Serilog;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -12,11 +13,23 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly HousingIntegrationsService _housingService;
+        private readonly ILogger _logger;
+        private readonly IMapper _mapper;
+        private readonly IValidator<CreateBookingRequest> _validator;
 
-        public AddBookingUseCase(IUnitOfWork unitOfWork, HousingIntegrationsService housingService)
+        public AddBookingUseCase(
+            IUnitOfWork unitOfWork,
+            HousingIntegrationsService housingService,
+            ILogger logger,
+            IMapper mapper,
+            IValidator<CreateBookingRequest> validator
+            )
         {
             _unitOfWork = unitOfWork;
             _housingService = housingService;
+            _logger = logger;
+            _mapper = mapper;
+            _validator = validator;
         }
 
         public async Task<Booking> ExecuteAsync(
@@ -24,36 +37,51 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             string userId,
             CancellationToken cancellationToken)
         {
-            if(!Guid.TryParse(userId, out var userGuid))
+            _logger.Information("Начало создания бронирования. Запрос: {@Request}, UserId: {UserId}", request, userId);
+
+            var userIdParseAttempt = Guid.TryParse(userId, out var userGuid);
+
+            if (!userIdParseAttempt)
             {
+                _logger.Warning("Некорректный формат UserId: {UserId}", userId);
+
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
-            var housingResponse = await _housingService.GetHousingInfoAsync(userGuid);
+            await _validator.ValidateAndThrowAsync(request);
 
-            int nights = (request.EndDate.Date - request.StartDate.Date).Days;
-            if (nights <= 0)
+            _logger.Information("Получение информации о жилье для HousingId: {HousingId}", request.HousingId);
+
+            var housingResponse = await _housingService.GetHousingInfoAsync(request.HousingId);
+
+            _logger.Information("Информация о жилье получена. Цена за ночь: {PricePerNight}", housingResponse.PricePerNight);
+
+            if (userGuid == housingResponse.OwnerId)
             {
-                throw new Exception("Неверный период бронирования");
+                _logger.Warning("Пользователь попытался забронировать свое же жилье.");
+
+                throw new ArgumentException("Извините, но забронировать свою же собственность невозможно.");
             }
 
-            decimal computedTotalPrice = (decimal)housingResponse.PricePerNight * nights;
+            var nights = (request.EndDate.Date - request.StartDate.Date).Days;
 
-            var booking = new Booking
-            {
-                BookingId = Guid.NewGuid(),
-                HousingId = request.HousingId,
-                UserId = userGuid,
-                StartDate = request.StartDate,
-                EndDate = request.EndDate,
-                TotalPrice = computedTotalPrice,
-                Status = BookingStatus.Pending,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            _logger.Information("Количество ночей: {Nights}", nights);
+
+            var computedTotalPrice = housingResponse.PricePerNight * nights;
+
+            _logger.Information("Общая стоимость бронирования: {TotalPrice}", computedTotalPrice);
+
+            var booking = _mapper.Map<Booking>(request, opt => {
+                opt.Items["ComputedTotalPrice"] = computedTotalPrice;
+                opt.Items["UserId"] = userGuid;
+            });
+
+            _logger.Information("Создан объект бронирования: {@Booking}", booking);
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
 
             return booking;
         }

@@ -7,9 +7,7 @@ namespace RentIt.Bookings.Core.Interfaces.Specitfications
     {
         Expression<Func<TEntity, bool>>? Criteria { get; }
         IReadOnlyList<Expression<Func<TEntity, object>>> IncludeExpressions { get; }
-        Expression<Func<TEntity, object>>? OrderByExpression { get; }
-        Expression<Func<TEntity, object>>? OrderByDescendingExpression { get; }
-        int Page { get; }
-        int PageSize { get; }
+        int? Page { get; }
+        int? PageSize { get; }
     }
 }

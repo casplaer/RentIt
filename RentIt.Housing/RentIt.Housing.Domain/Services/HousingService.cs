@@ -9,7 +9,8 @@ using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
 using RentIt.Housing.Domain.Services.Grpc;
-using Serilog;
+using RentIt.Housing.Domain.Services.MessageBroker;
+using RentIt.MessageBroker.Contracts.Events;
 
 namespace RentIt.Housing.Domain.Services
 {
@@ -24,6 +25,7 @@ namespace RentIt.Housing.Domain.Services
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
         private readonly SpamProfanityFilterService _filterService;
         private readonly Serilog.ILogger _logger;
+        private readonly EventBus _eventBus;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -34,7 +36,8 @@ namespace RentIt.Housing.Domain.Services
             HousingImageService imageService,
             UserIntegrationService userIntegrationService,
             SpamProfanityFilterService filterService,
-            Serilog.ILogger logger)
+            Serilog.ILogger logger,
+            EventBus eventBus)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;
@@ -45,6 +48,7 @@ namespace RentIt.Housing.Domain.Services
             _userIntegrationService = userIntegrationService;
             _filterService = filterService;
             _logger = logger;
+            _eventBus = eventBus;
         }
 
         public async Task<GetHousingByIdResponse> GetByIdAsync(
@@ -104,6 +108,7 @@ namespace RentIt.Housing.Domain.Services
                 numberOfRooms: request.NumberOfRooms,
                 rating: request.Rating,
                 status: request.Status,
+                estimatedStartDate: request.EstimatedStartDate,
                 estimatedEndDate: request.EstimatedEndDate,
                 page: request.Page,
                 pageSize: request.PageSize
@@ -174,11 +179,25 @@ namespace RentIt.Housing.Domain.Services
 
             CheckForUnathorizedAccess(housingToUpdate, userId);
 
+            var oldPrice = housingToUpdate.PricePerNight;
+
             _mapper.Map(request, housingToUpdate);
+
+            var newPrice = housingToUpdate.PricePerNight;
 
             housingToUpdate.Images = await _imageService.UpdateImagesAsync(housingId, request.AddedImages, request.RemovedImages, cancellationToken);
 
             housingToUpdate.UpdatedAt = DateTime.UtcNow;
+
+            if (oldPrice != newPrice)
+            {
+                await _eventBus.PublishAsync(
+                    new HousingUpdatedEvent
+                    {
+                        HousingId = housingId,
+                        NewPricePerNight = newPrice,
+                    }, cancellationToken);
+            }
 
             await _housingRepository.UpdateAsync(housingToUpdate, cancellationToken);
 
@@ -264,14 +283,14 @@ namespace RentIt.Housing.Domain.Services
 
             if (!parseAttempt)
             {
-                _logger.Warning("Некорректный формат ID комментатора: {UserId}.", userId);
+                _logger.Warning("Некорректный формат ID владельца: {UserId}.", userId);
 
                 throw new ArgumentException("Некорректный формат ID владельца.");
             }
 
             if (housingToCheck.OwnerId != userGuid)
             {
-                _logger.Warning("Попытка неавторизованного доступа к комментарию.");
+                _logger.Warning("Попытка неавторизованного доступа к собственности.");
 
                 throw new ArgumentException("Попытка неавторизованного доступа к собственности.");
             }
