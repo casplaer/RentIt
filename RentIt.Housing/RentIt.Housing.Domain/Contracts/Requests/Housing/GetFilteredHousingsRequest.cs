@@ -13,7 +13,7 @@ namespace RentIt.Housing.Domain.Contracts.Requests.Housing
         HousingStatus? Status,
         DateOnly? EstimatedStartDate,
         DateOnly? EstimatedEndDate,
-        int Page,
-        int PageSize
+        int Page = 1,
+        int PageSize = 10
         );
 }

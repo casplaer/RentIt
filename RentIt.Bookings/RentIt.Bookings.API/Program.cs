@@ -6,6 +6,7 @@ using RentIt.Bookings.Infrastructure.Data;
 using RentIt.Bookings.Infrastructure.Extensions;
 using RentIt.Bookings.Infrastructure.Options;
 using RentIt.Protos.Housing;
+using RentIt.Protos.Users;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +47,11 @@ builder.Services.AddRabbitMq();
 builder.Services.AddGrpcClient<HousingService.HousingServiceClient>(options =>
 {
     options.Address = new Uri("https://localhost:7175");
+});
+
+builder.Services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7108");
 });
 
 builder.Services.MapAllProfiles();

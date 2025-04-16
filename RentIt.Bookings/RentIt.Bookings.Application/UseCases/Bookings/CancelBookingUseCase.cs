@@ -1,7 +1,9 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
+using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
@@ -17,17 +19,26 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
         private readonly IRefundPaymentUseCase _refundPaymentUseCase;
+        private readonly HousingIntegrationsService _housingIntegrationsService;
+        private readonly UserIntegrationService _userIntegrationService;
+        private readonly IEmailSender _emailSender;
 
         public CancelBookingUseCase(
             ILogger logger, 
             IUnitOfWork unitOfWork,
             IEventBus eventBus,
-            IRefundPaymentUseCase refundPaymentUseCase)
+            IRefundPaymentUseCase refundPaymentUseCase,
+            UserIntegrationService userIntegrationService,
+            HousingIntegrationsService housingIntegrationsService,
+            IEmailSender emailSender)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;
             _refundPaymentUseCase = refundPaymentUseCase;
+            _userIntegrationService = userIntegrationService;
+            _housingIntegrationsService = housingIntegrationsService;
+            _emailSender = emailSender;
 
             _allowedToCancelStatuses =
             [
@@ -125,6 +136,17 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Изменения успешно сохранены.");
+
+            var housingInfo = await _housingIntegrationsService.GetHousingInfoAsync(bookingToCancel.HousingId);
+
+            var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToCancel.UserId);
+            var subject = "Отмена бронирования.";
+            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}!\n" +
+                       $"Ваше бронирование собственности {housingInfo.HousingName} с {bookingToCancel.StartDate:dd.MM.yyyy} по {bookingToCancel.EndDate:dd.MM.yyyy} было успешно отменено.";
+
+            await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
+
+            _logger.Information("Письмо об отмене бронирования отправлено на {Email}.", userInfo.Email);
         }
     }
 }

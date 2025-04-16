@@ -16,7 +16,6 @@ namespace RentIt.Bookings.API.Controllers
         private readonly IGetBookingUseCase _getBookingUseCase;
         private readonly IGetBookingsByUserIdUseCase _getBookingsByUserIdUseCase;
         private readonly IGetBookingsByHousingIdUseCase _getBookingsByHousingIdUseCase;
-        private readonly IUpdateBookingUseCase _updateBookingUseCase;
         private readonly IDeleteBookingUseCase _deleteBookingUseCase;
         private readonly IConfirmBookingUseCase _confirmBookingUseCase;
         private readonly IRejectBookingUseCase _rejectBookingUseCase;
@@ -29,7 +28,6 @@ namespace RentIt.Bookings.API.Controllers
             IGetBookingUseCase getBookingUseCase,
             IGetBookingsByHousingIdUseCase getBookingsByHousingIdUseCase,
             IGetBookingsByUserIdUseCase getBookingsByUserIdUseCase,
-            IUpdateBookingUseCase updateBookingUseCase,
             IDeleteBookingUseCase deleteBookingUseCase,
             IConfirmBookingUseCase confirmBookingUseCase,
             IRejectBookingUseCase rejectBookingUseCase,
@@ -41,7 +39,6 @@ namespace RentIt.Bookings.API.Controllers
             _getBookingUseCase = getBookingUseCase;
             _getBookingsByUserIdUseCase = getBookingsByUserIdUseCase;
             _getBookingsByHousingIdUseCase = getBookingsByHousingIdUseCase;
-            _updateBookingUseCase = updateBookingUseCase;
             _deleteBookingUseCase = deleteBookingUseCase;
             _confirmBookingUseCase = confirmBookingUseCase;
             _rejectBookingUseCase = rejectBookingUseCase;
@@ -138,22 +135,6 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("{bookingId}")]
-        public async Task<IActionResult> UpdateBooking(
-            [FromRoute] Guid bookingId,
-            [FromQuery] UpdateBookingRequest request,
-            CancellationToken cancellationToken)
-        {
-            _logger.Information("Начало обновления бронирования с ID: {BookingId} с данными: {@Request}", bookingId, request);
-
-            var booking = await _updateBookingUseCase.ExecuteAsync(bookingId, request, cancellationToken);
-
-            _logger.Information("Бронирование с ID {BookingId} успешно обновлено", bookingId);
-
-            return Ok(booking);
-        }
-
-        [Authorize]
         [HttpPut("{bookingId}/confirmation")]
         public async Task<IActionResult> ConfirmBooking(
             [FromRoute] Guid bookingId,
@@ -208,18 +189,19 @@ namespace RentIt.Bookings.API.Controllers
         [HttpPut("{bookingId}/admin-cancellation")]
         public async Task<IActionResult> AdminCancelBooking(
             [FromRoute] Guid bookingId,
+            bool isFined,
             CancellationToken cancellationToken)
         {
             _logger.Information("Запрос на отмену бронирования с ID: {BookingId}.", bookingId);
 
-            await _adminCancelBookingUseCase.ExecuteAsync(bookingId, cancellationToken);
+            await _adminCancelBookingUseCase.ExecuteAsync(bookingId, isFined, cancellationToken);
 
             _logger.Information("Бронирование c ID {BookingId} успешно отменено.", bookingId);
 
             return Ok("Бронирование отменено.");
         }
 
-        [Authorize]
+        [Authorize(Policy = "AdminPolicy")]
         [HttpDelete("{bookingId}")]
         public async Task<IActionResult> DeleteBooking(
             Guid bookingId,

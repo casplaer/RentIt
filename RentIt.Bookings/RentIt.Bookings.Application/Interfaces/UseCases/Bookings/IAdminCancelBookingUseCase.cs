@@ -2,6 +2,6 @@
 {
     public interface IAdminCancelBookingUseCase
     {
-        Task ExecuteAsync(Guid bookingId, CancellationToken cancellationToken);
+        Task ExecuteAsync(Guid bookingId, bool isFined, CancellationToken cancellationToken);
     }
 }

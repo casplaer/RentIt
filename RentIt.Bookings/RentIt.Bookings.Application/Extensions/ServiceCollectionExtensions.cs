@@ -33,7 +33,6 @@ namespace RentIt.Bookings.Application.Extensions
             services.AddScoped<IAdminCancelBookingUseCase, AdminCancelBookingUseCase>();
             services.AddScoped<IDeleteBookingUseCase, DeleteBookingUseCase>();
             services.AddScoped<IAddBookingUseCase, AddBookingUseCase>();
-            services.AddScoped<IUpdateBookingUseCase, UpdateBookingUseCase>();
             services.AddScoped<ICreatePaymentUseCase, CreatePaymentUseCase>();
             services.AddScoped<IConfirmPaymentUseCase, ConfirmPaymentUseCase>();
             services.AddScoped<IRefundPaymentUseCase, RefundPaymentUseCase>();
