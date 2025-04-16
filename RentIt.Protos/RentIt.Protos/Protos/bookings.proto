@@ -1,19 +1,17 @@
-﻿syntax = "proto3";
+syntax = "proto3";
 
-option csharp_namespace = "RentIt.Protos.Housing";
+option csharp_namespace = "RentIt.Protos.Booking";
 
 package housing;
 
-message GetHousingRequest {
+message GetExistBookingsRequest {
   string housing_id = 1;
 }
 
-message GetHousingResponse {
-  string owner_id = 1;
-  string housing_name = 2;
-  double price_per_night = 3;
+message GetExistBookingsResponse {
+  bool bookings_exist = 1;
 }
 
-service HousingService {
-  rpc GetHousing(GetHousingRequest) returns (GetHousingResponse);
+service BookingService {
+  rpc GetBookings(GetExistBookingsRequest) returns (GetExistBookingsResponse);
 }

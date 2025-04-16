@@ -41,6 +41,7 @@ namespace RentIt.Housing.Domain.Extensions
             services.AddScoped<FileStorageService>();
             services.AddScoped<ReviewsService>();
             services.AddScoped<UserIntegrationService>();
+            services.AddScoped<BookingIntegrationService>();
             services.AddScoped<HousingGrpcService>();
             services.AddScoped<SpamProfanityFilterService>();
             services.AddTransient<EventBus>();

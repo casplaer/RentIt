@@ -79,6 +79,16 @@ namespace RentIt.Bookings.Infrastructure.Repositories
                             cancellationToken);
         }
 
+        public async Task<IEnumerable<Booking>> GetBookingsByStatusesAsync(
+            Guid housingId, 
+            IEnumerable<BookingStatus> statuses, 
+            CancellationToken cancellationToken)
+        {
+            return await _context.Bookings
+                .Where(b => b.HousingId == housingId && statuses.Contains(b.Status))
+                .ToListAsync(cancellationToken);
+        }
+
         private IQueryable<Booking> ApplySpecification(
                     ISpecification<Booking> specification)
         {

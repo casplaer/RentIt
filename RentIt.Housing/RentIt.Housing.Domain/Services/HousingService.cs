@@ -19,6 +19,7 @@ namespace RentIt.Housing.Domain.Services
         private readonly IHousingRepository _housingRepository;
         private readonly HousingImageService _imageService;
         private readonly UserIntegrationService _userIntegrationService;
+        private readonly BookingIntegrationService _bookingIntegrationService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateHousingRequest> _createHousingRequestValidator;
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
@@ -35,6 +36,7 @@ namespace RentIt.Housing.Domain.Services
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
             HousingImageService imageService,
             UserIntegrationService userIntegrationService,
+            BookingIntegrationService bookingIntegrationService,
             SpamProfanityFilterService filterService,
             Serilog.ILogger logger,
             EventBus eventBus)
@@ -46,6 +48,7 @@ namespace RentIt.Housing.Domain.Services
             _updateHousingRequestValidator = updateHousingRequestValidator;
             _imageService = imageService;
             _userIntegrationService = userIntegrationService;
+            _bookingIntegrationService = bookingIntegrationService;
             _filterService = filterService;
             _logger = logger;
             _eventBus = eventBus;
@@ -232,6 +235,15 @@ namespace RentIt.Housing.Domain.Services
                 _logger.Warning("Собственность для удаления с ID {housingId} не найдена.", housingId);
 
                 throw new NotFoundException("Собственность для удаления не найдена.");
+            }
+
+            var bookingsExist = await _bookingIntegrationService.GetExistBookings(housingToDelete.HousingId);
+
+            if (bookingsExist)
+            {
+                _logger.Warning("Пользователь попытался удалить объявление с существующими бронированиями.");
+
+                throw new ArgumentException("Невозможно удалить объявления с существующими бронированиями.");
             }
 
             CheckForUnathorizedAccess(housingToDelete, userId);

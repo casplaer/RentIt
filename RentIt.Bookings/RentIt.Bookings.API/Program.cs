@@ -5,6 +5,7 @@ using RentIt.Bookings.Application.Extensions;
 using RentIt.Bookings.Infrastructure.Data;
 using RentIt.Bookings.Infrastructure.Extensions;
 using RentIt.Bookings.Infrastructure.Options;
+using RentIt.Bookings.Infrastructure.Services.Grpc;
 using RentIt.Protos.Housing;
 using RentIt.Protos.Users;
 using Serilog;
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<RentItDbContext>(options =>
 builder.Services.AddLogging(configuration);
 
 builder.Host.UseSerilog();
+
+builder.Services.AddGrpc();
 
 builder.Services.AddControllers();
 
@@ -66,6 +69,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCustomMiddlewares();
+
+app.MapGrpcService<BookingsGrpcService>();
 
 app.UseHttpsRedirection();
 

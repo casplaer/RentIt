@@ -22,7 +22,9 @@ namespace RentIt.Housing.Domain.Services.Grpc
         {
             _logger.Information("Получение собственности с ID {HousingId}", request.HousingId);
 
-            if (!Guid.TryParse(request.HousingId, out var housingGuid))
+            var housingIdParseAttempt = Guid.TryParse(request.HousingId, out var housingGuid);
+
+            if (!housingIdParseAttempt)
             {
                 _logger.Warning("Неверный формат housing_id. Ожидается GUID.");
 

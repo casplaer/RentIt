@@ -13,6 +13,7 @@ using RentIt.Housing.Domain.Services;
 using RentIt.Housing.Domain.Services.Grpc;
 using RentIt.Housing.Domain.Options;
 using Microsoft.Extensions.Options;
+using RentIt.Protos.Booking;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -61,6 +62,11 @@ builder.Services.AddRabbitMq();
 builder.Services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
 {
     options.Address = new Uri("https://localhost:7108");
+});
+
+builder.Services.AddGrpcClient<BookingService.BookingServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7288");
 });
 
 var app = builder.Build();
