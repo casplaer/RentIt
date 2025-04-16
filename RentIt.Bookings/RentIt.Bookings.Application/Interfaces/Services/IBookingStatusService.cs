@@ -1,7 +1,10 @@
 ﻿namespace RentIt.Bookings.Application.Interfaces.Services
 {
-    internal interface IBookingStatusService
+    public interface IBookingStatusService
     {
-        Task UpdateActiveBookings(CancellationToken cancellationToken);
+        Task UpdateActiveBookingsAsync(CancellationToken cancellationToken);
+        Task UpdatePaidBookingsAsync(CancellationToken cancellationToken);
+        Task UpdateConfirmedBookingsAsync(CancellationToken cancellationToken);
+        Task UpdatePendingBookingsAsync(CancellationToken cancellationToken);
     }
 }

@@ -5,6 +5,7 @@ using RentIt.Bookings.Application.Extensions;
 using RentIt.Bookings.Infrastructure.Data;
 using RentIt.Bookings.Infrastructure.Extensions;
 using RentIt.Bookings.Infrastructure.Options;
+using RentIt.Bookings.Infrastructure.Services;
 using RentIt.Bookings.Infrastructure.Services.Grpc;
 using RentIt.Protos.Housing;
 using RentIt.Protos.Users;
@@ -76,5 +77,7 @@ app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+HangfireJobsService.ConfigureHangfireJobs();
 
 app.Run();

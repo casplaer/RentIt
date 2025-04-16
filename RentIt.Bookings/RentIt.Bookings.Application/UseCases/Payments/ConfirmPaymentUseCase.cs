@@ -49,6 +49,13 @@ namespace RentIt.Bookings.Application.UseCases.Payments
                 throw new NotFoundException("Бронирование не найдено.");
             }
 
+            if (booking.Status == BookingStatus.Cancelled)
+            {
+                _logger.Warning("Пользователь пытается оплатить отмененное бронирование.");
+
+                throw new ArgumentException("Извините, но это бронирование отменено. Вероятно, вы не оплатили его вовремя. Проверьте свой электронный ящик.");
+            }
+
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             var subject = "Спасибо за оплату.";
             var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}! Ваш платеж на сумму {payment.Amount} успешно завершен. Приятного отдыха.";
@@ -59,7 +66,10 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             payment.Status = PaymentStatus.Completed;
             payment.PaymentTime = DateTime.UtcNow;
 
+            booking.Status = BookingStatus.Paid;
+
             _unitOfWork.Payments.Update(payment);
+            _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Платеж с ID {PaymentId} подтвержден.", paymentId);

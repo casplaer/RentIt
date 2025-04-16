@@ -12,6 +12,8 @@ namespace RentIt.Bookings.Infrastructure.Data.Configurations
 
             builder.HasKey(b => b.BookingId);
 
+            builder.HasIndex(b => new { b.Status, b.EndDate });
+
             builder.Property(b => b.BookingId)
                 .IsRequired();
 

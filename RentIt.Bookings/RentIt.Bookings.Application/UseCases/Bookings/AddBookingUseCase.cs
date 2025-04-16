@@ -76,6 +76,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 opt.Items["UserId"] = userGuid;
             });
 
+            //TODO: Отправить сообщение собственнику жилья о создании заявки по его объявлению.
+
             _logger.Information("Создан объект бронирования: {@Booking}", booking);
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
