@@ -237,6 +237,8 @@ namespace RentIt.Housing.Domain.Services
                 throw new NotFoundException("Собственность для удаления не найдена.");
             }
 
+            CheckForUnathorizedAccess(housingToDelete, userId);
+
             var bookingsExist = await _bookingIntegrationService.GetExistBookings(housingToDelete.HousingId);
 
             if (bookingsExist)
@@ -245,8 +247,6 @@ namespace RentIt.Housing.Domain.Services
 
                 throw new ArgumentException("Невозможно удалить объявления с существующими бронированиями.");
             }
-
-            CheckForUnathorizedAccess(housingToDelete, userId);
 
             await _imageService.ClearImagesAsync(housingToDelete.Images, cancellationToken);
 
