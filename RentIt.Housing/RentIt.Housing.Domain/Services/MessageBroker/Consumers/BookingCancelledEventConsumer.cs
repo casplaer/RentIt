@@ -35,22 +35,27 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
 
             _logger.Information("Cобственность с ID {HousingId} успешно получена консьюмером. Обновляем собственность.", context.Message.HousingId);
 
-            var newEstimatedStartDate = DateOnly.FromDateTime(context.Message.StartDate);
-            var newEstimatedEndDate = DateOnly.FromDateTime(context.Message.EndDate);
+            var cancelledStartDate = DateOnly.FromDateTime(context.Message.StartDate);
 
-            _logger.Information("Обновление примерной стартовой даты бронирования.");
+            var newEstimatedStartDate = context.Message.NextEstimatedStartDate;
+            var newEstimatedEndDate = context.Message.NextEstimatedEndDate;
 
-            housing.Housing.EstimatedStartDate = newEstimatedEndDate < housing.Housing.EstimatedStartDate ?
-                newEstimatedStartDate : housing.Housing.EstimatedStartDate;
+            if (cancelledStartDate == housing.Housing.EstimatedStartDate)
+            {
+                _logger.Information("Обновление примерной стартовой даты бронирования.");
 
-            _logger.Information("Обновление примерной конечной даты бронирования.");
+                housing.Housing.EstimatedStartDate = newEstimatedStartDate == null ?
+                    null : DateOnly.FromDateTime((DateTime)newEstimatedStartDate);
 
-            housing.Housing.EstimatedEndDate = newEstimatedEndDate > housing.Housing.EstimatedEndDate ?
-                housing.Housing.EstimatedEndDate : newEstimatedEndDate;
+                _logger.Information("Обновление примерной конечной даты бронирования.");
 
-            _logger.Information("Cобственность с ID {HousingId} успешно обновлена. Сохраняем изменения.", context.Message.HousingId);
+                housing.Housing.EstimatedStartDate = newEstimatedEndDate == null ?
+                    null : DateOnly.FromDateTime((DateTime)newEstimatedEndDate);
 
-            await _housingService.UpdateHousingAsync(housing.Housing, CancellationToken.None);
+                _logger.Information("Cобственность с ID {HousingId} успешно обновлена. Сохраняем изменения.", context.Message.HousingId);
+
+                await _housingService.UpdateHousingAsync(housing.Housing, CancellationToken.None);
+            }
         }
     }
 }

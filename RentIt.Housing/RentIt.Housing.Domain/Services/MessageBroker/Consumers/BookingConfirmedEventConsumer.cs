@@ -1,17 +1,16 @@
 ﻿using MassTransit;
-using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.Domain.Exceptions;
 using RentIt.MessageBroker.Contracts.Events;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
 {
-    public sealed class BookingCreatedEventConsumer : IConsumer<BookingCreatedEvent>
+    public sealed class BookingConfirmedEventConsumer : IConsumer<BookingConfirmedEvent>
     {
         private readonly HousingService _housingService;
         private readonly ILogger _logger;
 
-        public BookingCreatedEventConsumer(
+        public BookingConfirmedEventConsumer(
             HousingService housingService,
             ILogger logger)
         {
@@ -19,7 +18,7 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<BookingCreatedEvent> context)
+        public async Task Consume(ConsumeContext<BookingConfirmedEvent> context)
         {
             _logger.Information("Сообщение о создании бронирования успешно получено.");
 
@@ -38,19 +37,20 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
             var newStartDate = DateOnly.FromDateTime(context.Message.StartDate);
             var newEndDate = DateOnly.FromDateTime(context.Message.EndDate);
 
-            _logger.Information("Обновление примерной стартовой даты бронирования.");
+            if (newStartDate < housing.Housing.EstimatedStartDate)
+            {
+                _logger.Information("Обновление примерной стартовой даты бронирования.");
 
-            housing.Housing.EstimatedStartDate = newStartDate < housing.Housing.EstimatedStartDate ?
-                newStartDate : housing.Housing.EstimatedStartDate;
+                housing.Housing.EstimatedStartDate = newStartDate;
 
-            _logger.Information("Обновление примерной конечной даты бронирования.");
+                _logger.Information("Обновление примерной конечной даты бронирования.");
 
-            housing.Housing.EstimatedEndDate = newEndDate > housing.Housing.EstimatedEndDate ? 
-                newEndDate : housing.Housing.EstimatedEndDate;
+                housing.Housing.EstimatedEndDate = newEndDate;
 
-            _logger.Information("Cобственность с ID {HousingId} успешно обновлена. Сохраняем изменения.", context.Message.HousingId);
+                _logger.Information("Cобственность с ID {HousingId} успешно обновлена. Сохраняем изменения.", context.Message.HousingId);
 
-            await _housingService.UpdateHousingAsync(housing.Housing, CancellationToken.None);
+                await _housingService.UpdateHousingAsync(housing.Housing, CancellationToken.None);
+            }
         }
     }
 }

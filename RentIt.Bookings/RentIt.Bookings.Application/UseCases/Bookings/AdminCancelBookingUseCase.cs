@@ -82,7 +82,6 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 {
                     HousingId = bookingToCancel.HousingId,
                     StartDate = bookingToCancel.StartDate,
-                    EndDate = bookingToCancel.EndDate,
                     NextEstimatedStartDate = nextEstimatedStartDate,
                     NextEstimatedEndDate = nextEstimatedEndDate,
                 }, cancellationToken);

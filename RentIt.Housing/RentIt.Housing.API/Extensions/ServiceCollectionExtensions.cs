@@ -149,7 +149,7 @@ namespace RentIt.Housing.API.Extensions
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                busConfigurator.AddConsumer<BookingCreatedEventConsumer>();
+                busConfigurator.AddConsumer<BookingConfirmedEventConsumer>();
 
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
@@ -163,7 +163,7 @@ namespace RentIt.Housing.API.Extensions
 
                     configurator.ReceiveEndpoint("booking-created-queue", e =>
                     {
-                        e.ConfigureConsumer<BookingCreatedEventConsumer>(context);
+                        e.ConfigureConsumer<BookingConfirmedEventConsumer>(context);
                     });
                 });
             });

@@ -1,6 +1,6 @@
 ﻿namespace RentIt.MessageBroker.Contracts.Events
 {
-    public record BookingCreatedEvent
+    public record BookingConfirmedEvent
     {
         public Guid HousingId { get; init; }
         public DateTime StartDate { get; init; }

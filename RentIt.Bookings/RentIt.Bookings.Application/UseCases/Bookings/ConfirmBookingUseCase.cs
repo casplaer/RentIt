@@ -72,7 +72,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
 
             await _eventBus.PublishAsync(
-                new BookingCreatedEvent
+                new BookingConfirmedEvent
                 {
                     HousingId = booking.HousingId,
                     StartDate = booking.StartDate,
