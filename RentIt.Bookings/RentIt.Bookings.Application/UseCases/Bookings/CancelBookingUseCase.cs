@@ -87,7 +87,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 throw new ArgumentException($"Можно отменить бронирование только в статусе \"Обрабатывается\", \"Подтверждено\" или \"Оплачено\". Текущий статус: {bookingToCancel.Status}.");
             }
 
-            if (bookingToCancel.StartDate - DateTime.UtcNow >= TimeSpan.FromHours(24))
+            if ((bookingToCancel.StartDate - DateTime.UtcNow).TotalHours <= 24)
             {
                 _logger.Warning("Пользователь попытался отменить бронирование, которое начинается ранее чем через 24 часа от текущего момента.");
 
