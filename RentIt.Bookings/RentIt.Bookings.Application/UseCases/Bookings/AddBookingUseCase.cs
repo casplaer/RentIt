@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
@@ -16,20 +17,25 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
+        private readonly IEmailSender _emailSender;
+        private readonly UserIntegrationService _userIntegrationService;
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
             HousingIntegrationsService housingService,
             ILogger logger,
             IMapper mapper,
-            IValidator<CreateBookingRequest> validator
-            )
+            IValidator<CreateBookingRequest> validator,
+            IEmailSender emailSender,
+            UserIntegrationService userIntegrationService)
         {
             _unitOfWork = unitOfWork;
             _housingService = housingService;
             _logger = logger;
             _mapper = mapper;
             _validator = validator;
+            _emailSender = emailSender;
+            _userIntegrationService = userIntegrationService;
         }
 
         public async Task<Booking> ExecuteAsync(
@@ -76,14 +82,44 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 opt.Items["UserId"] = userGuid;
             });
 
-            //TODO: Отправить сообщение собственнику жилья о создании заявки по его объявлению.
-
             _logger.Information("Создан объект бронирования: {@Booking}", booking);
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
+
+            var ownerInfo = await _userIntegrationService.GetUserInfoAsync(housingResponse.OwnerId);
+            if (ownerInfo == null)
+            {
+                _logger.Warning("Не удалось получить информацию о владельце с ID {OwnerId}", housingResponse.OwnerId);
+            }
+            else
+            {
+                var ownerEmail = ownerInfo.Email;
+                var ownerMessage = $"На Ваше объявление {housingResponse.HousingName} была создана заявка с {request.StartDate:dd.MM.yyyy} по {request.EndDate:dd.MM.yyyy}." +
+                    $"Просмотреть эту и остальные заявки Вы можете <a href='https://localhost:3000/my-housings/bookings'>здесь</a>.\n\n" +
+                    "С уважением,\nКоманда RentIt.";
+
+                await _emailSender.SendEmailAsync(ownerEmail, "У Вас новая заявка!", ownerMessage, cancellationToken);
+                _logger.Information("Письмо отправлено владельцу жилья на почту: {OwnerEmail}", ownerEmail);
+            }
+
+            var userInfo = await _userIntegrationService.GetUserInfoAsync(userGuid);
+            if (userInfo == null)
+            {
+                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", userGuid);
+            }
+            else
+            {
+                var userEmail = userInfo.Email;
+                var userMessage = $"Поздравляем с созданием заявки на {housingResponse.HousingName} с {request.StartDate:dd.MM.yyyy} по {request.EndDate:dd.MM.yyyy}." +
+                    $"Свяжитесь с хозяином объявления для его подтверждения и дальнейшей организации Вашего отдыха.\n\n" +
+                    $"С уважением,\nКоманда RentIt.";
+
+                await _emailSender.SendEmailAsync(userEmail, "Заявка успешно создана!", userMessage, cancellationToken);
+                _logger.Information("Письмо отправлено пользователю на почту: {UserEmail}", userEmail);
+            }
 
             return booking;
         }

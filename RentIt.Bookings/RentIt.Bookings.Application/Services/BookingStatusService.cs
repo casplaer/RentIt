@@ -132,7 +132,7 @@ namespace RentIt.Bookings.Application.Services
                         body = $"Уважаемый {userInfo.FirstName} {userInfo.LastName},\n\n" +
                                "Мы вынуждены отменить ваше бронирование, так как оно было создано более 48 часов назад и так и не было подтверждено собственником объявления.\n\n" +
                                "Мы приносим извинения и надеемся, что в будущем такого больше не повторится.\n\n" +
-                               "С уважением,\nВаш сервис RentIt";
+                               "С уважением,\nКоманда RentIt.";
                     }
                     else
                     {
@@ -140,7 +140,7 @@ namespace RentIt.Bookings.Application.Services
                         body = $"Уважаемый {userInfo.FirstName} {userInfo.LastName},\n\n" +
                                "Мы вынуждены отменить ваше бронирование, так как до его начала осталось менее 24 часов, но оно не было подтверждено собственником объявления.\n\n" +
                                "Мы приносим извинения и надеемся, что в будущем такого больше не повторится.\n\n" +
-                               "С уважением,\nВаш сервис RentIt";
+                               "С уважением,\nКоманда RentIt.";
                     }
 
                     await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
