@@ -1,0 +1,79 @@
+{
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/users/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7108
+          }
+        ],
+        "UpstreamPathTemplate": "/api/users/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/housings/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7175
+          }
+        ],
+        "UpstreamPathTemplate": "/api/housings/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/bookings/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7200
+          }
+        ],
+        "UpstreamPathTemplate": "/api/bookings/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/reviews/{everything}",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7175
+          }
+        ],
+        "UpstreamPathTemplate": "/api/reviews/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/users/{userId}/reviews",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7175
+          }
+        ],
+        "UpstreamPathTemplate": "/api/users/{userId}/reviews",
+        "UpstreamHttpMethod": [ "GET" ]
+      },
+      {
+        "DownstreamPathTemplate": "/api/housings/{housingId}/reviews",
+        "DownstreamScheme": "https",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 7175
+          }
+        ],
+        "UpstreamPathTemplate": "/api/housings/{housingId}/reviews",
+        "UpstreamHttpMethod": [ "GET", "POST" ]
+      }
+    ],
+    "GlobalConfiguration": {
+      "BaseUrl": "https://localhost:7000"
+    }
+  }

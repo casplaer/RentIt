@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentIt.ApiGateway", "RentIt.ApiGateway\RentIt.ApiGateway.csproj", "{810AC8D7-9C7A-40EA-8206-710471022F07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{810AC8D7-9C7A-40EA-8206-710471022F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810AC8D7-9C7A-40EA-8206-710471022F07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810AC8D7-9C7A-40EA-8206-710471022F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810AC8D7-9C7A-40EA-8206-710471022F07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DCD2CDFD-2D2A-479B-A637-414B88ED2026}
+	EndGlobalSection
+EndGlobal
