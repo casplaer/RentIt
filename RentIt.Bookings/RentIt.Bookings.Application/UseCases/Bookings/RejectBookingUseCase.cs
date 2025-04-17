@@ -1,4 +1,5 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Enums;
@@ -12,15 +13,21 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly HousingIntegrationsService _housingIntegrationService;
+        private readonly UserIntegrationService _userIntegrationService;
+        private readonly IEmailSender _emailSender;
 
         public RejectBookingUseCase(
-            ILogger logger, 
+            ILogger logger,
             IUnitOfWork unitOfWork,
-            HousingIntegrationsService housingIntegrationsService)
+            HousingIntegrationsService housingIntegrationService,
+            UserIntegrationService userIntegrationService,
+            IEmailSender emailSender)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _housingIntegrationService = housingIntegrationsService;
+            _housingIntegrationService = housingIntegrationService;
+            _userIntegrationService = userIntegrationService;
+            _emailSender = emailSender;
         }
 
         public async Task ExecuteAsync(string userId, Guid bookingId, CancellationToken cancellationToken)
@@ -62,6 +69,23 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Изменения успешно сохранены.");
+
+            var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToReject.UserId);
+
+            if (userInfo == null)
+            {
+                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId} для отправки email", bookingToReject.UserId);
+            }
+            else
+            {
+                var subject = "Бронирование отклонено.";
+                var body = $"Здравствуйте, {userInfo.FirstName}! Ваша заявка на бронирование {housing.HousingName}" +
+                    $" от {bookingToReject.StartDate:dd.MM.yyyy} до {bookingToReject.EndDate:dd.MM.yyyy} была отклонена владельцем.\n\n" +
+                    "С уважением,\nКоманда RentIt."; ;
+
+                await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
+                _logger.Information("Уведомление по email отправлено пользователю {UserEmail}", userInfo.Email);
+            }
         }
     }
 }

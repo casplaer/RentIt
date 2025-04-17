@@ -1,6 +1,7 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Enums;
@@ -13,19 +14,16 @@ namespace RentIt.Bookings.Application.UseCases.Payments
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly IEmailSender _emailSender;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public ConfirmPaymentUseCase(
             IUnitOfWork unitOfWork,
             ILogger logger,
-            UserIntegrationService userIntegrationService,
-            IEmailSender emailSender)
+            BookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
-            _userIntegrationService = userIntegrationService;
-            _emailSender = emailSender;
+            _bookingNotificationService = bookingNotificationService; 
         }
 
         public async Task<Payment> ExecuteAsync(Guid paymentId, CancellationToken cancellationToken)
@@ -56,13 +54,6 @@ namespace RentIt.Bookings.Application.UseCases.Payments
                 throw new ArgumentException("Извините, но это бронирование отменено. Вероятно, вы не оплатили его вовремя. Проверьте свой электронный ящик.");
             }
 
-            var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-            var subject = "Спасибо за оплату.";
-            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}! Ваш платеж на сумму {payment.Amount} успешно завершен. Приятного отдыха.";
-            await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
-
-            _logger.Information("Уведомление о подтверждении отправлено пользователю {Email}.", userInfo.Email);
-
             payment.Status = PaymentStatus.Completed;
             payment.PaymentTime = DateTime.UtcNow;
 
@@ -72,10 +63,13 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
+            await _bookingNotificationService.NotifyUserAboutPaymentSuccessAsync(booking, payment, cancellationToken);
+
+            _logger.Information("Уведомление о подтверждении отправлено пользователю.");
+
             _logger.Information("Платеж с ID {PaymentId} подтвержден.", paymentId);
 
             return payment;
         }
     }
-
 }

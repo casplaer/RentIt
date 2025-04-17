@@ -2,6 +2,7 @@
 using FluentValidation;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
@@ -17,8 +18,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
-        private readonly IEmailSender _emailSender;
-        private readonly UserIntegrationService _userIntegrationService;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
@@ -26,16 +26,14 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             ILogger logger,
             IMapper mapper,
             IValidator<CreateBookingRequest> validator,
-            IEmailSender emailSender,
-            UserIntegrationService userIntegrationService)
+            BookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _housingService = housingService;
             _logger = logger;
             _mapper = mapper;
             _validator = validator;
-            _emailSender = emailSender;
-            _userIntegrationService = userIntegrationService;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task<Booking> ExecuteAsync(
@@ -89,37 +87,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
 
-            var ownerInfo = await _userIntegrationService.GetUserInfoAsync(housingResponse.OwnerId);
-            if (ownerInfo == null)
-            {
-                _logger.Warning("Не удалось получить информацию о владельце с ID {OwnerId}", housingResponse.OwnerId);
-            }
-            else
-            {
-                var ownerEmail = ownerInfo.Email;
-                var ownerMessage = $"На Ваше объявление {housingResponse.HousingName} была создана заявка с {request.StartDate:dd.MM.yyyy} по {request.EndDate:dd.MM.yyyy}." +
-                    $"Просмотреть эту и остальные заявки Вы можете <a href='https://localhost:3000/my-housings/bookings'>здесь</a>.\n\n" +
-                    "С уважением,\nКоманда RentIt.";
+            _logger.Information("Отправка уведомления владельцу о создании новой заявки на его объявление.");
 
-                await _emailSender.SendEmailAsync(ownerEmail, "У Вас новая заявка!", ownerMessage, cancellationToken);
-                _logger.Information("Письмо отправлено владельцу жилья на почту: {OwnerEmail}", ownerEmail);
-            }
+            await _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, cancellationToken);
 
-            var userInfo = await _userIntegrationService.GetUserInfoAsync(userGuid);
-            if (userInfo == null)
-            {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", userGuid);
-            }
-            else
-            {
-                var userEmail = userInfo.Email;
-                var userMessage = $"Поздравляем с созданием заявки на {housingResponse.HousingName} с {request.StartDate:dd.MM.yyyy} по {request.EndDate:dd.MM.yyyy}." +
-                    $"Свяжитесь с хозяином объявления для его подтверждения и дальнейшей организации Вашего отдыха.\n\n" +
-                    $"С уважением,\nКоманда RentIt.";
+            _logger.Information("Отправка уведомления пользователю об успешном создании заявки.");
 
-                await _emailSender.SendEmailAsync(userEmail, "Заявка успешно создана!", userMessage, cancellationToken);
-                _logger.Information("Письмо отправлено пользователю на почту: {UserEmail}", userEmail);
-            }
+            await _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, cancellationToken);
 
             return booking;
         }

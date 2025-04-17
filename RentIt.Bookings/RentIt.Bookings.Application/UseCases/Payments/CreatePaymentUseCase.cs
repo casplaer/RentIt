@@ -17,6 +17,8 @@ namespace RentIt.Bookings.Application.UseCases.Payments
         private readonly UserIntegrationService _userIntegrationService;
         private readonly IEmailSender _emailSender;
 
+        private readonly string baseUrl = "https://localhost:3000";
+
         public CreatePaymentUseCase(
             IUnitOfWork unitOfWork,
             ILogger logger,
@@ -59,10 +61,16 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             _logger.Information("Платеж с ID: {PaymentId} успешно сохранён в базе данных", payment.PaymentId);
 
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-            var subject = "Бронирование создано.";
-            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}! " +
-                       $"Ваше бронирование успешно создано. " +
-                       $"Для подтверждения бронирования, пожалуйста, оплатите платеж на сумму {payment.Amount}.";
+            var subject = "Ваше бронирование подтверждено!";
+
+            var paymentUrl = $"{baseUrl}/my-bookings/{booking.BookingId}/checkout";
+
+            var body = $@"<p>Здравствуйте, {userInfo.FirstName} {userInfo.LastName}!</p>
+                <p>Ваше бронирование от {booking.StartDate:dd.MM.yyyy} было подтверждено владельцем.</p>
+                <p>Общая стоимость бронирования: {payment.Amount:C}.</p>
+                <p>Для оплаты перейдите по ссылке: <a href='{paymentUrl}'>Оплатить бронирование</a>.</p>
+                <p>С уважением,<br>Команда RentIt</p>";
+
             await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
             
             _logger.Information("Отправлено уведомление на почту {Email} о создании бронирования и запросе на оплату, PaymentID: {PaymentId}", userInfo.Email, payment.PaymentId);

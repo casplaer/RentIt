@@ -12,6 +12,8 @@ using RentIt.Protos.Housing;
 using RentIt.Protos.Users;
 using Serilog;
 
+//TODO: Добавить SignalR
+
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("BookingDatabaseConnection");

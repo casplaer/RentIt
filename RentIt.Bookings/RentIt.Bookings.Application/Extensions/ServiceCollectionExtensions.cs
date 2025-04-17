@@ -47,6 +47,7 @@ namespace RentIt.Bookings.Application.Extensions
         {
             services.AddScoped<HousingIntegrationsService>();
             services.AddScoped<UserIntegrationService>();
+            services.AddTransient<BookingNotificationService>();
             services.AddTransient<IBookingStatusService, BookingStatusService>();
 
             return services;
