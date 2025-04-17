@@ -1,4 +1,6 @@
-﻿using MassTransit;
+﻿using Hangfire;
+using Hangfire.Redis.StackExchange;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +32,29 @@ namespace RentIt.Bookings.API.Extensions
 
                 options.InstanceName = "RentIt";
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddBookingsHangfire(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("RedisConnection");
+
+            services.AddHangfire(config =>
+            {
+                config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                        .UseSimpleAssemblyNameTypeSerializer()
+                        .UseRecommendedSerializerSettings()
+                        .UseRedisStorage(redisConnectionString, new RedisStorageOptions
+                        {
+                            Db = 3,
+                            Prefix = "hangfire:"
+                        });
+            });
+
+            services.AddHangfireServer();
 
             return services;
         }

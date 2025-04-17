@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RentIt.Bookings.API.Extensions;
@@ -32,6 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddRedis(configuration);
+builder.Services.AddBookingsHangfire(configuration);
 builder.Services.AddJwtAuthentication(configuration);
 
 builder.Services.AddApplicationServices();
@@ -78,6 +80,7 @@ app.UseHttpsRedirection();
 app.UseHttpsRedirection();
 app.MapControllers();
 
-HangfireJobsService.ConfigureHangfireJobs();
+app.UseHangfireDashboard("/hangfire");
+HangfireJobsService.ConfigureHangfireJobs(app);
 
 app.Run();
