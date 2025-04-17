@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Core.Interfaces.Repositories;
@@ -12,24 +13,31 @@ namespace RentIt.Users.Application.Commands.Users.Update
         private readonly IUserRepository _userRepository;
         private readonly IEmailNormalizer _emailNormalizer;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdateUserCommandHandler> _logger;
 
         public UpdateUserCommandHandler(
             IUserRepository userRepository,
             IEmailNormalizer emailNormalizer,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<UpdateUserCommandHandler> logger)
         {
             _userRepository = userRepository;
             _emailNormalizer = emailNormalizer;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<bool> Handle(
-            UpdateUserCommand request, 
+            UpdateUserCommand request,
             CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Запрос на обновление пользователя с Id: {UserId}", request.UserId);
+
             var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
             if (user == null)
             {
+                _logger.LogWarning("Пользователь с Id {UserId} не найден", request.UserId);
+
                 throw new NotFoundException("Пользователь не найден.");
             }
 
@@ -38,8 +46,12 @@ namespace RentIt.Users.Application.Commands.Users.Update
             user.NormalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
             user.UpdatedAt = DateTime.UtcNow;
 
+            _logger.LogInformation("Обновляем данные пользователя с Id: {UserId}", request.UserId);
+
             _userRepository.Update(user);
             await _userRepository.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Пользователь с Id: {UserId} успешно обновлен", request.UserId);
 
             return true;
         }

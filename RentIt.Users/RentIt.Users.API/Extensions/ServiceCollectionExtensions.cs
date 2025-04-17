@@ -3,6 +3,7 @@ using Hangfire.Redis.StackExchange;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -122,6 +123,19 @@ namespace RentIt.Users.API.Extensions
                     policy.RequireClaim("status", "Active");
                 });
             });
+
+            return services;
+        }
+
+        public static IServiceCollection AddLogging(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+
+            services.AddSingleton<Serilog.ILogger>(Log.Logger);
 
             return services;
         }

@@ -6,6 +6,7 @@ using RentIt.Users.Application.Interfaces;
 using RentIt.Users.Core.Entities;
 using RentIt.Users.Core.Enums;
 using RentIt.Users.Core.Interfaces.Repositories;
+using Serilog;
 
 namespace RentIt.Users.Application.Commands.Users.Create
 {
@@ -21,6 +22,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
         private readonly IEmailSender _emailSender;
         private readonly IAccountTokenGenerator _accountTokenGenerator;
         private readonly ILinkGenerator _linkGenerator;
+        private readonly ILogger _logger;
 
         public CreateUserCommandHandler(
             IUserRepository userRepository,
@@ -41,24 +43,30 @@ namespace RentIt.Users.Application.Commands.Users.Create
             _emailSender = emailSender;
             _accountTokenGenerator = accountTokenGenerator;
             _linkGenerator = linkGenerator;
+            _logger = Log.ForContext<CreateUserCommandHandler>();
         }
 
         public async Task Handle(
-            CreateUserCommand request, 
+            CreateUserCommand request,
             CancellationToken cancellationToken)
         {
+            _logger.Information("Начато создание нового пользователя с email: {Email}", request.Email);
+
             var normalizedEmail = _emailNormalizer.NormalizeEmail(request.Email);
             var defaultRole = await _roleRepository.GetRoleByNameAsync("User", cancellationToken);
 
             var existingUser = await _userRepository.GetUserByNormalizedEmailAsync(normalizedEmail, cancellationToken);
             if (existingUser != null)
             {
+                _logger.Warning("Попытка регистрации с уже существующим email: {Email}", request.Email);
                 throw new UserAlreadyExistsException("Пользователь с таким email уже существует.");
             }
 
+            var userId = Guid.NewGuid();
+
             var user = new User
             {
-                UserId = Guid.NewGuid(),
+                UserId = userId,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
@@ -77,7 +85,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
             var accountToken = new AccountToken
             {
                 TokenId = Guid.NewGuid(),
-                UserId = user.UserId,
+                UserId = userId,
                 Token = confirmationToken,
                 Expiration = DateTime.UtcNow.AddDays(1),
                 TokenType = TokenType.Confirmation
@@ -88,12 +96,16 @@ namespace RentIt.Users.Application.Commands.Users.Create
             await _userRepository.AddAsync(user, cancellationToken);
             await _userRepository.SaveChangesAsync(cancellationToken);
 
+            _logger.Information("Пользователь {UserId} успешно создан и сохранён в базе данных", userId);
+
             var confirmationLink = _linkGenerator.GenerateConfirmationLink(user.UserId, confirmationToken);
 
             BackgroundJob.Enqueue(() =>
                 _emailSender.SendEmailAsync(user.Email,
                     "Подтверждение учётной записи",
                     $"Для подтверждения учётной записи нажмите <a href='{confirmationLink}'>здесь</a>.", cancellationToken));
+
+            _logger.Information("Письмо с подтверждением аккаунта отправлено на email: {Email}", request.Email);
         }
     }
 }
