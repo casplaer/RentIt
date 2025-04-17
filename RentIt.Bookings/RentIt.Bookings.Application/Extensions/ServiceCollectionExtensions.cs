@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Mappings.Bookings;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.UseCases.Bookings;
 using RentIt.Bookings.Application.UseCases.Payments;
@@ -45,6 +47,7 @@ namespace RentIt.Bookings.Application.Extensions
         {
             services.AddScoped<HousingIntegrationsService>();
             services.AddScoped<UserIntegrationService>();
+            services.AddTransient<IBookingStatusService, BookingStatusService>();
 
             return services;
         }
