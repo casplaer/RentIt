@@ -9,10 +9,12 @@ namespace RentIt.Users.Application.Commands.Users.Delete
         private readonly IUserRepository _userRepository;
         private readonly ILogger _logger;
 
-        public DeleteUserCommandHandler(IUserRepository userRepository)
+        public DeleteUserCommandHandler(
+            IUserRepository userRepository,
+            ILogger logger)
         {
             _userRepository = userRepository;
-            _logger = Log.ForContext<DeleteUserCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<bool> Handle(

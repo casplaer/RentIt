@@ -10,10 +10,12 @@ namespace RentIt.Users.Application.Commands.Users.Logout
         private readonly IJwtProvider _jwtProvider;
         private readonly ILogger _logger;
 
-        public LogoutUserCommandHandler(IJwtProvider jwtProvider)
+        public LogoutUserCommandHandler(
+            IJwtProvider jwtProvider,
+            ILogger logger)
         {
             _jwtProvider = jwtProvider ?? throw new ArgumentNullException(nameof(jwtProvider));
-            _logger = Log.ForContext<LogoutUserCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<string> Handle(

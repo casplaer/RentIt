@@ -33,7 +33,8 @@ namespace RentIt.Users.Application.Commands.Users.Create
             IMapper mapper,
             IEmailSender emailSender,
             IAccountTokenGenerator accountTokenGenerator,
-            ILinkGenerator linkGenerator)
+            ILinkGenerator linkGenerator,
+            ILogger logger)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
@@ -43,7 +44,7 @@ namespace RentIt.Users.Application.Commands.Users.Create
             _emailSender = emailSender;
             _accountTokenGenerator = accountTokenGenerator;
             _linkGenerator = linkGenerator;
-            _logger = Log.ForContext<CreateUserCommandHandler>();
+            _logger = logger;
         }
 
         public async Task Handle(

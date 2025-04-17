@@ -22,14 +22,15 @@ namespace RentIt.Users.Application.Commands.Users.Login
             IJwtProvider jwtProvider,
             IPasswordHasher passwordHasher,
             IMapper mapper,
-            IEmailNormalizer emailNormalizer)
+            IEmailNormalizer emailNormalizer,
+            ILogger logger)
         {
             _userRepository = userRepository;
             _jwtProvider = jwtProvider;
             _passwordHasher = passwordHasher;
             _mapper = mapper;
             _emailNormalizer = emailNormalizer;
-            _logger = Log.ForContext<LoginUserCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<LoginUserResponse> Handle(

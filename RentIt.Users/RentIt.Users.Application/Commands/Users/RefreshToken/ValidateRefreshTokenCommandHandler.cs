@@ -15,11 +15,12 @@ namespace RentIt.Users.Application.Commands.Users.RefreshToken
 
         public ValidateRefreshTokenCommandHandler(
             IUserRepository userRepository,
-            IJwtProvider jwtProvider)
+            IJwtProvider jwtProvider,
+            ILogger logger)
         {
             _userRepository = userRepository;
             _jwtProvider = jwtProvider;
-            _logger = Log.ForContext<ValidateRefreshTokenCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<ValidateRefreshTokenResponse> Handle(

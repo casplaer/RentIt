@@ -22,14 +22,15 @@ namespace RentIt.Users.Application.Commands.Users.Password
             IAccountTokenRepository accountTokenRepository,
             IPasswordHasher passwordHasher,
             IEmailNormalizer emailNormalizer,
-            IValidator<ResetPasswordCommand> resetPasswordCommandValidator)
+            IValidator<ResetPasswordCommand> resetPasswordCommandValidator,
+            ILogger logger)
         {
             _userRepository = userRepository;
             _accountTokenRepository = accountTokenRepository;
             _passwordHasher = passwordHasher;
             _emailNormalizer = emailNormalizer;
             _resetPasswordCommandValidator = resetPasswordCommandValidator;
-            _logger = Log.ForContext<ResetPasswordCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<bool> Handle(

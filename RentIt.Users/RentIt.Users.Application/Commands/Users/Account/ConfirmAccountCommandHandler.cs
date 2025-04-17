@@ -15,11 +15,12 @@ namespace RentIt.Users.Application.Commands.Users.Account
 
         public ConfirmAccountCommandHandler(
             IUserRepository userRepository,
-            IAccountTokenRepository accountTokenRepository)
+            IAccountTokenRepository accountTokenRepository, 
+            ILogger logger)
         {
             _userRepository = userRepository;
             _accountTokenRepository = accountTokenRepository;
-            _logger = Log.ForContext<ConfirmAccountCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<bool> Handle(

@@ -26,7 +26,8 @@ namespace RentIt.Users.Application.Commands.Users.Password
             IEmailSender emailSender,
             IEmailNormalizer emailNormalizer,
             IAccountTokenGenerator accountTokenGenerator,
-            ILinkGenerator linkGenerator)
+            ILinkGenerator linkGenerator,
+            ILogger logger)
         {
             _userRepository = userRepository;
             _accountTokenRepository = accountTokenRepository;
@@ -34,7 +35,7 @@ namespace RentIt.Users.Application.Commands.Users.Password
             _emailNormalizer = emailNormalizer;
             _accountTokenGenerator = accountTokenGenerator;
             _linkGenerator = linkGenerator;
-            _logger = Log.ForContext<ForgotPasswordCommandHandler>();
+            _logger = logger;
         }
 
         public async Task<bool> Handle(
