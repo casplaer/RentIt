@@ -14,14 +14,14 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class ConfirmBookingUseCase : IConfirmBookingUseCase
     {
         private readonly ILogger _logger;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
+        private readonly HousingIntegrationService _housingIntegrationsService;
         private readonly ICreatePaymentUseCase _createPaymentUseCase;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
 
         public ConfirmBookingUseCase(
             ILogger logger,
-            HousingIntegrationsService housingIntegrationsService,
+            HousingIntegrationService housingIntegrationsService,
             ICreatePaymentUseCase createPaymentUseCase,
             IUnitOfWork unitOfWork,
             IEventBus eventBus)

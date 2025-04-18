@@ -65,8 +65,6 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             await _bookingNotificationService.NotifyUserAboutPaymentSuccessAsync(booking, payment, cancellationToken);
 
-            _logger.Information("Уведомление о подтверждении отправлено пользователю.");
-
             _logger.Information("Платеж с ID {PaymentId} подтвержден.", paymentId);
 
             return payment;

@@ -13,13 +13,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
+        private readonly HousingIntegrationService _housingIntegrationsService;
         private readonly IMapper _mapper;
 
         public GetBookingsByHousingIdUseCase(
             ILogger logger, 
             IUnitOfWork unitOfWork,
-            HousingIntegrationsService housingIntegrationsService,
+            HousingIntegrationService housingIntegrationsService,
             IMapper mapper)
         {
             _logger = logger;

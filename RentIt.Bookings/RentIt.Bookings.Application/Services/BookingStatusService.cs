@@ -1,6 +1,5 @@
 ﻿using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.Bookings.Application.Interfaces.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;

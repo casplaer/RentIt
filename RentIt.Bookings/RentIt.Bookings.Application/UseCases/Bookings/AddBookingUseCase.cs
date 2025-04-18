@@ -14,7 +14,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class AddBookingUseCase : IAddBookingUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationsService _housingService;
+        private readonly HousingIntegrationService _housingService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
@@ -22,7 +22,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
-            HousingIntegrationsService housingService,
+            HousingIntegrationService housingService,
             ILogger logger,
             IMapper mapper,
             IValidator<CreateBookingRequest> validator,
@@ -87,11 +87,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
 
-            _logger.Information("Отправка уведомления владельцу о создании новой заявки на его объявление.");
-
             await _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, cancellationToken);
-
-            _logger.Information("Отправка уведомления пользователю об успешном создании заявки.");
 
             await _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, cancellationToken);
 

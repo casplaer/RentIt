@@ -11,12 +11,12 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
+        private readonly HousingIntegrationService _housingIntegrationsService;
 
         public GetBookingUseCase(
             IUnitOfWork unitOfWork, 
             ILogger logger,
-            HousingIntegrationsService housingIntegrationsService)
+            HousingIntegrationService housingIntegrationsService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;

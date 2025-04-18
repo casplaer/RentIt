@@ -1,6 +1,7 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Enums;
@@ -13,19 +14,16 @@ namespace RentIt.Bookings.Application.UseCases.Payments
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly IEmailSender _emailSender;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public RefundPaymentUseCase(
             IUnitOfWork unitOfWork,
             ILogger logger,
-            UserIntegrationService userIntegrationService,
-            IEmailSender emailSender)
+            BookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
-            _userIntegrationService = userIntegrationService;
-            _emailSender = emailSender;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task<Payment> ExecuteAsync(
@@ -85,17 +83,7 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             _logger.Information("Платеж с ID {PaymentId} отмечен как возвращенный.", paymentId);
 
-            var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-            var subject = "Возврат средств по вашему платежу.";
-            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}!\n" +
-                       $"Ваш платеж на сумму {payment.Amount} был возвращен.\n" +
-                       (isFined
-                           ? $"Удержан штраф {finePercent}% за позднюю отмену. Итоговая сумма возврата: {refundAmount}."
-                           : "Вы получили полный возврат средств.");
-
-            await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
-
-            _logger.Information("Уведомление о возврате средств отправлено пользователю {Email}.", userInfo.Email);
+            await _bookingNotificationService.NotifyUserAboutRefundAsync(booking, payment, isFined, finePercent, refundAmount, cancellationToken);
 
             return payment;
         }
