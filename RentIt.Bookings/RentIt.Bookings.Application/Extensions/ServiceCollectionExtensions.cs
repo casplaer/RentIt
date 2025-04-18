@@ -2,11 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Application.Interfaces.UseCases.Messages;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Mappings.Bookings;
 using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.UseCases.Bookings;
+using RentIt.Bookings.Application.UseCases.Messages;
 using RentIt.Bookings.Application.UseCases.Payments;
 using RentIt.Bookings.Application.Validators;
 using RentIt.Bookings.Contracts.Requests.Bookings;
@@ -35,10 +37,12 @@ namespace RentIt.Bookings.Application.Extensions
             services.AddScoped<IAdminCancelBookingUseCase, AdminCancelBookingUseCase>();
             services.AddScoped<IDeleteBookingUseCase, DeleteBookingUseCase>();
             services.AddScoped<IAddBookingUseCase, AddBookingUseCase>();
+
             services.AddScoped<ICreatePaymentUseCase, CreatePaymentUseCase>();
             services.AddScoped<IConfirmPaymentUseCase, ConfirmPaymentUseCase>();
             services.AddScoped<IRefundPaymentUseCase, RefundPaymentUseCase>();
 
+            services.AddScoped<IGetMessagesUseCase, GetMessagesUseCase>();
 
             return services;
         }

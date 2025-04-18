@@ -15,6 +15,7 @@ namespace RentIt.Bookings.Infrastructure.Extensions
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IBookingRepository, BookingRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
