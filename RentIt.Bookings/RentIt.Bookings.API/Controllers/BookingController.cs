@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace RentIt.Bookings.API.Controllers
 {
     [ApiController]
-    [Route("api/bookings")]
+    [Route("api")]
     public class BookingController : Controller
     {
         private readonly Serilog.ILogger _logger;
@@ -47,7 +47,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("bookings")]
         public async Task<IActionResult> CreateBooking(
             [FromQuery] CreateBookingRequest request,
             CancellationToken cancellationToken)
@@ -64,7 +64,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("{bookingId}")]
+        [HttpGet("bookings/{bookingId}")]
         public async Task<IActionResult> GetBooking(
             Guid bookingId,
             CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("users/{userId}")]
+        [HttpGet("users/{userId}/bookings")]
         public async Task<IActionResult> GetBookingByUserId(
             [FromRoute] Guid userId,
             [FromQuery] GetBookingsByPagesRequest request,
@@ -110,7 +110,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("housings/{housingId}")]
+        [HttpGet("housings/{housingId}/bookings")]
         public async Task<IActionResult> GetBookingsByHousingId(
             [FromRoute] Guid housingId,
             GetBookingsByPagesRequest request,
@@ -135,7 +135,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("{bookingId}/confirmation")]
+        [HttpPut("bookings/{bookingId}/confirmation")]
         public async Task<IActionResult> ConfirmBooking(
             [FromRoute] Guid bookingId,
             CancellationToken cancellationToken)
@@ -152,7 +152,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("{bookingId}/rejection")]
+        [HttpPut("bookings/{bookingId}/rejection")]
         public async Task<IActionResult> RejectBooking(
             [FromRoute] Guid bookingId,
             CancellationToken cancellationToken)
@@ -169,7 +169,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize]
-        [HttpPut("{bookingId}/cancellation")]
+        [HttpPut("bookings/{bookingId}/cancellation")]
         public async Task<IActionResult> CancelBooking(
             [FromRoute] Guid bookingId,
             CancellationToken cancellationToken)
@@ -186,7 +186,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize(Policy = "AdminPolicy")]
-        [HttpPut("{bookingId}/admin-cancellation")]
+        [HttpPut("bookings/{bookingId}/admin-cancellation")]
         public async Task<IActionResult> AdminCancelBooking(
             [FromRoute] Guid bookingId,
             bool isFined,
@@ -202,7 +202,7 @@ namespace RentIt.Bookings.API.Controllers
         }
 
         [Authorize(Policy = "AdminPolicy")]
-        [HttpDelete("{bookingId}")]
+        [HttpDelete("bookings/{bookingId}")]
         public async Task<IActionResult> DeleteBooking(
             Guid bookingId,
             CancellationToken cancellationToken)
