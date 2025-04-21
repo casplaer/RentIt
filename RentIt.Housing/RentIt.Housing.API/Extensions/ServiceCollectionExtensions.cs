@@ -151,6 +151,8 @@ namespace RentIt.Housing.API.Extensions
 
                 busConfigurator.AddConsumer<BookingConfirmedEventConsumer>();
                 busConfigurator.AddConsumer<BookingCancelledEventConsumer>();
+                busConfigurator.AddConsumer<BookingCompletedEventConsumer>();
+                busConfigurator.AddConsumer<BookingActivatedEventConsumer>();
 
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
@@ -170,6 +172,16 @@ namespace RentIt.Housing.API.Extensions
                     configurator.ReceiveEndpoint("booking-cancelled-queue", e =>
                     {
                         e.ConfigureConsumer<BookingCancelledEventConsumer>(context);
+                    });
+
+                    configurator.ReceiveEndpoint("booking-completed-queue", e =>
+                    {
+                        e.ConfigureConsumer<BookingCompletedEventConsumer>(context);
+                    });
+
+                    configurator.ReceiveEndpoint("booking-activated-queue", e =>
+                    {
+                        e.ConfigureConsumer<BookingActivatedEventConsumer>(context);
                     });
                 });
             });

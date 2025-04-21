@@ -113,7 +113,7 @@ namespace RentIt.Bookings.API.Controllers
         [HttpGet("housings/{housingId}/bookings")]
         public async Task<IActionResult> GetBookingsByHousingId(
             [FromRoute] Guid housingId,
-            GetBookingsByPagesRequest request,
+            [FromQuery] GetBookingsByPagesRequest request,
             CancellationToken cancellationToken
             )
         {
@@ -131,7 +131,7 @@ namespace RentIt.Bookings.API.Controllers
 
             _logger.Information("Получено {Count} бронирований для собственности {HousingId}", housingId);
 
-            return Ok();
+            return Ok(bookingDtos);
         }
 
         [Authorize]

@@ -1,10 +1,8 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
-using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
@@ -86,8 +84,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             {
                 _logger.Warning("Пользователь попытался отменить бронирование, которое начинается ранее чем через 24 часа от текущего момента.");
 
-                throw new ArgumentException("Минимальное время для отмены бронирования состовляет 24 часа до его начала." +
-                    "Для возврата средств обратитесь в техническую поддержку.");
+                throw new ArgumentException("Минимальное время для отмены бронирования состовляет 24 часа до его начала. " +
+                    "Для его отмены и возврата средств обратитесь в техническую поддержку.");
             }
 
             DateTime? nextEstimatedStartDate = null;

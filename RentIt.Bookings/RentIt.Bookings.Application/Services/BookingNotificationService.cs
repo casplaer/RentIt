@@ -122,7 +122,7 @@ namespace RentIt.Bookings.Application.Services
                 <p>Здравствуйте, {userInfo.FirstName} {userInfo.LastName},</p>
                 <p>Ваше бронирование <strong>{housingInfo.HousingName}</strong> с <strong>{bookingToCancel.StartDate:dd.MM.yyyy}</strong> по <strong>{bookingToCancel.EndDate:dd.MM.yyyy}</strong> было успешно отменено.</p>
                 <p>Если у вас есть вопросы, свяжитесь с нами: <a href='mailto:support@rentit.com'>support@rentit.com</a>.</p>
-                <p><a href='https://yourapp.com' class='button'>Найти новое жилье</a></p>";
+                <p><a href='https://localhost:3000' class='button'>Найти новое жилье</a></p>";
 
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Отмена бронирования", body, cancellationToken);

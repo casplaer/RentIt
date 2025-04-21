@@ -21,9 +21,12 @@ namespace RentIt.Bookings.Application.Specifications
                 queryable,
                 (current, includeExpression) => current.Include(includeExpression));
 
-            queryable = queryable
-                .Skip((int)((specification.Page - 1) * specification.PageSize))
-                .Take((int)specification.PageSize);
+            if(specification.Page != null && specification.PageSize != null)
+            {
+                queryable = queryable
+                    .Skip((int)((specification.Page - 1) * specification.PageSize))
+                    .Take((int)specification.PageSize);
+            }
 
             return queryable;
         }

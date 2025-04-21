@@ -34,9 +34,9 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             _logger.Information("Начало возврата средств для платежа. PaymentId: {PaymentId}", paymentId);
 
             var payment = await _unitOfWork.Payments.GetByIdAsync(paymentId, cancellationToken);
-            if (payment == null)
+            if (payment == null || payment.Status != PaymentStatus.Completed)
             {
-                _logger.Warning("Платеж с ID {PaymentId} не найден.", paymentId);
+                _logger.Warning("Платеж с ID {PaymentId} не найден или не был завершен.", paymentId);
 
                 throw new Exception("Платеж не найден.");
             }

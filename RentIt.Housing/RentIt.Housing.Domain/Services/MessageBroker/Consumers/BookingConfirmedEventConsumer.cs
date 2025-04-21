@@ -37,7 +37,7 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
             var newStartDate = DateOnly.FromDateTime(context.Message.StartDate);
             var newEndDate = DateOnly.FromDateTime(context.Message.EndDate);
 
-            if (newStartDate < housing.Housing.EstimatedStartDate)
+            if (newStartDate < housing.Housing.EstimatedStartDate || housing.Housing.EstimatedStartDate == null)
             {
                 _logger.Information("Обновление примерной стартовой даты бронирования.");
 

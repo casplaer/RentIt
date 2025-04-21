@@ -6,8 +6,6 @@ using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.MessageBroker.Contracts.Events;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Interfaces.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
@@ -51,9 +49,12 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 throw new NotFoundException("Бронирование с таким ID не найдено.");
             }
 
-            _logger.Information("Возврат денег клиенту.");
+            if (bookingToCancel.Payment != null)
+            {
+                _logger.Information("Возврат денег клиенту, если бронирование уже было оплачено.");
 
-            await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
+                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
+            }
 
             DateTime? nextEstimatedStartDate = null;
             DateTime? nextEstimatedEndDate = null;

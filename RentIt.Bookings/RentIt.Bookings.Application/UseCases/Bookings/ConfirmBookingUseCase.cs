@@ -47,9 +47,9 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
 
-            if (booking == null)
+            if (booking == null || booking.Status != BookingStatus.Pending)
             {
-                _logger.Warning("Бронирование с ID {BookingId} не найдено.", bookingId);
+                _logger.Warning("Бронирование с ID {BookingId} не найдено или его статус не равен Pending.", bookingId);
 
                 throw new NotFoundException("Бронирование не найдено.");
             }
@@ -69,7 +69,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Публикация сообщения об успешном создании бронирования в брокер сообщений.");
 
-            await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
+            booking.Payment = await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
 
             await _eventBus.PublishAsync(
                 new BookingConfirmedEvent

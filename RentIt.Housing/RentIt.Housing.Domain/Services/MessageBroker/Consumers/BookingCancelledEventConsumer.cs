@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.Domain.Exceptions;
 using RentIt.MessageBroker.Contracts.Events;
 using Serilog;
@@ -51,6 +52,11 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
 
                 housing.Housing.EstimatedStartDate = newEstimatedEndDate == null ?
                     null : DateOnly.FromDateTime((DateTime)newEstimatedEndDate);
+
+                if (housing.Housing.EstimatedStartDate == null)
+                {
+                    housing.Housing.Status = HousingStatus.Available;
+                }
 
                 _logger.Information("Cобственность с ID {HousingId} успешно обновлена. Сохраняем изменения.", context.Message.HousingId);
 
