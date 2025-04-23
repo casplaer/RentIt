@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
@@ -12,24 +14,26 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class AddBookingUseCase : IAddBookingUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationsService _housingService;
+        private readonly HousingIntegrationService _housingService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
-            HousingIntegrationsService housingService,
+            HousingIntegrationService housingService,
             ILogger logger,
             IMapper mapper,
-            IValidator<CreateBookingRequest> validator
-            )
+            IValidator<CreateBookingRequest> validator,
+            BookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _housingService = housingService;
             _logger = logger;
             _mapper = mapper;
             _validator = validator;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task<Booking> ExecuteAsync(
@@ -76,14 +80,16 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 opt.Items["UserId"] = userGuid;
             });
 
-            //TODO: Отправить сообщение собственнику жилья о создании заявки по его объявлению.
-
             _logger.Information("Создан объект бронирования: {@Booking}", booking);
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
+
+            await _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, cancellationToken);
+
+            await _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, cancellationToken);
 
             return booking;
         }

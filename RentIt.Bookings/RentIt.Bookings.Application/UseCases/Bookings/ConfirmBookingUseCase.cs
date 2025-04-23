@@ -14,14 +14,14 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class ConfirmBookingUseCase : IConfirmBookingUseCase
     {
         private readonly ILogger _logger;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
+        private readonly HousingIntegrationService _housingIntegrationsService;
         private readonly ICreatePaymentUseCase _createPaymentUseCase;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
 
         public ConfirmBookingUseCase(
             ILogger logger,
-            HousingIntegrationsService housingIntegrationsService,
+            HousingIntegrationService housingIntegrationsService,
             ICreatePaymentUseCase createPaymentUseCase,
             IUnitOfWork unitOfWork,
             IEventBus eventBus)
@@ -47,9 +47,9 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
 
-            if (booking == null)
+            if (booking == null || booking.Status != BookingStatus.Pending)
             {
-                _logger.Warning("Бронирование с ID {BookingId} не найдено.", bookingId);
+                _logger.Warning("Бронирование с ID {BookingId} не найдено или его статус не равен Pending.", bookingId);
 
                 throw new NotFoundException("Бронирование не найдено.");
             }
@@ -69,18 +69,20 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Публикация сообщения об успешном создании бронирования в брокер сообщений.");
 
-            await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
-
-            await _eventBus.PublishAsync(
-                new BookingConfirmedEvent
-                {
-                    HousingId = booking.HousingId,
-                    StartDate = booking.StartDate,
-                    EndDate = booking.EndDate,
-                }, cancellationToken);
+            booking.Payment = await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
 
             _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(booking.HousingId, cancellationToken);
+
+            await _eventBus.PublishAsync(
+                new BookingUpdatedEvent
+                {
+                    HousingId = booking.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                }, cancellationToken);
         }
     }
 }

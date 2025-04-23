@@ -3,11 +3,11 @@ using RentIt.Protos.Housing;
 
 namespace RentIt.Bookings.Application.Services.Grpc
 {
-    public class HousingIntegrationsService
+    public class HousingIntegrationService
     {
         private readonly HousingService.HousingServiceClient _housingServiceClient;
 
-        public HousingIntegrationsService(HousingService.HousingServiceClient housingServiceClient)
+        public HousingIntegrationService(HousingService.HousingServiceClient housingServiceClient)
         {
             _housingServiceClient = housingServiceClient;
         }

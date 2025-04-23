@@ -1,9 +1,8 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
-using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Services.Grpc;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
@@ -19,26 +18,20 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
         private readonly IRefundPaymentUseCase _refundPaymentUseCase;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly IEmailSender _emailSender;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public CancelBookingUseCase(
             ILogger logger, 
             IUnitOfWork unitOfWork,
             IEventBus eventBus,
             IRefundPaymentUseCase refundPaymentUseCase,
-            UserIntegrationService userIntegrationService,
-            HousingIntegrationsService housingIntegrationsService,
-            IEmailSender emailSender)
+            BookingNotificationService bookingNotificationService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;
             _refundPaymentUseCase = refundPaymentUseCase;
-            _userIntegrationService = userIntegrationService;
-            _housingIntegrationsService = housingIntegrationsService;
-            _emailSender = emailSender;
+            _bookingNotificationService = bookingNotificationService;
 
             _allowedToCancelStatuses =
             [
@@ -87,29 +80,19 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 throw new ArgumentException($"Можно отменить бронирование только в статусе \"Обрабатывается\", \"Подтверждено\" или \"Оплачено\". Текущий статус: {bookingToCancel.Status}.");
             }
 
-            if (bookingToCancel.StartDate - DateTime.UtcNow >= TimeSpan.FromHours(24))
+            if ((bookingToCancel.StartDate - DateTime.UtcNow).TotalHours <= 24)
             {
                 _logger.Warning("Пользователь попытался отменить бронирование, которое начинается ранее чем через 24 часа от текущего момента.");
 
-                throw new ArgumentException("Минимальное время для отмены бронирования состовляет 24 часа до его начала." +
-                    "Для возврата средств обратитесь в техническую поддержку.");
+                throw new ArgumentException("Минимальное время для отмены бронирования состовляет 24 часа до его начала. " +
+                    "Для его отмены и возврата средств обратитесь в техническую поддержку.");
             }
 
-            DateTime? nextEstimatedStartDate = null;
-            DateTime? nextEstimatedEndDate = null;
+            _logger.Information("Находим предущую цепочу бронирований для обновления информации в объявлении. (Если такая имеется)");
 
-            _logger.Information("Находим следующее бронирование для обновления информации в объявлении. (Если такое имеется)");
-
-            var nextBooking = await _unitOfWork.Bookings.GetNextBookingByEndDate(
-                                                            bookingToCancel.HousingId, 
-                                                            bookingToCancel.EndDate, 
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                            bookingToCancel,
                                                             cancellationToken);
-
-            if (nextBooking != null)
-            {
-                nextEstimatedStartDate = nextBooking.StartDate;
-                nextEstimatedEndDate = nextBooking.EndDate;
-            }
 
             _logger.Information("Возврат денег клиенту, если бронирование уже оплачено.");
 
@@ -121,12 +104,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             bookingToCancel.Status = BookingStatus.Cancelled;
 
             await _eventBus.PublishAsync( 
-                new BookingCancelledEvent
+                new BookingUpdatedEvent
                 {
                     HousingId = bookingToCancel.HousingId,
-                    StartDate = bookingToCancel.StartDate,
-                    NextEstimatedStartDate = nextEstimatedStartDate,
-                    NextEstimatedEndDate = nextEstimatedEndDate,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
                 }, cancellationToken);
 
             _logger.Information("Статус бронирования успешно изменен на Cancelled.");
@@ -136,16 +118,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Изменения успешно сохранены.");
 
-            var housingInfo = await _housingIntegrationsService.GetHousingInfoAsync(bookingToCancel.HousingId);
-
-            var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToCancel.UserId);
-            var subject = "Отмена бронирования.";
-            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}!\n" +
-                       $"Ваше бронирование собственности {housingInfo.HousingName} с {bookingToCancel.StartDate:dd.MM.yyyy} по {bookingToCancel.EndDate:dd.MM.yyyy} было успешно отменено.";
-
-            await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
-
-            _logger.Information("Письмо об отмене бронирования отправлено на {Email}.", userInfo.Email);
+            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
         }
     }
 }

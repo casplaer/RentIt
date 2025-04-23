@@ -1,5 +1,7 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
@@ -11,16 +13,19 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationsService _housingIntegrationService;
+        private readonly HousingIntegrationService _housingIntegrationService;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public RejectBookingUseCase(
-            ILogger logger, 
+            ILogger logger,
             IUnitOfWork unitOfWork,
-            HousingIntegrationsService housingIntegrationsService)
+            HousingIntegrationService housingIntegrationService,
+            BookingNotificationService bookingNotificationService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
-            _housingIntegrationService = housingIntegrationsService;
+            _housingIntegrationService = housingIntegrationService;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task ExecuteAsync(string userId, Guid bookingId, CancellationToken cancellationToken)
@@ -62,6 +67,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Изменения успешно сохранены.");
+
+            await _bookingNotificationService.NotifyUserAboutBookingRejectionAsync(bookingToReject, housing, cancellationToken);
         }
     }
 }

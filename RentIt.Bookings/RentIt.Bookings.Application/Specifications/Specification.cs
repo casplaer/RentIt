@@ -24,7 +24,12 @@ namespace RentIt.Bookings.Application.Specifications
 
         protected void SetPagination(int? page, int? pageSize)
         {
-            if(page > 0 && pageSize > 0)
+            if (page == null && pageSize == null)
+            {
+                Page = null;
+                PageSize = null;
+            }
+            else if(page > 0 && pageSize > 0)
             {
                 Page = page;
                 PageSize = pageSize;

@@ -16,6 +16,10 @@ namespace RentIt.Bookings.Application.Validators
                 .LessThan(x => x.EndDate)
                 .WithMessage("Начальная дата должна быть раньше конечной даты.");
 
+            RuleFor(x => x.StartDate)
+                .GreaterThan(DateTime.UtcNow + TimeSpan.FromHours(24))
+                .WithMessage("Нельзя забронировать собственность менее чем за 24 часа до начала.");
+
             RuleFor(x => x)
             .MustAsync(async (request, cancellation) =>
                 !await unitOfWork.Bookings.AnyOverlappingBookingAsync(request.HousingId, request.StartDate, request.EndDate, cancellation))

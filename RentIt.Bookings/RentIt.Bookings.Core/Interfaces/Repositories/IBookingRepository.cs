@@ -8,7 +8,8 @@ namespace RentIt.Bookings.Core.Interfaces.Repositories
     {
         Task<PaginatedResult<Booking>> GetPaginatedFilteredBookingsAsync(ISpecification<Booking> specification, CancellationToken cancellationToken);
         Task<IEnumerable<Booking>> GetAllFilteredBookingsAsync(ISpecification<Booking> specification, CancellationToken cancellationToken);
-        Task<Booking?> GetNextBookingByEndDate(Guid housingId, DateTime endDate, CancellationToken cancellationToken);
+        Task<(DateTime? ChaingStart, DateTime? ChainEnd)> GetCurrentBookingChainAsync(Booking excludedBooking, CancellationToken cancellationToken);
+        Task<(DateTime? ChaingStart, DateTime? ChainEnd)> GetCurrentBookingChainAsync(Guid housingId,CancellationToken cancellationToken);
         Task<bool> AnyOverlappingBookingAsync(Guid housingId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken);
         Task<IEnumerable<Booking>> GetBookingsByStatusesAsync(Guid housingId, IEnumerable<BookingStatus> statuses, CancellationToken cancellationToken);
     }

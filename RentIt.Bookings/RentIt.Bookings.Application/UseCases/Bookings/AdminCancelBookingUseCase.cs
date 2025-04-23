@@ -6,8 +6,7 @@ using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.MessageBroker.Contracts.Events;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Interfaces.Services;
-using RentIt.Bookings.Application.Services.Grpc;
+using RentIt.Bookings.Application.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -17,26 +16,21 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
         private readonly IRefundPaymentUseCase _refundPaymentUseCase;
-        private readonly HousingIntegrationsService _housingIntegrationsService;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly IEmailSender _emailSender;
+        private readonly BookingNotificationService _bookingNotificationService;
+
 
         public AdminCancelBookingUseCase(
             ILogger logger,
             IUnitOfWork unitOfWork,
             IEventBus eventBus,
             IRefundPaymentUseCase refundPaymentUseCase,
-            UserIntegrationService userIntegrationService,
-            HousingIntegrationsService housingIntegrationsService,
-            IEmailSender emailSender)
+            BookingNotificationService bookingNotificationService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;
             _refundPaymentUseCase = refundPaymentUseCase;
-            _userIntegrationService = userIntegrationService;
-            _emailSender = emailSender;
-            _housingIntegrationsService = housingIntegrationsService;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task ExecuteAsync(
@@ -55,35 +49,27 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 throw new NotFoundException("Бронирование с таким ID не найдено.");
             }
 
-            _logger.Information("Возврат денег клиенту.");
-
-            await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
-
-            DateTime? nextEstimatedStartDate = null;
-            DateTime? nextEstimatedEndDate = null;
-
-            _logger.Information("Находим следующее бронирование для обновления информации в объявлении. (Если такое имеется)");
-
-            var nextBooking = await _unitOfWork.Bookings.GetNextBookingByEndDate(
-                                                            bookingToCancel.HousingId,
-                                                            bookingToCancel.EndDate,
-                                                            cancellationToken);
-
-            if (nextBooking != null)
+            if (bookingToCancel.Payment != null)
             {
-                nextEstimatedStartDate = nextBooking.StartDate;
-                nextEstimatedEndDate = nextBooking.EndDate;
+                _logger.Information("Возврат денег клиенту, если бронирование уже было оплачено.");
+
+                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
             }
+
+            _logger.Information("Находим следующую цепочку бронирований для обновления информации в объявлении. (Если таковая имеется)");
+
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                                        bookingToCancel,
+                                                                        cancellationToken);
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
             await _eventBus.PublishAsync(
-                new BookingCancelledEvent
+                new BookingUpdatedEvent
                 {
                     HousingId = bookingToCancel.HousingId,
-                    StartDate = bookingToCancel.StartDate,
-                    NextEstimatedStartDate = nextEstimatedStartDate,
-                    NextEstimatedEndDate = nextEstimatedEndDate,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
                 }, cancellationToken);
 
             _logger.Information("Статус бронирования успешно изменен на Cancelled.");
@@ -93,16 +79,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Изменения успешно сохранены.");
 
-            var housingInfo = await _housingIntegrationsService.GetHousingInfoAsync(bookingToCancel.HousingId);
-
-            var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToCancel.UserId);
-            var subject = "Отмена бронирования.";
-            var body = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName}!\n" +
-                       $"Ваше бронирование собственности {housingInfo.HousingName} с {bookingToCancel.StartDate:dd.MM.yyyy} по {bookingToCancel.EndDate:dd.MM.yyyy} было успешно отменено.";
-
-            await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
-
-            _logger.Information("Письмо об отмене бронирования отправлено на {Email}.", userInfo.Email);
+            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
         }
     }
 }

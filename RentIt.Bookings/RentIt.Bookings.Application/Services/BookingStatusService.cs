@@ -1,29 +1,27 @@
-﻿using RentIt.Bookings.Application.Interfaces.Services;
-using RentIt.Bookings.Application.Services.Grpc;
+﻿using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
+using RentIt.MessageBroker.Contracts.Events;
 
 namespace RentIt.Bookings.Application.Services
 {
+
     public class BookingStatusService : IBookingStatusService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IEmailSender _emailSender;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly ILogger _logger;
+        private readonly IEventBus _eventBus;
+        private readonly BookingNotificationService _bookingNotificationService;
 
         public BookingStatusService(
             IUnitOfWork unitOfWork, 
-            IEmailSender emailSender,
-            UserIntegrationService userIntegrationService,
-            ILogger logger)
+            IEventBus eventBus,
+            BookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
-            _emailSender = emailSender;
-            _userIntegrationService = userIntegrationService;
-            _logger = logger;
+            _eventBus = eventBus;
+            _bookingNotificationService = bookingNotificationService;
         }
 
         public async Task UpdateActiveBookingsAsync(CancellationToken cancellationToken)
@@ -38,18 +36,21 @@ namespace RentIt.Bookings.Application.Services
                 {
                     booking.Status = BookingStatus.Completed;
 
-                    var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-
-                    var emailSubject = "Спасибо, что выбрали нас!";
-                    var emailBody = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName},\n\n" +
-                                    $"Спасибо, что воспользовались нашим сервисом для бронирования.\n\n" +
-                                    "Мы рады, что могли помочь вам с вашим поиском и надеемся, что в будущем вы снова выберете нас.\n\n" +
-                                    "С наилучшими пожеланиями,\n" +
-                                    "Ваша команда RentIt.";
-
-                    await _emailSender.SendEmailAsync(userInfo.Email, emailSubject, emailBody, cancellationToken);
+                    await _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken);
 
                     _unitOfWork.Bookings.Update(booking);
+
+                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                            booking,
+                            cancellationToken);
+
+                    var completedEvent = new BookingUpdatedEvent
+                    {
+                        HousingId = booking.HousingId,
+                        NewStartDate = StartDate,
+                        NewEndDate = EndDate,
+                    };
+                    await _eventBus.PublishAsync(completedEvent, cancellationToken);
                 }
             }
 
@@ -68,16 +69,22 @@ namespace RentIt.Bookings.Application.Services
                 {
                     booking.Status = BookingStatus.Cancelled;
 
-                    var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-
-                    var emailSubject = "Ваше бронирование отменено";
-                    var emailBody = $"Здравствуйте, {userInfo.FirstName} {userInfo.LastName},\n\n" +
-                                    $"К сожалению, ваше бронирование с {booking.StartDate.Date} по {booking.EndDate.Date} было отменено, так как оно не было оплачено за 12 часов до начала.\n\n" +
-                                    "Пожалуйста, свяжитесь с нами, если у вас возникли вопросы.";
-
-                    await _emailSender.SendEmailAsync(userInfo.Email, emailSubject, emailBody, cancellationToken);
+                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonPaymentAsync(booking, cancellationToken);
 
                     _unitOfWork.Bookings.Update(booking);
+
+                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                booking,
+                                                cancellationToken);
+
+                    var cancelledEvent = new BookingUpdatedEvent
+                    {
+                        HousingId = booking.HousingId,
+                        NewStartDate = StartDate,
+                        NewEndDate = EndDate,
+                    };
+
+                    await _eventBus.PublishAsync(cancelledEvent, cancellationToken);
                 }
             }
 
@@ -97,6 +104,15 @@ namespace RentIt.Bookings.Application.Services
                     booking.Status = BookingStatus.Active;
 
                     _unitOfWork.Bookings.Update(booking);
+
+                    var activatedEvent = new BookingUpdatedEvent
+                    {
+                        HousingId = booking.HousingId,
+                        NewStartDate = booking.StartDate,
+                        NewEndDate = booking.EndDate,
+                        BookingStatus = booking.Status.ToString()
+                    };
+                    await _eventBus.PublishAsync(activatedEvent, cancellationToken);
                 }
             }
 
@@ -121,29 +137,7 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
-
-                    string subject;
-                    string body;
-
-                    if (isCreatedMoreThan48HoursAgo)
-                    {
-                        subject = "Ваше бронирование отменено";
-                        body = $"Уважаемый {userInfo.FirstName} {userInfo.LastName},\n\n" +
-                               "Мы вынуждены отменить ваше бронирование, так как оно было создано более 48 часов назад и так и не было подтверждено собственником объявления.\n\n" +
-                               "Мы приносим извинения и надеемся, что в будущем такого больше не повторится.\n\n" +
-                               "С уважением,\nВаш сервис RentIt";
-                    }
-                    else
-                    {
-                        subject = "Ваше бронирование отменено";
-                        body = $"Уважаемый {userInfo.FirstName} {userInfo.LastName},\n\n" +
-                               "Мы вынуждены отменить ваше бронирование, так как до его начала осталось менее 24 часов, но оно не было подтверждено собственником объявления.\n\n" +
-                               "Мы приносим извинения и надеемся, что в будущем такого больше не повторится.\n\n" +
-                               "С уважением,\nВаш сервис RentIt";
-                    }
-
-                    await _emailSender.SendEmailAsync(userInfo.Email, subject, body, cancellationToken);
+                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(booking, isCreatedMoreThan48HoursAgo, cancellationToken);
                 }
             }
 
