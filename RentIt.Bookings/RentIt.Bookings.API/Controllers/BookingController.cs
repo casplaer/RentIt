@@ -4,8 +4,6 @@ using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using System.Security.Claims;
 
-//TODO: Добавить методы для липовой платежки.
-
 namespace RentIt.Bookings.API.Controllers
 {
     [ApiController]
