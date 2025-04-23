@@ -2,6 +2,7 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using RentIt.Bookings.API.Extensions;
+using RentIt.Bookings.API.Hubs;
 using RentIt.Bookings.Application.Extensions;
 using RentIt.Bookings.Infrastructure.Data;
 using RentIt.Bookings.Infrastructure.Extensions;
@@ -26,6 +27,8 @@ builder.Services.AddLogging(configuration);
 builder.Host.UseSerilog();
 
 builder.Services.AddGrpc();
+
+builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
 
@@ -79,6 +82,8 @@ app.UseHttpsRedirection();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.UseHangfireDashboard("/hangfire");
 HangfireJobsService.ConfigureHangfireJobs(app);

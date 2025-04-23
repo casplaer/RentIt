@@ -13,11 +13,13 @@ namespace RentIt.Bookings.Infrastructure.Data
 
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new BookingConfiguration());
             modelBuilder.ApplyConfiguration(new PaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new MessageConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

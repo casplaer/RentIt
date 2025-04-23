@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RentIt.Bookings.Infrastructure.Data;
@@ -11,9 +12,11 @@ using RentIt.Bookings.Infrastructure.Data;
 namespace RentIt.Bookings.Infrastructure.Migrations
 {
     [DbContext(typeof(RentItDbContext))]
-    partial class RentItDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250418065643_AddMessageModel")]
+    partial class AddMessageModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
