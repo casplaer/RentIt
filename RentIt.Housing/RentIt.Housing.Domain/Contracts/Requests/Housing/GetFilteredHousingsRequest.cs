@@ -11,8 +11,8 @@ namespace RentIt.Housing.Domain.Contracts.Requests.Housing
         int? NumberOfRooms,
         double? Rating,
         HousingStatus? Status,
-        DateTime? EstimatedStartDate,
-        DateTime? EstimatedEndDate,
+        DateTime? UserStartDate,
+        DateTime? UserEndDate,
         int Page = 1,
         int PageSize = 10
         );

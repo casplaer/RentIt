@@ -96,7 +96,7 @@ namespace RentIt.Housing.Domain.Services
                 request.NumberOfRooms?.ToString() ?? "Не задано",
                 request.Rating?.ToString() ?? "Не задано",
                 request.Status?.ToString() ?? "Не задано",
-                request.EstimatedEndDate?.ToString("yyyy-MM-dd") ?? "Не задано",
+                request.UserEndDate?.ToString("yyyy-MM-dd") ?? "Не задано",
                 request.Page,
                 request.PageSize);
 
@@ -111,8 +111,8 @@ namespace RentIt.Housing.Domain.Services
                 numberOfRooms: request.NumberOfRooms,
                 rating: request.Rating,
                 status: request.Status,
-                estimatedStartDate: request.EstimatedStartDate,
-                estimatedEndDate: request.EstimatedEndDate,
+                userStartDate: request.UserStartDate,
+                userEndDate: request.UserEndDate,
                 page: request.Page,
                 pageSize: request.PageSize
             );
