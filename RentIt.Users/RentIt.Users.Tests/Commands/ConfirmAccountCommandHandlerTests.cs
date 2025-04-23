@@ -45,6 +45,7 @@ namespace RentIt.Users.Tests.Commands
 
             _mockAccountTokenRepository.Setup(x => x.GetTokenAsync(userId, token, TokenType.Confirmation, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tokenEntity);
+
             _mockUserRepository.Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(user);
 
@@ -52,6 +53,7 @@ namespace RentIt.Users.Tests.Commands
 
             Assert.True(result);
             Assert.Equal(UserStatus.Active, user.Status);
+
             _mockAccountTokenRepository.Verify(x => x.Delete(tokenEntity), Times.Once);
             _mockUserRepository.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -65,7 +67,9 @@ namespace RentIt.Users.Tests.Commands
             _mockAccountTokenRepository.Setup(x => x.GetTokenAsync(userId, token, TokenType.Confirmation, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((AccountToken)null);
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(new ConfirmAccountCommand(userId, token), CancellationToken.None));
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+                    _handler.Handle(new ConfirmAccountCommand(userId, token), CancellationToken.None));
+            
             Assert.Equal("Неверная или просроченная ссылка для восстановления пароля.", exception.Message);
         }
 
@@ -74,6 +78,7 @@ namespace RentIt.Users.Tests.Commands
         {
             var userId = Guid.NewGuid();
             var token = "validToken";
+
             var tokenEntity = new AccountToken
             {
                 UserId = userId,
@@ -84,10 +89,12 @@ namespace RentIt.Users.Tests.Commands
 
             _mockAccountTokenRepository.Setup(x => x.GetTokenAsync(userId, token, TokenType.Confirmation, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(tokenEntity);
+
             _mockUserRepository.Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync((User)null);
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(new ConfirmAccountCommand(userId, token), CancellationToken.None));
+            var exception = await Assert.ThrowsAsync<NotFoundException>(() => 
+                    _handler.Handle(new ConfirmAccountCommand(userId, token), CancellationToken.None));
             
             Assert.Equal("Пользователь не найден.", exception.Message);
         }

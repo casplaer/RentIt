@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using MediatR;
 using RentIt.Users.Application.Exceptions;
 using RentIt.Users.Application.Interfaces;
