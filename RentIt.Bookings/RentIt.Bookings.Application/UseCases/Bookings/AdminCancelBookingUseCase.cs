@@ -56,31 +56,20 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
             }
 
-            DateTime? nextEstimatedStartDate = null;
-            DateTime? nextEstimatedEndDate = null;
+            _logger.Information("Находим следующую цепочку бронирований для обновления информации в объявлении. (Если таковая имеется)");
 
-            _logger.Information("Находим следующее бронирование для обновления информации в объявлении. (Если такое имеется)");
-
-            var nextBooking = await _unitOfWork.Bookings.GetNextBookingByEndDate(
-                                                            bookingToCancel.HousingId,
-                                                            bookingToCancel.EndDate,
-                                                            cancellationToken);
-
-            if (nextBooking != null)
-            {
-                nextEstimatedStartDate = nextBooking.StartDate;
-                nextEstimatedEndDate = nextBooking.EndDate;
-            }
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                                        bookingToCancel,
+                                                                        cancellationToken);
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
             await _eventBus.PublishAsync(
-                new BookingCancelledEvent
+                new BookingUpdatedEvent
                 {
                     HousingId = bookingToCancel.HousingId,
-                    StartDate = bookingToCancel.StartDate,
-                    NextEstimatedStartDate = nextEstimatedStartDate,
-                    NextEstimatedEndDate = nextEstimatedEndDate,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
                 }, cancellationToken);
 
             _logger.Information("Статус бронирования успешно изменен на Cancelled.");

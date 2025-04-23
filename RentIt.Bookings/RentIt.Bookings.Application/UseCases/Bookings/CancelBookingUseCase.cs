@@ -88,21 +88,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                     "Для его отмены и возврата средств обратитесь в техническую поддержку.");
             }
 
-            DateTime? nextEstimatedStartDate = null;
-            DateTime? nextEstimatedEndDate = null;
+            _logger.Information("Находим предущую цепочу бронирований для обновления информации в объявлении. (Если такая имеется)");
 
-            _logger.Information("Находим следующее бронирование для обновления информации в объявлении. (Если такое имеется)");
-
-            var nextBooking = await _unitOfWork.Bookings.GetNextBookingByEndDate(
-                                                            bookingToCancel.HousingId, 
-                                                            bookingToCancel.EndDate, 
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                            bookingToCancel,
                                                             cancellationToken);
-
-            if (nextBooking != null)
-            {
-                nextEstimatedStartDate = nextBooking.StartDate;
-                nextEstimatedEndDate = nextBooking.EndDate;
-            }
 
             _logger.Information("Возврат денег клиенту, если бронирование уже оплачено.");
 
@@ -114,12 +104,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             bookingToCancel.Status = BookingStatus.Cancelled;
 
             await _eventBus.PublishAsync( 
-                new BookingCancelledEvent
+                new BookingUpdatedEvent
                 {
                     HousingId = bookingToCancel.HousingId,
-                    StartDate = bookingToCancel.StartDate,
-                    NextEstimatedStartDate = nextEstimatedStartDate,
-                    NextEstimatedEndDate = nextEstimatedEndDate,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
                 }, cancellationToken);
 
             _logger.Information("Статус бронирования успешно изменен на Cancelled.");

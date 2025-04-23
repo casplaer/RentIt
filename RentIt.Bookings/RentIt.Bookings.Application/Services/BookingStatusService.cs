@@ -4,7 +4,6 @@ using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
-using Serilog;
 
 namespace RentIt.Bookings.Application.Services
 {
@@ -41,13 +40,15 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    var completedEvent = new BookingCompletedEvent
+                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                            booking,
+                            cancellationToken);
+
+                    var completedEvent = new BookingUpdatedEvent
                     {
                         HousingId = booking.HousingId,
-                        StartDate = booking.StartDate,
-                        EndDate = booking.EndDate,
-                        NextEstimatedStartDate = null,
-                        NextEstimatedEndDate = null 
+                        NewStartDate = StartDate,
+                        NewEndDate = EndDate,
                     };
                     await _eventBus.PublishAsync(completedEvent, cancellationToken);
                 }
@@ -72,13 +73,17 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    var cancelledEvent = new BookingCancelledEvent
+                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                booking,
+                                                cancellationToken);
+
+                    var cancelledEvent = new BookingUpdatedEvent
                     {
                         HousingId = booking.HousingId,
-                        StartDate = booking.StartDate,
-                        NextEstimatedStartDate = null,
-                        NextEstimatedEndDate = null
+                        NewStartDate = StartDate,
+                        NewEndDate = EndDate,
                     };
+
                     await _eventBus.PublishAsync(cancelledEvent, cancellationToken);
                 }
             }
@@ -100,11 +105,12 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    var activatedEvent = new BookingActivatedEvent
+                    var activatedEvent = new BookingUpdatedEvent
                     {
                         HousingId = booking.HousingId,
-                        StartDate = booking.StartDate,
-                        EndDate = booking.EndDate
+                        NewStartDate = booking.StartDate,
+                        NewEndDate = booking.EndDate,
+                        BookingStatus = booking.Status.ToString()
                     };
                     await _eventBus.PublishAsync(activatedEvent, cancellationToken);
                 }

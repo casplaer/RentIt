@@ -71,16 +71,18 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             booking.Payment = await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
 
-            await _eventBus.PublishAsync(
-                new BookingConfirmedEvent
-                {
-                    HousingId = booking.HousingId,
-                    StartDate = booking.StartDate,
-                    EndDate = booking.EndDate,
-                }, cancellationToken);
-
             _unitOfWork.Bookings.Update(booking);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(booking.HousingId, cancellationToken);
+
+            await _eventBus.PublishAsync(
+                new BookingUpdatedEvent
+                {
+                    HousingId = booking.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                }, cancellationToken);
         }
     }
 }

@@ -27,17 +27,91 @@ namespace RentIt.Bookings.Infrastructure.Repositories
             return await query.ToListAsync(cancellationToken);
         }
 
-        public Task<Booking?> GetNextBookingByEndDate(
-            Guid housingId, 
-            DateTime endDate, 
-            CancellationToken cancellationToken)
+        public async Task<(DateTime? ChaingStart, DateTime? ChainEnd)> GetCurrentBookingChainAsync(Booking excludedBooking, CancellationToken cancellationToken)
         {
-            var nextBooking = _context.Bookings
-                .Where(b => b.HousingId == housingId && b.StartDate > endDate)
-                .OrderBy(b => b.StartDate)
-                .FirstOrDefaultAsync(cancellationToken);
+            var validStatuses = new[]
+            {
+                BookingStatus.Confirmed, 
+                BookingStatus.Paid, 
+                BookingStatus.Active 
+            };
 
-            return nextBooking;
+            var bookings = await _context.Bookings
+                .Where(b => b.HousingId == excludedBooking.HousingId
+                            && b.BookingId != excludedBooking.BookingId
+                            && validStatuses.Contains(b.Status))
+                .OrderBy(b => b.StartDate)
+                .ToListAsync(cancellationToken);
+
+            if (bookings.Count == 0)
+            {
+                return (null, null);
+            }
+
+            var chainStart = bookings.First().StartDate;
+            var chainEnd = bookings.First().EndDate;
+
+            for (int i = 1; i < bookings.Count; i++)
+            {
+                var previous = bookings[i - 1];
+                var current = bookings[i];
+
+                var gap = (current.StartDate - previous.EndDate).TotalHours;
+
+                if (gap < 36)
+                {
+                    chainEnd = current.EndDate;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return (chainStart, chainEnd);
+        }
+
+        public async Task<(DateTime? ChaingStart, DateTime? ChainEnd)> GetCurrentBookingChainAsync(Guid housingId, CancellationToken cancellationToken)
+        {
+            var validStatuses = new[] 
+            { 
+                BookingStatus.Confirmed, 
+                BookingStatus.Paid, 
+                BookingStatus.Active 
+            };
+
+            var bookings = await _context.Bookings
+                .Where(b => b.HousingId == housingId
+                            && validStatuses.Contains(b.Status))
+                .OrderBy(b => b.StartDate)
+                .ToListAsync(cancellationToken);
+
+            if (bookings.Count == 0)
+            {
+                return (null, null);
+            }
+
+            var chainStart = bookings.First().StartDate;
+            var chainEnd = bookings.First().EndDate;
+
+            for (int i = 1; i < bookings.Count; i++)
+            {
+                var previous = bookings[i - 1];
+                var current = bookings[i];
+
+                var gap = (current.StartDate - previous.EndDate).TotalHours;
+
+                if (gap < 36)
+                {
+                    chainEnd = current.EndDate;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return (chainStart, chainEnd);
         }
 
         public async Task<PaginatedResult<Booking>> GetPaginatedFilteredBookingsAsync(

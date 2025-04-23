@@ -149,10 +149,7 @@ namespace RentIt.Housing.API.Extensions
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                busConfigurator.AddConsumer<BookingConfirmedEventConsumer>();
-                busConfigurator.AddConsumer<BookingCancelledEventConsumer>();
-                busConfigurator.AddConsumer<BookingCompletedEventConsumer>();
-                busConfigurator.AddConsumer<BookingActivatedEventConsumer>();
+                busConfigurator.AddConsumer<BookingUpdatedEventConsumer>();
 
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
@@ -164,24 +161,9 @@ namespace RentIt.Housing.API.Extensions
                         h.Password(options.Password);
                     });
 
-                    configurator.ReceiveEndpoint("booking-created-queue", e =>
+                    configurator.ReceiveEndpoint("booking-updated-queue", e =>
                     {
-                        e.ConfigureConsumer<BookingConfirmedEventConsumer>(context);
-                    });
-
-                    configurator.ReceiveEndpoint("booking-cancelled-queue", e =>
-                    {
-                        e.ConfigureConsumer<BookingCancelledEventConsumer>(context);
-                    });
-
-                    configurator.ReceiveEndpoint("booking-completed-queue", e =>
-                    {
-                        e.ConfigureConsumer<BookingCompletedEventConsumer>(context);
-                    });
-
-                    configurator.ReceiveEndpoint("booking-activated-queue", e =>
-                    {
-                        e.ConfigureConsumer<BookingActivatedEventConsumer>(context);
+                        e.ConfigureConsumer<BookingUpdatedEventConsumer>(context);
                     });
                 });
             });
