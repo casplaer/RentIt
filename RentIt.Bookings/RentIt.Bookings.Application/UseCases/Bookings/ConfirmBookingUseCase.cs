@@ -1,8 +1,8 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Payments;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
@@ -14,14 +14,14 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class ConfirmBookingUseCase : IConfirmBookingUseCase
     {
         private readonly ILogger _logger;
-        private readonly HousingIntegrationService _housingIntegrationsService;
+        private readonly IHousingIntegrationService _housingIntegrationsService;
         private readonly ICreatePaymentUseCase _createPaymentUseCase;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
 
         public ConfirmBookingUseCase(
             ILogger logger,
-            HousingIntegrationService housingIntegrationsService,
+            IHousingIntegrationService housingIntegrationsService,
             ICreatePaymentUseCase createPaymentUseCase,
             IUnitOfWork unitOfWork,
             IEventBus eventBus)

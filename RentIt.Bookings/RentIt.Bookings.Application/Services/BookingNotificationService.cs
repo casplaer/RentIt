@@ -1,5 +1,5 @@
 ﻿using RentIt.Bookings.Application.Interfaces.Services;
-using RentIt.Bookings.Application.Services.Grpc;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Contracts.Dto;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
@@ -9,14 +9,14 @@ namespace RentIt.Bookings.Application.Services
 {
     public class BookingNotificationService
     {
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly HousingIntegrationService _housingIntegrationService;
+        private readonly IUserIntegrationService _userIntegrationService;
+        private readonly IHousingIntegrationService _housingIntegrationService;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public BookingNotificationService(
-            UserIntegrationService userIntegrationService,
-            HousingIntegrationService housingIntegrationService,
+            IUserIntegrationService userIntegrationService,
+            IHousingIntegrationService housingIntegrationService,
             IEmailSender emailSender,
             ILogger logger)
         {

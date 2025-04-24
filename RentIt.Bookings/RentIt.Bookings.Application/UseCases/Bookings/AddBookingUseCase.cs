@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using FluentValidation;
-using RentIt.Bookings.Application.Interfaces.Services;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Interfaces.Repositories;
@@ -14,7 +13,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     public class AddBookingUseCase : IAddBookingUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationService _housingService;
+        private readonly IHousingIntegrationService _housingService;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
@@ -22,7 +21,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
-            HousingIntegrationService housingService,
+            IHousingIntegrationService housingService,
             ILogger logger,
             IMapper mapper,
             IValidator<CreateBookingRequest> validator,
