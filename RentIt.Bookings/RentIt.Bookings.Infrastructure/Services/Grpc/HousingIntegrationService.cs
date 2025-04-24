@@ -1,9 +1,10 @@
-﻿using RentIt.Bookings.Contracts.Dto;
+﻿using RentIt.Bookings.Application.Interfaces.Services.Grpc;
+using RentIt.Bookings.Contracts.Dto;
 using RentIt.Protos.Housing;
 
-namespace RentIt.Bookings.Application.Services.Grpc
+namespace RentIt.Bookings.Infrastructure.Services.Grpc
 {
-    public class HousingIntegrationService
+    public class HousingIntegrationService : IHousingIntegrationService
     {
         private readonly HousingService.HousingServiceClient _housingServiceClient;
 
@@ -22,7 +23,7 @@ namespace RentIt.Bookings.Application.Services.Grpc
             (
                 Guid.Parse(response.OwnerId),
                 response.HousingName,
-                (decimal) response.PricePerNight
+                (decimal)response.PricePerNight
             );
         }
     }

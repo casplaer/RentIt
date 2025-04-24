@@ -1,8 +1,7 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
-using RentIt.Bookings.Application.Interfaces.Services;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using Serilog;
@@ -13,13 +12,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationService _housingIntegrationService;
+        private readonly IHousingIntegrationService _housingIntegrationService;
         private readonly BookingNotificationService _bookingNotificationService;
 
         public RejectBookingUseCase(
             ILogger logger,
             IUnitOfWork unitOfWork,
-            HousingIntegrationService housingIntegrationService,
+            IHousingIntegrationService housingIntegrationService,
             BookingNotificationService bookingNotificationService)
         {
             _logger = logger;

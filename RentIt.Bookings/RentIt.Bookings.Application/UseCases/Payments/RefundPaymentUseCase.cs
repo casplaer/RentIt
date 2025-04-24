@@ -1,8 +1,6 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
-using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;

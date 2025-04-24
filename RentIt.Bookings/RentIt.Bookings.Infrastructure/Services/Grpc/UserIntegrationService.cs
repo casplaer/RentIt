@@ -1,9 +1,10 @@
-﻿using RentIt.Bookings.Contracts.Dto;
+﻿using RentIt.Bookings.Application.Interfaces.Services.Grpc;
+using RentIt.Bookings.Contracts.Dto;
 using RentIt.Protos.Users;
 
-namespace RentIt.Bookings.Application.Services.Grpc
+namespace RentIt.Bookings.Infrastructure.Services.Grpc
 {
-    public class UserIntegrationService
+    public class UserIntegrationService : IUserIntegrationService
     {
         private readonly UsersService.UsersServiceClient _usersClient;
 

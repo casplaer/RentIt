@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Contracts.Dto;
 using RentIt.Bookings.Contracts.Requests.Bookings;
@@ -13,13 +13,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationService _housingIntegrationsService;
+        private readonly IHousingIntegrationService _housingIntegrationsService;
         private readonly IMapper _mapper;
 
         public GetBookingsByHousingIdUseCase(
             ILogger logger, 
             IUnitOfWork unitOfWork,
-            HousingIntegrationService housingIntegrationsService,
+            IHousingIntegrationService housingIntegrationsService,
             IMapper mapper)
         {
             _logger = logger;

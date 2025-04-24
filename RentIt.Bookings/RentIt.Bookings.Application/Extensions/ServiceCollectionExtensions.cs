@@ -5,7 +5,6 @@ using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Mappings.Bookings;
 using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Application.UseCases.Bookings;
 using RentIt.Bookings.Application.UseCases.Payments;
 using RentIt.Bookings.Application.Validators;
@@ -45,8 +44,6 @@ namespace RentIt.Bookings.Application.Extensions
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddScoped<HousingIntegrationService>();
-            services.AddScoped<UserIntegrationService>();
             services.AddTransient<BookingNotificationService>();
             services.AddTransient<IBookingStatusService, BookingStatusService>();
 
