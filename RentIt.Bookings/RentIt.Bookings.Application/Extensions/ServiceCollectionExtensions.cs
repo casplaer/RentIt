@@ -48,7 +48,7 @@ namespace RentIt.Bookings.Application.Extensions
 
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddTransient<BookingNotificationService>();
+            services.AddTransient<IBookingNotificationService, BookingNotificationService>();
             services.AddTransient<IBookingStatusService, BookingStatusService>();
 
             return services;

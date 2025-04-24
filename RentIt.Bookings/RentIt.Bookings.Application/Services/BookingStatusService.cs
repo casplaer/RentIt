@@ -12,12 +12,12 @@ namespace RentIt.Bookings.Application.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         public BookingStatusService(
             IUnitOfWork unitOfWork, 
             IEventBus eventBus,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;

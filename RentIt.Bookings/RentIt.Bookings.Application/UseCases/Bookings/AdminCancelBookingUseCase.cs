@@ -6,7 +6,7 @@ using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.MessageBroker.Contracts.Events;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Services;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -16,7 +16,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
         private readonly IRefundPaymentUseCase _refundPaymentUseCase;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
 
         public AdminCancelBookingUseCase(
@@ -24,7 +24,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             IUnitOfWork unitOfWork,
             IEventBus eventBus,
             IRefundPaymentUseCase refundPaymentUseCase,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;

@@ -7,7 +7,7 @@ using Serilog;
 
 namespace RentIt.Bookings.Application.Services
 {
-    public class BookingNotificationService
+    public class BookingNotificationService : IBookingNotificationService
     {
         private readonly IUserIntegrationService _userIntegrationService;
         private readonly IHousingIntegrationService _housingIntegrationService;
