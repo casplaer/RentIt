@@ -1,7 +1,6 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Contracts.Requests.Payments;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Enums;
@@ -14,14 +13,14 @@ namespace RentIt.Bookings.Application.UseCases.Payments
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger _logger;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         private readonly string baseUrl = "https://localhost:3000";
 
         public CreatePaymentUseCase(
             IUnitOfWork unitOfWork,
             ILogger logger,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
