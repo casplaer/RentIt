@@ -14,5 +14,7 @@ namespace RentIt.Bookings.Application.Interfaces.Services
         Task NotifyUserAboutPaymentSuccessAsync(Booking booking, Payment payment, CancellationToken cancellationToken);
         Task NotifyUserAboutRefundAsync(Booking booking, Payment payment, bool isFined, decimal finePercent, decimal refundAmount, CancellationToken cancellationToken);
         Task NotifyUserAboutBookingCompletionAsync(Booking booking, CancellationToken cancellationToken);
+        Task NotifyUserAboutBookingCancellationDueToNonPaymentAsync(Booking booking, CancellationToken cancellationToken);
+        Task NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(Booking booking, bool isCreatedMoreThan48HoursAgo, CancellationToken cancellationToken);
     }
 }
