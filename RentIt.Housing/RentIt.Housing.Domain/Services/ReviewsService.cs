@@ -213,7 +213,7 @@ namespace RentIt.Housing.Domain.Services
             {
                 _logger.Warning("Попытка неавторизованного доступа к комментарию.");
 
-                throw new ArgumentException("Попытка неавторизованного доступа к комментарию.");
+                throw new UnauthorizedAccessException("Попытка неавторизованного доступа к комментарию.");
             }
         }
     }
