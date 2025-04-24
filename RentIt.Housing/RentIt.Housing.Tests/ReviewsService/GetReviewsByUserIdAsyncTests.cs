@@ -18,6 +18,7 @@ namespace RentIt.Housing.Tests.ReviewsService
         private readonly Mock<IValidator<CreateReviewRequest>> _createReviewRequestValidator;
         private readonly Mock<IValidator<UpdateReviewRequest>> _updateReviewRequestValidator;
         private readonly Mock<ILogger> _logger;
+
         private readonly Domain.Services.ReviewsService _service;
 
         public GetReviewsByUserIdAsyncTests()
@@ -29,6 +30,7 @@ namespace RentIt.Housing.Tests.ReviewsService
             _createReviewRequestValidator = new Mock<IValidator<CreateReviewRequest>>();
             _updateReviewRequestValidator = new Mock<IValidator<UpdateReviewRequest>>();
             _logger = new Mock<ILogger>();
+
             _service = new Domain.Services.ReviewsService(
                 _reviewRepository.Object,
                 _userIntegrationService.Object,
@@ -46,8 +48,18 @@ namespace RentIt.Housing.Tests.ReviewsService
             var userId = Guid.NewGuid();
             var reviews = new List<Review>
             {
-                new Review { ReviewId = Guid.NewGuid(), UserId = userId, Comment = "Excellent service!" },
-                new Review { ReviewId = Guid.NewGuid(), UserId = userId, Comment = "Not bad at all." }
+                new()
+                { 
+                    ReviewId = Guid.NewGuid(), 
+                    UserId = userId, 
+                    Comment = "Excellent service!" 
+                },
+                new()
+                { 
+                    ReviewId = Guid.NewGuid(), 
+                    UserId = userId, 
+                    Comment = "Not bad at all." 
+                }
             };
 
             _reviewRepository.Setup(r => r.GetAllReviewsAsync(It.IsAny<CancellationToken>()))

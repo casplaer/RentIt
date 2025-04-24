@@ -17,6 +17,7 @@ namespace RentIt.Housing.Tests.HousingService
         private readonly Mock<IHousingImageService> _imageService = new();
         private readonly Mock<IValidator<CreateHousingRequest>> _validator = new();
         private readonly IMapper _mapper;
+
         private readonly Domain.Services.HousingService _service;
 
         public AddHousingAsyncTests()
@@ -42,18 +43,20 @@ namespace RentIt.Housing.Tests.HousingService
             );
         }
 
-        private CreateHousingRequest BuildRequest(IEnumerable<IFormFile>? images = null) =>
-        new(
-            Title: "Test Housing",
-            Description: "Test Description",
-            Country: "Test Country",
-            City: "Test City",
-            Address: "Test Address",
-            PricePerNight: 100,
-            NumberOfRooms: 2,
-            Amenities: ["WiFi", "TV"],
-            Images: images
-        );
+        private CreateHousingRequest BuildRequest(IEnumerable<IFormFile>? images = null)
+        {
+            return new(
+                Title: "Test Housing",
+                Description: "Test Description",
+                Country: "Test Country",
+                City: "Test City",
+                Address: "Test Address",
+                PricePerNight: 100,
+                NumberOfRooms: 2,
+                Amenities: ["WiFi", "TV"],
+                Images: images
+            );
+        }
 
         [Fact]
         public async Task AddsHousingSuccessfully_WhenRequestIsValid_WithoutImages()
@@ -106,5 +109,4 @@ namespace RentIt.Housing.Tests.HousingService
             Assert.Equal("Некорректный формат ID.", ex.Message);
         }
     }
-
 }

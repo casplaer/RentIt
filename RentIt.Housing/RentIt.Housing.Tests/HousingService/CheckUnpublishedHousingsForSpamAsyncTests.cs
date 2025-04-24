@@ -15,6 +15,7 @@ namespace RentIt.Housing.Tests.HousingService
         private readonly Mock<IHousingRepository> _housingRepository;
         private readonly Mock<ISpamProfanityFilterService> _spamService;
         private readonly Mock<ILogger> _logger;
+
         private readonly Domain.Services.HousingService _service;
 
         public CheckUnpublishedHousingsForSpamAsyncTests()
@@ -42,10 +43,18 @@ namespace RentIt.Housing.Tests.HousingService
         public async Task ProcessesAllUnpublishedHousings()
         {
             var housings = new List<HousingEntity>
-        {
-            new HousingEntity { HousingId = Guid.NewGuid(), Title = "Test1" },
-            new HousingEntity { HousingId = Guid.NewGuid(), Title = "Test2" }
-        };
+            {
+                new() 
+                { 
+                    HousingId = Guid.NewGuid(), 
+                    Title = "Test1" 
+                },
+                new()
+                { 
+                    HousingId = Guid.NewGuid(), 
+                    Title = "Test2" 
+                }
+            };
 
             _housingRepository.Setup(r => r.GetAllUnpublishedAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(housings);
@@ -85,7 +94,7 @@ namespace RentIt.Housing.Tests.HousingService
             };
 
             _housingRepository.Setup(r => r.GetAllUnpublishedAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<HousingEntity> { housing });
+                .ReturnsAsync([housing]);
 
             _spamService.Setup(s => s.ContainsSpamOrProfanity(housing.Title))
                 .Returns(true);
@@ -99,7 +108,5 @@ namespace RentIt.Housing.Tests.HousingService
                 h.HousingId == housing.HousingId &&
                 h.Status == HousingStatus.Rejected), It.IsAny<CancellationToken>()), Times.Once);
         }
-
     }
-
 }

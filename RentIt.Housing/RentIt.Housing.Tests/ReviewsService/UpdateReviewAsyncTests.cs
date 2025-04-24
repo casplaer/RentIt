@@ -20,6 +20,7 @@ namespace RentIt.Housing.Tests.ReviewsService
         private readonly Mock<IValidator<UpdateReviewRequest>> _updateReviewRequestValidatorMock;
         private readonly Mock<IValidator<CreateReviewRequest>> _createReviewRequestValidatorMock;
         private readonly Mock<ILogger> _loggerMock;
+
         private readonly Domain.Services.ReviewsService _reviewsService;
 
         public UpdateReviewAsyncTests()
@@ -67,7 +68,12 @@ namespace RentIt.Housing.Tests.ReviewsService
             var userId = "user123"; 
             var updateRequest = new UpdateReviewRequest(5, "Great!");
             var cancellationToken = CancellationToken.None;
-            var review = new Review { ReviewId = reviewId, HousingId = Guid.NewGuid() };
+
+            var review = new Review
+            { 
+                ReviewId = reviewId, 
+                HousingId = Guid.NewGuid() 
+            };
 
             _reviewRepositoryMock
                 .Setup(r => r.GetReviewByIdAsync(reviewId, cancellationToken))
@@ -90,7 +96,13 @@ namespace RentIt.Housing.Tests.ReviewsService
             var userId = "user123"; 
             var updateRequest = new UpdateReviewRequest(5, "Great!");
             var cancellationToken = CancellationToken.None;
-            var review = new Review { ReviewId = reviewId, HousingId = Guid.NewGuid() };
+
+            var review = new Review 
+            { 
+                ReviewId = reviewId, 
+                HousingId = Guid.NewGuid() 
+            };
+
             var housing = new HousingEntity
             {
                 HousingId = review.HousingId,
@@ -119,10 +131,11 @@ namespace RentIt.Housing.Tests.ReviewsService
             var updateRequest = new UpdateReviewRequest(5, "Updated review!");
             var cancellationToken = CancellationToken.None;
             var review = new Review { ReviewId = reviewId, HousingId = Guid.NewGuid(), UserId = userId };
+            
             var housing = new HousingEntity
             {
                 HousingId = review.HousingId,
-                Reviews = new List<Review> { review } 
+                Reviews = [review]
             };
 
             _reviewRepositoryMock

@@ -89,7 +89,12 @@ namespace RentIt.Housing.Tests.HousingService
             var housingId = Guid.NewGuid();
             var ownerId = Guid.NewGuid();
 
-            var housing = new HousingEntity { HousingId = housingId, OwnerId = ownerId };
+            var housing = new HousingEntity 
+            { 
+                HousingId = housingId, 
+                OwnerId = ownerId 
+            };
+
             var userInfo = new UserInfoDto("Jane", "Smith", "jane.smith@example.com", "+987654321");
 
             _housingRepoMock.Setup(r => r.GetByIdAsync(housingId, It.IsAny<CancellationToken>()))

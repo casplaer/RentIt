@@ -8,7 +8,6 @@ using RentIt.Housing.Domain.Contracts.Dto.Users;
 using RentIt.Housing.Domain.Contracts.Requests.Reviews;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
-using RentIt.Housing.Domain.Mappings.Housing;
 using RentIt.Housing.Domain.Mappings.Reviews;
 using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
@@ -25,6 +24,7 @@ namespace RentIt.Housing.Tests.ReviewsService
         private readonly Mock<IReviewRepository> _reviewRepositoryMock;
         private readonly IMapper _mapper;
         private readonly Mock<IValidator<CreateReviewRequest>> _validatorMock;
+
         private readonly Domain.Services.ReviewsService _reviewService;
 
         public AddReviewAsyncTests()
@@ -106,7 +106,7 @@ namespace RentIt.Housing.Tests.ReviewsService
             {
                 HousingId = _housingId,
                 Status = HousingStatus.Available,
-                Reviews = new List<Review>(),
+                Reviews = [],
             };
 
             _housingServiceMock

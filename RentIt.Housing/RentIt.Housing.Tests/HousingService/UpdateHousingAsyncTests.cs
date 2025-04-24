@@ -82,12 +82,13 @@ namespace RentIt.Housing.Tests.HousingService
             var housingId = Guid.NewGuid();
             var userId = Guid.NewGuid().ToString();
             var request = BuildRequest(pricePerNight: 150m);
+
             var existingHousing = new HousingEntity
             {
                 HousingId = housingId,
                 OwnerId = Guid.Parse(userId),
                 PricePerNight = 100m,
-                Images = new List<HousingImage>()
+                Images = []
             };
 
             _validator.Setup(v => v.ValidateAsync(request, It.IsAny<CancellationToken>()))
@@ -146,7 +147,7 @@ namespace RentIt.Housing.Tests.HousingService
                               .Returns(Task.CompletedTask);
 
             _imageService.Setup(i => i.UpdateImagesAsync(housingId, addedImages, removedImages, It.IsAny<CancellationToken>()))
-                         .ReturnsAsync(new List<HousingImage> { new HousingImage { ImageUrl = "new-image.jpg" } });
+                         .ReturnsAsync(new List<HousingImage> { new() { ImageUrl = "new-image.jpg" } });
 
             await _service.UpdateHousingAsync(housingId, userId, request, CancellationToken.None);
 

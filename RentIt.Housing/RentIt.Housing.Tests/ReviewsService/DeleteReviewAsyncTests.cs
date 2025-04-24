@@ -15,6 +15,7 @@ namespace RentIt.Housing.Tests.ReviewsService
     {
         private readonly Mock<IReviewRepository> _reviewRepositoryMock;
         private readonly Mock<IHousingService> _housingServiceMock;
+
         private readonly Domain.Services.ReviewsService _reviewsService;
 
         public DeleteReviewAsyncTests()
@@ -37,16 +38,14 @@ namespace RentIt.Housing.Tests.ReviewsService
         [Fact]
         public async Task DeleteReviewAsync_ReviewNotFound_ThrowsNotFoundException()
         {
-            // Arrange
             var reviewId = Guid.NewGuid();
             var userId = Guid.NewGuid().ToString();
             var cancellationToken = CancellationToken.None;
 
             _reviewRepositoryMock
                 .Setup(r => r.GetReviewByIdAsync(reviewId, cancellationToken))
-                .ReturnsAsync((Review)null); // Review not found
+                .ReturnsAsync((Review)null); 
 
-            // Act & Assert
             var exception = await Assert.ThrowsAsync<NotFoundException>(
                 () => _reviewsService.DeleteReviewAsync(reviewId, userId, cancellationToken));
 
@@ -59,7 +58,12 @@ namespace RentIt.Housing.Tests.ReviewsService
             var reviewId = Guid.NewGuid();
             var userId = Guid.NewGuid().ToString();
             var cancellationToken = CancellationToken.None;
-            var review = new Review { ReviewId = reviewId, HousingId = Guid.NewGuid() };
+            
+            var review = new Review
+            { 
+                ReviewId = reviewId, 
+                HousingId = Guid.NewGuid() 
+            };
 
             _reviewRepositoryMock
                 .Setup(r => r.GetReviewByIdAsync(reviewId, cancellationToken))
@@ -145,5 +149,4 @@ namespace RentIt.Housing.Tests.ReviewsService
             Assert.Equal("Попытка неавторизованного доступа к комментарию.", exception.Message);
         }
     }
-
 }

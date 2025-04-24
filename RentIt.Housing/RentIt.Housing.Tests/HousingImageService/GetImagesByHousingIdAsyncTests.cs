@@ -11,6 +11,7 @@ namespace RentIt.Housing.Tests.HousingImageService
         private readonly Mock<IHousingImageRepository> _imageRepository;
         private readonly Mock<IFileStorageService> _fileStorageService;
         private readonly Mock<ILogger> _logger;
+
         private readonly Domain.Services.HousingImageService _service;
 
         public GetImagesByHousingIdAsyncTests()
@@ -30,10 +31,18 @@ namespace RentIt.Housing.Tests.HousingImageService
         {
             var housingId = Guid.NewGuid();
             var expectedImages = new List<HousingImage>
-        {
-            new() { ImageId = Guid.NewGuid(), ImageUrl = "http://image1.com" },
-            new() { ImageId = Guid.NewGuid(), ImageUrl = "http://image2.com" }
-        };
+            {
+                new()
+                {
+                    ImageId = Guid.NewGuid(),
+                    ImageUrl = "http://image1.com" 
+                },
+                new()
+                { 
+                    ImageId = Guid.NewGuid(), 
+                    ImageUrl = "http://image2.com" 
+                }
+            };
 
             _imageRepository.Setup(r => r.GetImagesByHousingIdAsync(housingId, It.IsAny<CancellationToken>()))
                             .ReturnsAsync(expectedImages);
@@ -41,6 +50,7 @@ namespace RentIt.Housing.Tests.HousingImageService
             var result = await _service.GetImagesByHousingIdAsync(housingId, CancellationToken.None);
 
             Assert.Equal(expectedImages, result);
+
             _imageRepository.Verify(r => r.GetImagesByHousingIdAsync(housingId, It.IsAny<CancellationToken>()), Times.Once);
         }
 
@@ -68,5 +78,4 @@ namespace RentIt.Housing.Tests.HousingImageService
             await Assert.ThrowsAsync<Exception>(() => _service.GetImagesByHousingIdAsync(housingId, CancellationToken.None));
         }
     }
-
 }

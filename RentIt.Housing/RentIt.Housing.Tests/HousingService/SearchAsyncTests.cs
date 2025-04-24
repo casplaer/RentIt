@@ -128,8 +128,8 @@ namespace RentIt.Housing.Tests.HousingService
 
             var housings = new List<HousingEntity>
             {
-                new HousingEntity(),
-                new HousingEntity()
+                new(),
+                new()
             };
 
             _validatorMock

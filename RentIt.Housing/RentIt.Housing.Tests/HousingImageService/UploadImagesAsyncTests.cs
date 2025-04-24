@@ -12,6 +12,7 @@ namespace RentIt.Housing.Tests.HousingImageService
         private readonly Mock<IHousingImageRepository> _imageRepository;
         private readonly Mock<IFileStorageService> _fileStorageService;
         private readonly Mock<ILogger> _logger;
+
         private readonly Domain.Services.HousingImageService _service;
 
         public UploadImagesAsyncTests()
@@ -101,6 +102,7 @@ namespace RentIt.Housing.Tests.HousingImageService
             var images = new List<IFormFile> { CreateFormFile(), CreateFormFile() };
 
             _fileStorageService.Setup(f => f.ValidateImageFile(It.IsAny<IFormFile>()));
+
             _fileStorageService.Setup(f => f.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<CancellationToken>()))
                                .ReturnsAsync("http://image.url");
 
@@ -110,9 +112,10 @@ namespace RentIt.Housing.Tests.HousingImageService
             await _service.UploadImagesAsync(housingId, images, CancellationToken.None);
 
             _fileStorageService.Verify(f => f.ValidateImageFile(It.IsAny<IFormFile>()), Times.Exactly(2));
+
             _fileStorageService.Verify(f => f.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
+
             _imageRepository.Verify(r => r.AddAsync(It.IsAny<HousingImage>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
     }
-
 }

@@ -72,7 +72,7 @@ namespace RentIt.Housing.Tests.HousingImageService
             _imageRepository.Setup(r => r.DeleteAsync(image.ImageId, cancellationToken))
                 .Returns(Task.CompletedTask);
 
-            var result = await _service.UpdateImagesAsync(housingId, null, new List<string> { "images/abc.jpg" }, cancellationToken);
+            var result = await _service.UpdateImagesAsync(housingId, null, ["images/abc.jpg"], cancellationToken);
 
             Assert.Empty(result);
         }
@@ -86,7 +86,7 @@ namespace RentIt.Housing.Tests.HousingImageService
             _imageRepository.Setup(r => r.GetImagesByHousingIdAsync(housingId, cancellationToken))
                 .ReturnsAsync(new List<HousingImage>());
 
-            var result = await _service.UpdateImagesAsync(housingId, null, new List<string> { "notfound.jpg" }, cancellationToken);
+            var result = await _service.UpdateImagesAsync(housingId, null, ["notfound.jpg"], cancellationToken);
 
             Assert.Empty(result);
         }
@@ -97,15 +97,14 @@ namespace RentIt.Housing.Tests.HousingImageService
             var housingId = Guid.NewGuid();
             var cancellationToken = CancellationToken.None;
             var images = new List<HousingImage>
-        {
-            new HousingImage
             {
-                ImageId = Guid.NewGuid(),
-                HousingId = housingId,
-                ImageUrl = "http://img1.jpg",
-                Order = 1
-            }
-        };
+                new() {
+                    ImageId = Guid.NewGuid(),
+                    HousingId = housingId,
+                    ImageUrl = "http://img1.jpg",
+                    Order = 1
+                }
+            };
 
             _imageRepository.Setup(r => r.GetImagesByHousingIdAsync(housingId, cancellationToken))
                 .ReturnsAsync(images);

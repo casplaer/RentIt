@@ -16,6 +16,7 @@ namespace RentIt.Housing.Tests.HousingService
         private readonly Mock<IHousingImageService> _imageService;
         private readonly Mock<IBookingIntegrationService> _bookingIntegrationService;
         private readonly Mock<ILogger> _logger;
+
         private readonly Domain.Services.HousingService _service;
 
         public DeleteHousingAsyncTests()
@@ -49,7 +50,7 @@ namespace RentIt.Housing.Tests.HousingService
             {
                 HousingId = housingId,
                 OwnerId = Guid.Parse(userId),
-                Images = new List<HousingImage>()
+                Images = []
             };
 
             _housingRepository.Setup(r => r.GetByIdAsync(housingId, It.IsAny<CancellationToken>()))
@@ -92,7 +93,7 @@ namespace RentIt.Housing.Tests.HousingService
             {
                 HousingId = housingId,
                 OwnerId = Guid.Parse(userId),
-                Images = new List<HousingImage>()
+                Images = []
             };
 
             _housingRepository.Setup(r => r.GetByIdAsync(housingId, It.IsAny<CancellationToken>()))
@@ -127,5 +128,4 @@ namespace RentIt.Housing.Tests.HousingService
                 _service.DeleteHousingAsync(housingId, userId, CancellationToken.None));
         }
     }
-
 }
