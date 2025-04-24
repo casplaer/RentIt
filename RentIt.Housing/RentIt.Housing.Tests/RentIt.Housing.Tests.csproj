@@ -22,6 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="RentIt.MessageBroker.Contracts">
+      <HintPath>..\..\RentIt.MessageBroker\RentIt.MessageBroker.Contracts\bin\Debug\net8.0\RentIt.MessageBroker.Contracts.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

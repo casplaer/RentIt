@@ -12,7 +12,7 @@ namespace RentIt.Housing.Domain.Mappings.Housing
             CreateMap<CreateHousingRequest, HousingEntity>()
                 .ForMember(dest => dest.HousingId, opt => opt.MapFrom(_ => Guid.NewGuid()))
                 .ForMember(dest => dest.OwnerId, opt => opt.MapFrom((src, dest, destMember, context) =>
-                    (Guid)context.Items["ownerId"]))
+                    context.Items.ContainsKey("ownerId") ? (Guid)context.Items["ownerId"] : Guid.Empty))
                 .ForMember(dest => dest.Rating, opt => opt.Ignore())
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => HousingStatus.Unpublished))
                 .ForMember(dest => dest.Images, opt => opt.Ignore())
