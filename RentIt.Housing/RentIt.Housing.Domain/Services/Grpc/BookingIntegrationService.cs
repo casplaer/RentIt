@@ -1,8 +1,9 @@
-﻿using RentIt.Protos.Booking;
+﻿using RentIt.Housing.Domain.Services.Interfaces;
+using RentIt.Protos.Booking;
 
 namespace RentIt.Housing.Domain.Services.Grpc
 {
-    public class BookingIntegrationService
+    public class BookingIntegrationService : IBookingIntegrationService
     {
         private readonly BookingService.BookingServiceClient _bookingsClient;
 

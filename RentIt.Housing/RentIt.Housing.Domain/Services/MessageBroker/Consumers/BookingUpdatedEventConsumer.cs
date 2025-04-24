@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.Domain.Exceptions;
+using RentIt.Housing.Domain.Services.Interfaces;
 using RentIt.MessageBroker.Contracts.Events;
 using Serilog;
 
@@ -8,11 +9,11 @@ namespace RentIt.Housing.Domain.Services.MessageBroker.Consumers
 {
     public sealed class BookingUpdatedEventConsumer : IConsumer<BookingUpdatedEvent>
     {
-        private readonly HousingService _housingService;
+        private readonly IHousingService _housingService;
         private readonly ILogger _logger;
 
         public BookingUpdatedEventConsumer(
-            HousingService housingService,
+            IHousingService housingService,
             ILogger logger)
         {
             _housingService = housingService;

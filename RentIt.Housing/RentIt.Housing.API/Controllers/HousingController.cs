@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
-using RentIt.Housing.Domain.Services;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 using System.Security.Claims;
 
@@ -11,9 +11,9 @@ namespace RentIt.Housing.API.Controllers
     [Route("api/housings")]
     public class HousingController : Controller
     {
-        private readonly HousingService _housingService;
+        private readonly IHousingService _housingService;
 
-        public HousingController(HousingService housingService)
+        public HousingController(IHousingService housingService)
         {
             _housingService = housingService;
         }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class FileStorageService
+    public class FileStorageService : IFileStorageService
     {
         private readonly ILogger _logger;
 

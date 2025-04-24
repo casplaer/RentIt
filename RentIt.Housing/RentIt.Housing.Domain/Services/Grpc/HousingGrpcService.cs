@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using RentIt.Housing.Domain.Exceptions;
+using RentIt.Housing.Domain.Services.Interfaces;
 using RentIt.Protos.Housing;
 using Serilog;
 
@@ -7,11 +8,11 @@ namespace RentIt.Housing.Domain.Services.Grpc
 {
     public class HousingGrpcService : Protos.Housing.HousingService.HousingServiceBase
     {
-        private readonly HousingService _housingService;
+        private readonly IHousingService _housingService;
         private readonly ILogger _logger;
 
         public HousingGrpcService(
-            HousingService housingService,
+            IHousingService housingService,
             ILogger logger)
         {
             _housingService = housingService;

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DnsClient.Internal;
 using FluentValidation;
 using RentIt.Housing.DataAccess.Entities;
 using RentIt.Housing.DataAccess.Enums;
@@ -8,25 +7,24 @@ using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
-using RentIt.Housing.Domain.Services.Grpc;
-using RentIt.Housing.Domain.Services.MessageBroker;
+using RentIt.Housing.Domain.Services.Interfaces;
 using RentIt.MessageBroker.Contracts.Events;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class HousingService
+    public class HousingService : IHousingService
     {
         private readonly IHousingRepository _housingRepository;
-        private readonly HousingImageService _imageService;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly BookingIntegrationService _bookingIntegrationService;
+        private readonly IHousingImageService _imageService;
+        private readonly IUserIntegrationService _userIntegrationService;
+        private readonly IBookingIntegrationService _bookingIntegrationService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateHousingRequest> _createHousingRequestValidator;
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
-        private readonly SpamProfanityFilterService _filterService;
+        private readonly ISpamProfanityFilterService _filterService;
         private readonly Serilog.ILogger _logger;
-        private readonly EventBus _eventBus;
+        private readonly IEventBus _eventBus;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -34,12 +32,12 @@ namespace RentIt.Housing.Domain.Services
             IValidator<CreateHousingRequest> createHousingRequestValidator,
             IValidator<GetFilteredHousingsRequest> getFilteredHousingRequestValidator,
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
-            HousingImageService imageService,
-            UserIntegrationService userIntegrationService,
-            BookingIntegrationService bookingIntegrationService,
-            SpamProfanityFilterService filterService,
+            IHousingImageService imageService,
+            IUserIntegrationService userIntegrationService,
+            IBookingIntegrationService bookingIntegrationService,
+            ISpamProfanityFilterService filterService,
             Serilog.ILogger logger,
-            EventBus eventBus)
+            IEventBus eventBus)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;

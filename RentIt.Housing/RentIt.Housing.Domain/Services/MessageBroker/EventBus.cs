@@ -1,8 +1,9 @@
 ﻿using MassTransit;
+using RentIt.Housing.Domain.Services.Interfaces;
 
 namespace RentIt.Housing.Domain.Services.MessageBroker
 {
-    public sealed class EventBus
+    public class EventBus : IEventBus
     {
         private readonly IPublishEndpoint _publishEndpoint;
 

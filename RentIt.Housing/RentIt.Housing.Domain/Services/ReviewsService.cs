@@ -5,16 +5,16 @@ using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.DataAccess.Interfaces.Repositories;
 using RentIt.Housing.Domain.Contracts.Requests.Reviews;
 using RentIt.Housing.Domain.Exceptions;
-using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class ReviewsService
+    public class ReviewsService : IReviewsService
     {
         private readonly IReviewRepository _reviewRepository;
-        private readonly UserIntegrationService _userIntegrationService;
-        private readonly HousingService _housingService;
+        private readonly IUserIntegrationService _userIntegrationService;
+        private readonly IHousingService _housingService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateReviewRequest> _createReviewRequestValidator;
         private readonly IValidator<UpdateReviewRequest> _updateReviewRequestValidator;
@@ -22,8 +22,8 @@ namespace RentIt.Housing.Domain.Services
 
         public ReviewsService(
             IReviewRepository reviewRepository,
-            UserIntegrationService userIntegrationService,
-            HousingService housingService,
+            IUserIntegrationService userIntegrationService,
+            IHousingService housingService,
             IMapper mapper,
             IValidator<CreateReviewRequest> createReviewRequestValidator,
             IValidator<UpdateReviewRequest> updateReviewRequestValidator,

@@ -1,19 +1,20 @@
 ﻿using Microsoft.AspNetCore.Http;
 using RentIt.Housing.DataAccess.Entities;
 using RentIt.Housing.DataAccess.Interfaces.Repositories;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class HousingImageService
+    public class HousingImageService : IHousingImageService
     {
         private readonly IHousingImageRepository _imageRepository;
-        private readonly FileStorageService _fileStorageService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly ILogger _logger;
 
         public HousingImageService(
             IHousingImageRepository imageRepository,
-            FileStorageService fileStorageService,
+            IFileStorageService fileStorageService,
             ILogger logger)
         {
             _imageRepository = imageRepository;

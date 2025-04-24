@@ -1,9 +1,10 @@
 ﻿using RentIt.Housing.Domain.Contracts.Dto.Users;
+using RentIt.Housing.Domain.Services.Interfaces;
 using RentIt.Protos.Users;
 
 namespace RentIt.Housing.Domain.Services.Grpc
 {
-    public class UserIntegrationService
+    public class UserIntegrationService : IUserIntegrationService
     {
         private readonly UsersService.UsersServiceClient _usersClient;
 

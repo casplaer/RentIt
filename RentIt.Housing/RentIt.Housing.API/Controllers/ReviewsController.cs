@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentIt.Housing.Domain.Contracts.Requests.Reviews;
-using RentIt.Housing.Domain.Services;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 using System.Security.Claims;
 
@@ -11,10 +11,10 @@ namespace RentIt.Housing.API.Controllers
     [Route("api")]
     public class ReviewsController : Controller
     {
-        private readonly ReviewsService _reviewService;
+        private readonly IReviewsService _reviewService;
 
         public ReviewsController(
-            ReviewsService reviewService)
+            IReviewsService reviewService)
         {
             _reviewService = reviewService;
         }

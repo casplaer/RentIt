@@ -6,6 +6,7 @@ using RentIt.Housing.Domain.Mappings.Housing;
 using RentIt.Housing.Domain.Mappings.Reviews;
 using RentIt.Housing.Domain.Services;
 using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Services.Interfaces;
 using RentIt.Housing.Domain.Services.MessageBroker;
 using RentIt.Housing.Domain.Validators;
 
@@ -36,15 +37,15 @@ namespace RentIt.Housing.Domain.Extensions
 
         public static IServiceCollection AddDomainServices(this IServiceCollection services)
         {
-            services.AddScoped<HousingService>();
-            services.AddScoped<HousingImageService>();
-            services.AddScoped<FileStorageService>();
-            services.AddScoped<ReviewsService>();
-            services.AddScoped<UserIntegrationService>();
-            services.AddScoped<BookingIntegrationService>();
+            services.AddScoped<IHousingService, HousingService>();
+            services.AddScoped<IHousingImageService, HousingImageService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IReviewsService, ReviewsService>();
+            services.AddScoped<IUserIntegrationService, UserIntegrationService>();
+            services.AddScoped<IBookingIntegrationService, BookingIntegrationService>();
             services.AddScoped<HousingGrpcService>();
-            services.AddScoped<SpamProfanityFilterService>();
-            services.AddTransient<EventBus>();
+            services.AddScoped<ISpamProfanityFilterService, SpamProfanityFilterService>();
+            services.AddTransient<IEventBus, EventBus>();
 
             return services;
         }
