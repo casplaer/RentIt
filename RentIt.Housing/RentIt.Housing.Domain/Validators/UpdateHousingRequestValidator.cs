@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 
 namespace RentIt.Housing.Domain.Validators
@@ -47,6 +48,11 @@ namespace RentIt.Housing.Domain.Validators
                 .NotEmpty()
                 .NotNull()
                 .WithMessage("Список удобств не может быть пустым.");
+
+            RuleFor(x => x.EstimatedEndDate)
+                .Must((request, endDate) => 
+                request.Status.HasValue && request.Status.Value == HousingStatus.Booked ? true : endDate == null)
+                .WithMessage("Невозможно установить приблизительную дату освобождения, если собственность не забронирована.");
         }
     }
 }

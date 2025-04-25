@@ -1,9 +1,13 @@
 ﻿using Hangfire;
 using Hangfire.Redis.StackExchange;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using RentIt.Protos.Users;
+using RentIt.Housing.Domain.Options;
+using RentIt.Housing.Domain.Services.MessageBroker.Consumers;
+using RentIt.MessageBroker.Contracts.Events;
 using Serilog;
 using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
@@ -125,16 +129,6 @@ namespace RentIt.Housing.API.Extensions
             return services;
         }
 
-        public static IServiceCollection AddGrpc(this IServiceCollection services)
-        {
-            services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
-            {
-                options.Address = new Uri("https://localhost:7108");
-            });
-
-            return services;
-        }
-
         public static IServiceCollection AddLogging(
             this IServiceCollection services,
             IConfiguration configuration)
@@ -144,6 +138,41 @@ namespace RentIt.Housing.API.Extensions
                 .CreateLogger();
 
             services.AddSingleton<Serilog.ILogger>(Log.Logger);
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitMq(
+            this IServiceCollection services)
+        {
+            services.AddMassTransit(busConfigurator =>
+            {
+                busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+                busConfigurator.AddConsumer<BookingConfirmedEventConsumer>();
+                busConfigurator.AddConsumer<BookingCancelledEventConsumer>();
+
+                busConfigurator.UsingRabbitMq((context, configurator) =>
+                {
+                    MessageBrokerOptions options = context.GetRequiredService<MessageBrokerOptions>();
+
+                    configurator.Host(new Uri(options.Host), h =>
+                    {
+                        h.Username(options.Username);
+                        h.Password(options.Password);
+                    });
+
+                    configurator.ReceiveEndpoint("booking-created-queue", e =>
+                    {
+                        e.ConfigureConsumer<BookingConfirmedEventConsumer>(context);
+                    });
+
+                    configurator.ReceiveEndpoint("booking-cancelled-queue", e =>
+                    {
+                        e.ConfigureConsumer<BookingCancelledEventConsumer>(context);
+                    });
+                });
+            });
 
             return services;
         }

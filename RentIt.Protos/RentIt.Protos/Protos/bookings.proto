@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "RentIt.Protos.Booking";
+
+package housing;
+
+message GetExistBookingsRequest {
+  string housing_id = 1;
+}
+
+message GetExistBookingsResponse {
+  bool bookings_exist = 1;
+}
+
+service BookingService {
+  rpc GetBookings(GetExistBookingsRequest) returns (GetExistBookingsResponse);
+}

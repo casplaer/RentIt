@@ -10,9 +10,17 @@ using RentIt.Users.Infrastructure.Extensions;
 using Hangfire;
 using RentIt.Users.Infrastructure.Services.Grpc;
 using RentIt.Users.Infrastructure.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
 var connectionString = builder.Configuration.GetConnectionString("UsersDatabaseConnection");
+
+var configuration = builder.Configuration;
+
+builder.Services.AddLogging(configuration);
+
+builder.Host.UseSerilog();
 
 builder.Services.AddDbContext<RentItDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -32,14 +40,16 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
 });
 
-builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<SmtpOptions>(configuration.GetSection("Smtp"));
+builder.Services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-builder.Services.AddRedis(builder.Configuration);
-builder.Services.AddUsersHangfire(builder.Configuration);
-builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddRedis(configuration);
+builder.Services.AddUsersHangfire(configuration);
+builder.Services.AddJwtAuthentication(configuration);
+
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
@@ -61,7 +71,7 @@ app.UseAuthorization();
 app.UseCustomMiddlewares();
 app.UseHangfireDashboard("/hangfire");
 
-HangfireJobsService.ConfigureHangfireJobs();
+HangfireJobsService.ConfigureHangfireJobs(app);
 
 app.MapGrpcService<UsersGrpcService>();
 

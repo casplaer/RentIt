@@ -93,6 +93,8 @@ services:
     volumes:
       - "./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
       - "./RentIt.Housing/RentIt.Housing.API/Logs:/var/log/RentIt.Housing.API/Logs"
+      - "./RentIt.Bookings/RentIt.Bookings.API/Logs:/var/log/RentIt.Bookings.API/Logs"
+      - "./RentIt.Users/RentIt.Users.API/Logs:/var/log/RentIt.Users.API/Logs"
     depends_on:
       - logstash
     environment:
@@ -112,9 +114,23 @@ services:
     networks:
       - elastic
 
+  rentit-mq:
+    image: rabbitmq:4.0-management
+    container_name: rentit-rabbitmq
+    hostname: "rentit-mq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+        - rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
 networks:
   elastic:
     driver: bridge
 
 volumes:
-  esdata:    
+  esdata:
+  rabbitmq-data:

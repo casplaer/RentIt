@@ -26,6 +26,7 @@ namespace RentIt.Housing.DataAccess.Entities
         public List<HousingImage> Images { get; set; } = new();
         public List<Review> Reviews { get; set; } = new();
 
+        public DateOnly? EstimatedStartDate { get; set; }
         public DateOnly? EstimatedEndDate { get; set; }
 
         public DateTime CreatedAt { get; set; }
