@@ -5,6 +5,7 @@ using RentIt.Housing.DataAccess.Enums;
 using RentIt.Housing.DataAccess.Interfaces.Repositories;
 using RentIt.Housing.Domain.Contracts.Requests.Reviews;
 using RentIt.Housing.Domain.Exceptions;
+using RentIt.Housing.Domain.Services.Grpc;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services

@@ -8,7 +8,9 @@ using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
-using Serilog;
+using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Services.MessageBroker;
+using RentIt.MessageBroker.Contracts.Events;
 
 namespace RentIt.Housing.Domain.Services
 {
@@ -17,12 +19,14 @@ namespace RentIt.Housing.Domain.Services
         private readonly IHousingRepository _housingRepository;
         private readonly HousingImageService _imageService;
         private readonly UserIntegrationService _userIntegrationService;
+        private readonly BookingIntegrationService _bookingIntegrationService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateHousingRequest> _createHousingRequestValidator;
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
         private readonly SpamProfanityFilterService _filterService;
         private readonly Serilog.ILogger _logger;
+        private readonly EventBus _eventBus;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -32,8 +36,10 @@ namespace RentIt.Housing.Domain.Services
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
             HousingImageService imageService,
             UserIntegrationService userIntegrationService,
+            BookingIntegrationService bookingIntegrationService,
             SpamProfanityFilterService filterService,
-            Serilog.ILogger logger)
+            Serilog.ILogger logger,
+            EventBus eventBus)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;
@@ -42,8 +48,10 @@ namespace RentIt.Housing.Domain.Services
             _updateHousingRequestValidator = updateHousingRequestValidator;
             _imageService = imageService;
             _userIntegrationService = userIntegrationService;
+            _bookingIntegrationService = bookingIntegrationService;
             _filterService = filterService;
             _logger = logger;
+            _eventBus = eventBus;
         }
 
         public async Task<GetHousingByIdResponse> GetByIdAsync(
@@ -103,6 +111,7 @@ namespace RentIt.Housing.Domain.Services
                 numberOfRooms: request.NumberOfRooms,
                 rating: request.Rating,
                 status: request.Status,
+                estimatedStartDate: request.EstimatedStartDate,
                 estimatedEndDate: request.EstimatedEndDate,
                 page: request.Page,
                 pageSize: request.PageSize
@@ -173,11 +182,25 @@ namespace RentIt.Housing.Domain.Services
 
             CheckForUnathorizedAccess(housingToUpdate, userId);
 
+            var oldPrice = housingToUpdate.PricePerNight;
+
             _mapper.Map(request, housingToUpdate);
+
+            var newPrice = housingToUpdate.PricePerNight;
 
             housingToUpdate.Images = await _imageService.UpdateImagesAsync(housingId, request.AddedImages, request.RemovedImages, cancellationToken);
 
             housingToUpdate.UpdatedAt = DateTime.UtcNow;
+
+            if (oldPrice != newPrice)
+            {
+                await _eventBus.PublishAsync(
+                    new HousingUpdatedEvent
+                    {
+                        HousingId = housingId,
+                        NewPricePerNight = newPrice,
+                    }, cancellationToken);
+            }
 
             await _housingRepository.UpdateAsync(housingToUpdate, cancellationToken);
 
@@ -215,6 +238,15 @@ namespace RentIt.Housing.Domain.Services
             }
 
             CheckForUnathorizedAccess(housingToDelete, userId);
+
+            var bookingsExist = await _bookingIntegrationService.GetExistBookings(housingToDelete.HousingId);
+
+            if (bookingsExist)
+            {
+                _logger.Warning("Пользователь попытался удалить объявление с существующими бронированиями.");
+
+                throw new ArgumentException("Невозможно удалить объявления с существующими бронированиями.");
+            }
 
             await _imageService.ClearImagesAsync(housingToDelete.Images, cancellationToken);
 
@@ -263,7 +295,7 @@ namespace RentIt.Housing.Domain.Services
 
             if (!parseAttempt)
             {
-                _logger.Warning("Некорректный формат ID комментатора: {UserId}.", userId);
+                _logger.Warning("Некорректный формат ID владельца: {UserId}.", userId);
 
                 throw new ArgumentException("Некорректный формат ID владельца.");
             }

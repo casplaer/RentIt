@@ -10,6 +10,10 @@ using Hangfire;
 using Serilog;
 using MongoDB.Driver;
 using RentIt.Housing.Domain.Services;
+using RentIt.Housing.Domain.Services.Grpc;
+using RentIt.Housing.Domain.Options;
+using Microsoft.Extensions.Options;
+using RentIt.Protos.Booking;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +28,8 @@ builder.Services.AddLogging(configuration);
 builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
+
+builder.Services.AddGrpc();
 
 builder.Services.AddSingleton<IMongoClient>(options =>
 {
@@ -45,9 +51,22 @@ builder.Services.AddHousingHangfire(configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<MessageBrokerOptions>(
+    configuration.GetSection("MessageBroker"));
+
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<MessageBrokerOptions>>().Value);
+
+builder.Services.AddRabbitMq();
+
 builder.Services.AddGrpcClient<UsersService.UsersServiceClient>(options =>
 {
     options.Address = new Uri("https://localhost:7108");
+});
+
+builder.Services.AddGrpcClient<BookingService.BookingServiceClient>(options =>
+{
+    options.Address = new Uri("https://localhost:7288");
 });
 
 var app = builder.Build();
@@ -62,6 +81,8 @@ app.UseCustomMiddlewares();
 
 app.UseHangfireDashboard("/hangfire");
 HangfireJobsService.ConfigureRecurringJobs();
+
+app.MapGrpcService<HousingGrpcService>();
 
 app.UseHttpsRedirection();
 app.MapControllers();
