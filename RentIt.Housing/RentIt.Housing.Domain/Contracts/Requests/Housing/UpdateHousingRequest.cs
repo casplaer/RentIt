@@ -13,7 +13,7 @@ namespace RentIt.Housing.Domain.Contracts.Requests.Housing
         int? NumberOfRooms,
         List<string>? Amenities,
         HousingStatus? Status,
-        DateOnly? EstimatedEndDate,
+        DateTime? EstimatedEndDate,
         List<IFormFile>? AddedImages,
         List<string>? RemovedImages
         );

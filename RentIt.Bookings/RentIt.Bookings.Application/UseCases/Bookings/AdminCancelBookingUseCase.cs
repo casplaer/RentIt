@@ -1,0 +1,85 @@
+﻿using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Core.Interfaces.Repositories;
+using RentIt.Bookings.Application.Exceptions;
+using Serilog;
+using RentIt.Bookings.Core.Enums;
+using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.MessageBroker.Contracts.Events;
+using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
+using RentIt.Bookings.Application.Interfaces.Services;
+
+namespace RentIt.Bookings.Application.UseCases.Bookings
+{
+    public class AdminCancelBookingUseCase : IAdminCancelBookingUseCase
+    {
+        private readonly ILogger _logger;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEventBus _eventBus;
+        private readonly IRefundPaymentUseCase _refundPaymentUseCase;
+        private readonly IBookingNotificationService _bookingNotificationService;
+
+
+        public AdminCancelBookingUseCase(
+            ILogger logger,
+            IUnitOfWork unitOfWork,
+            IEventBus eventBus,
+            IRefundPaymentUseCase refundPaymentUseCase,
+            IBookingNotificationService bookingNotificationService)
+        {
+            _logger = logger;
+            _unitOfWork = unitOfWork;
+            _eventBus = eventBus;
+            _refundPaymentUseCase = refundPaymentUseCase;
+            _bookingNotificationService = bookingNotificationService;
+        }
+
+        public async Task ExecuteAsync(
+            Guid bookingId, 
+            bool isFined,
+            CancellationToken cancellationToken)
+        {
+            _logger.Information("Начало отмены бронирования с ID {BookingId} администратором.", bookingId);
+
+            var bookingToCancel = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
+
+            if (bookingToCancel == null)
+            {
+                _logger.Warning("Бронирование с ID {BookingID} не найдено.", bookingId);
+
+                throw new NotFoundException("Бронирование с таким ID не найдено.");
+            }
+
+            if (bookingToCancel.Payment != null)
+            {
+                _logger.Information("Возврат денег клиенту, если бронирование уже было оплачено.");
+
+                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
+            }
+
+            _logger.Information("Находим следующую цепочку бронирований для обновления информации в объявлении. (Если таковая имеется)");
+
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                                                                        bookingToCancel,
+                                                                        cancellationToken);
+
+            bookingToCancel.Status = BookingStatus.Cancelled;
+
+            await _eventBus.PublishAsync(
+                new BookingUpdatedEvent
+                {
+                    HousingId = bookingToCancel.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                }, cancellationToken);
+
+            _logger.Information("Статус бронирования успешно изменен на Cancelled.");
+
+            _unitOfWork.Bookings.Update(bookingToCancel);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.Information("Изменения успешно сохранены.");
+
+            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
+        }
+    }
+}

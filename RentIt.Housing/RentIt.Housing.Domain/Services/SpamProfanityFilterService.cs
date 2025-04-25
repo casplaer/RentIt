@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using RentIt.Housing.Domain.Services.Interfaces;
 using Serilog;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class SpamProfanityFilterService
+    public class SpamProfanityFilterService : ISpamProfanityFilterService
     {
         private readonly List<string> _spamAndProfanityWords;
         private readonly string _spamWordsFilePath;

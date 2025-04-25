@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using RentIt.Housing.Domain.Services.Interfaces;
 
 namespace RentIt.Housing.Domain.Services
 {
@@ -6,7 +7,7 @@ namespace RentIt.Housing.Domain.Services
     {
         public static void ConfigureRecurringJobs()
         {
-            RecurringJob.AddOrUpdate<HousingService>(
+            RecurringJob.AddOrUpdate<IHousingService>(
                 recurringJobId: "CheckHousingsForSpamAndProfanity",
                 methodCall: service => service.CheckUnpublishedHousingsForSpamAsync(new CancellationToken()),
                 cronExpression: () => Cron.Daily(),

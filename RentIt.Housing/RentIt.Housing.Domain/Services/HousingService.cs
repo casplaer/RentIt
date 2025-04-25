@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DnsClient.Internal;
 using FluentValidation;
 using RentIt.Housing.DataAccess.Entities;
 using RentIt.Housing.DataAccess.Enums;
@@ -8,21 +7,24 @@ using RentIt.Housing.DataAccess.Specifications.Housing;
 using RentIt.Housing.Domain.Contracts.Requests.Housing;
 using RentIt.Housing.Domain.Contracts.Responses.Housing;
 using RentIt.Housing.Domain.Exceptions;
-using Serilog;
+using RentIt.Housing.Domain.Services.Interfaces;
+using RentIt.MessageBroker.Contracts.Events;
 
 namespace RentIt.Housing.Domain.Services
 {
-    public class HousingService
+    public class HousingService : IHousingService
     {
         private readonly IHousingRepository _housingRepository;
-        private readonly HousingImageService _imageService;
-        private readonly UserIntegrationService _userIntegrationService;
+        private readonly IHousingImageService _imageService;
+        private readonly IUserIntegrationService _userIntegrationService;
+        private readonly IBookingIntegrationService _bookingIntegrationService;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateHousingRequest> _createHousingRequestValidator;
         private readonly IValidator<GetFilteredHousingsRequest> _getFilteredHousingRequestValidator;
         private readonly IValidator<UpdateHousingRequest> _updateHousingRequestValidator;
-        private readonly SpamProfanityFilterService _filterService;
+        private readonly ISpamProfanityFilterService _filterService;
         private readonly Serilog.ILogger _logger;
+        private readonly IEventBus _eventBus;
 
         public HousingService(
             IHousingRepository housingRepository,
@@ -30,10 +32,12 @@ namespace RentIt.Housing.Domain.Services
             IValidator<CreateHousingRequest> createHousingRequestValidator,
             IValidator<GetFilteredHousingsRequest> getFilteredHousingRequestValidator,
             IValidator<UpdateHousingRequest> updateHousingRequestValidator,
-            HousingImageService imageService,
-            UserIntegrationService userIntegrationService,
-            SpamProfanityFilterService filterService,
-            Serilog.ILogger logger)
+            IHousingImageService imageService,
+            IUserIntegrationService userIntegrationService,
+            IBookingIntegrationService bookingIntegrationService,
+            ISpamProfanityFilterService filterService,
+            Serilog.ILogger logger,
+            IEventBus eventBus)
         {
             _housingRepository = housingRepository;
             _mapper = mapper;
@@ -42,8 +46,10 @@ namespace RentIt.Housing.Domain.Services
             _updateHousingRequestValidator = updateHousingRequestValidator;
             _imageService = imageService;
             _userIntegrationService = userIntegrationService;
+            _bookingIntegrationService = bookingIntegrationService;
             _filterService = filterService;
             _logger = logger;
+            _eventBus = eventBus;
         }
 
         public async Task<GetHousingByIdResponse> GetByIdAsync(
@@ -88,7 +94,7 @@ namespace RentIt.Housing.Domain.Services
                 request.NumberOfRooms?.ToString() ?? "Не задано",
                 request.Rating?.ToString() ?? "Не задано",
                 request.Status?.ToString() ?? "Не задано",
-                request.EstimatedEndDate?.ToString("yyyy-MM-dd") ?? "Не задано",
+                request.UserEndDate?.ToString("yyyy-MM-dd") ?? "Не задано",
                 request.Page,
                 request.PageSize);
 
@@ -103,7 +109,8 @@ namespace RentIt.Housing.Domain.Services
                 numberOfRooms: request.NumberOfRooms,
                 rating: request.Rating,
                 status: request.Status,
-                estimatedEndDate: request.EstimatedEndDate,
+                userStartDate: request.UserStartDate,
+                userEndDate: request.UserEndDate,
                 page: request.Page,
                 pageSize: request.PageSize
             );
@@ -173,11 +180,25 @@ namespace RentIt.Housing.Domain.Services
 
             CheckForUnathorizedAccess(housingToUpdate, userId);
 
+            var oldPrice = housingToUpdate.PricePerNight;
+
             _mapper.Map(request, housingToUpdate);
+
+            var newPrice = housingToUpdate.PricePerNight;
 
             housingToUpdate.Images = await _imageService.UpdateImagesAsync(housingId, request.AddedImages, request.RemovedImages, cancellationToken);
 
             housingToUpdate.UpdatedAt = DateTime.UtcNow;
+
+            if (oldPrice != newPrice)
+            {
+                await _eventBus.PublishAsync(
+                    new HousingUpdatedEvent
+                    {
+                        HousingId = housingId,
+                        NewPricePerNight = newPrice,
+                    }, cancellationToken);
+            }
 
             await _housingRepository.UpdateAsync(housingToUpdate, cancellationToken);
 
@@ -215,6 +236,15 @@ namespace RentIt.Housing.Domain.Services
             }
 
             CheckForUnathorizedAccess(housingToDelete, userId);
+
+            var bookingsExist = await _bookingIntegrationService.GetExistBookings(housingToDelete.HousingId);
+
+            if (bookingsExist)
+            {
+                _logger.Warning("Пользователь попытался удалить объявление с существующими бронированиями.");
+
+                throw new ArgumentException("Невозможно удалить объявления с существующими бронированиями.");
+            }
 
             await _imageService.ClearImagesAsync(housingToDelete.Images, cancellationToken);
 
@@ -263,7 +293,7 @@ namespace RentIt.Housing.Domain.Services
 
             if (!parseAttempt)
             {
-                _logger.Warning("Некорректный формат ID комментатора: {UserId}.", userId);
+                _logger.Warning("Некорректный формат ID владельца: {UserId}.", userId);
 
                 throw new ArgumentException("Некорректный формат ID владельца.");
             }
@@ -272,7 +302,7 @@ namespace RentIt.Housing.Domain.Services
             {
                 _logger.Warning("Попытка неавторизованного доступа к собственности.");
 
-                throw new ArgumentException("Попытка неавторизованного доступа к собственности.");
+                throw new UnauthorizedAccessException("Попытка неавторизованного доступа к собственности.");
             }
         }
     }

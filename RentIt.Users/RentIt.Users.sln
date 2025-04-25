@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentIt.Users.Application", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentIt.Users.Infrastructure", "RentIt.Users.Infrastructure\RentIt.Users.Infrastructure.csproj", "{60160B5B-542A-4034-8BC2-13C372E90204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentIt.Users.Contracts", "RentIt.Users.Contracts\RentIt.Users.Contracts.csproj", "{BA33AD0E-A065-4CEB-A63B-142EEB2A56FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentIt.Users.Contracts", "RentIt.Users.Contracts\RentIt.Users.Contracts.csproj", "{BA33AD0E-A065-4CEB-A63B-142EEB2A56FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentIt.Users.Tests", "RentIt.Users.Tests\RentIt.Users.Tests.csproj", "{5AFA0D97-4F73-49F7-BEA3-9514DC483AE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{BA33AD0E-A065-4CEB-A63B-142EEB2A56FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA33AD0E-A065-4CEB-A63B-142EEB2A56FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA33AD0E-A065-4CEB-A63B-142EEB2A56FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AFA0D97-4F73-49F7-BEA3-9514DC483AE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AFA0D97-4F73-49F7-BEA3-9514DC483AE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AFA0D97-4F73-49F7-BEA3-9514DC483AE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AFA0D97-4F73-49F7-BEA3-9514DC483AE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

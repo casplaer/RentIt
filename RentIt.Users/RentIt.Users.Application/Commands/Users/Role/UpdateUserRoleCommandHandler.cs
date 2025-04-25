@@ -40,5 +40,4 @@ namespace RentIt.Users.Application.Commands.Users.Role
             return true;
         }
     }
-
 }
