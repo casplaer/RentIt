@@ -15,7 +15,7 @@ namespace RentIt.Bookings.Application.Services
         private readonly IBookingNotificationService _bookingNotificationService;
 
         public BookingStatusService(
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             IEventBus eventBus,
             IBookingNotificationService bookingNotificationService)
         {
@@ -93,27 +93,24 @@ namespace RentIt.Bookings.Application.Services
 
         public async Task UpdatePaidBookingsAsync(CancellationToken cancellationToken)
         {
-            var specification = new SearchBookingSpecification(status: BookingStatus.Paid);
+            var specification = new SearchBookingSpecification(startDate: DateTime.UtcNow.Date, status: BookingStatus.Paid);
 
             var bookingsToUpdate = await _unitOfWork.Bookings.GetAllFilteredBookingsAsync(specification, cancellationToken);
 
             foreach (var booking in bookingsToUpdate)
             {
-                if (booking.StartDate.Date == DateTime.UtcNow.Date)
+                booking.Status = BookingStatus.Active;
+
+                _unitOfWork.Bookings.Update(booking);
+
+                var activatedEvent = new BookingUpdatedEvent
                 {
-                    booking.Status = BookingStatus.Active;
-
-                    _unitOfWork.Bookings.Update(booking);
-
-                    var activatedEvent = new BookingUpdatedEvent
-                    {
-                        HousingId = booking.HousingId,
-                        NewStartDate = booking.StartDate,
-                        NewEndDate = booking.EndDate,
-                        BookingStatus = booking.Status.ToString()
-                    };
-                    await _eventBus.PublishAsync(activatedEvent, cancellationToken);
-                }
+                    HousingId = booking.HousingId,
+                    NewStartDate = booking.StartDate,
+                    NewEndDate = booking.EndDate,
+                    BookingStatus = booking.Status.ToString()
+                };
+                await _eventBus.PublishAsync(activatedEvent, cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

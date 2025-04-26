@@ -19,11 +19,6 @@ namespace RentIt.Bookings.Application.Validators
             RuleFor(x => x.StartDate)
                 .GreaterThan(DateTime.UtcNow + TimeSpan.FromHours(24))
                 .WithMessage("Нельзя забронировать собственность менее чем за 24 часа до начала.");
-
-            RuleFor(x => x)
-            .MustAsync(async (request, cancellation) =>
-                !await unitOfWork.Bookings.AnyOverlappingBookingAsync(request.HousingId, request.StartDate, request.EndDate, cancellation))
-            .WithMessage("На выбранные даты уже существует бронь.");
         }
     }
 }

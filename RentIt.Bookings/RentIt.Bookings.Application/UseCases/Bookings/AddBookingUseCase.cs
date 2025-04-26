@@ -51,7 +51,14 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
-            await _validator.ValidateAndThrowAsync(request);
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
+
+            var anyOverlapping = await _unitOfWork.Bookings.AnyOverlappingBookingAsync(request.HousingId, request.StartDate, request.EndDate, cancellationToken);
+
+            if (anyOverlapping)
+            {
+                throw new ArgumentException("На выбранные даты уже существует бронь.");
+            }
 
             _logger.Information("Получение информации о жилье для HousingId: {HousingId}", request.HousingId);
 
