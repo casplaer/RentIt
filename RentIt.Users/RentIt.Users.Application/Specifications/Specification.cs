@@ -26,14 +26,6 @@ namespace RentIt.Users.Application.Specifications
         protected void AddInclude(Expression<Func<TEntity, object>> includeExpression) =>
             _includeExpressions.Add(includeExpression);
 
-        protected void AddOrderBy(
-            Expression<Func<TEntity, object>> orderByExpression) =>
-            OrderByExpression = orderByExpression;
-
-        protected void AddOrderByDescending(
-            Expression<Func<TEntity, object>> orderByDescendingExpression) =>
-            OrderByDescendingExpression = orderByDescendingExpression;
-
         protected void SetPagination(int page, int pageSize)
         {
             Page = page;

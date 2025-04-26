@@ -1,0 +1,82 @@
+﻿using FluentValidation;
+using RentIt.Bookings.Application.Exceptions;
+using RentIt.Bookings.Application.Interfaces.Services;
+
+namespace RentIt.Bookings.API.Middleware
+{
+    public class ExceptionHandlingMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private readonly IAppLogger _logger;
+
+        public ExceptionHandlingMiddleware(RequestDelegate next, IAppLogger logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                await HandleExceptionAsync(context, ex);
+            }
+        }
+
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            _logger.LogError("Возникла ошибка.");
+
+            int statusCode = StatusCodes.Status500InternalServerError;
+            string message = "Возникла непредвиденная ошибка.";
+
+            switch (exception)
+            {
+                case ArgumentException or ArgumentNullException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    message = exception.Message;
+                    break;
+
+                case NotFoundException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    message = exception.Message;
+                    break;
+
+                case ValidationException validationException:
+                    statusCode = StatusCodes.Status400BadRequest;
+
+                    var firstErrorMessage = validationException.Errors?.FirstOrDefault()?.ErrorMessage
+                        ?? "Ошибка валидации.";
+                    message = firstErrorMessage;
+                    break;
+
+                case UnauthorizedAccessException:
+                    statusCode = StatusCodes.Status401Unauthorized;
+                    message = exception.Message;
+                    break;
+
+                case InvalidOperationException:
+                    statusCode = StatusCodes.Status409Conflict;
+                    message = exception.Message;
+                    break;
+
+                default:
+                    _logger.LogWarning("Необработанное исключение: {ExceptionType}", exception.GetType());
+                    break;
+            }
+
+            context.Response.StatusCode = statusCode;
+            context.Response.ContentType = "application/json";
+
+            return context.Response.WriteAsJsonAsync(new
+            {
+                StatusCode = statusCode,
+                Message = message
+            });
+        }
+    }
+}
