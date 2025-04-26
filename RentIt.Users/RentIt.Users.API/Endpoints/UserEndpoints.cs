@@ -22,7 +22,7 @@ namespace RentIt.Users.API.Endpoints
     {
         public static void MapUserEndpoints(this WebApplication app)
         {
-            var usersGroup = app.MapGroup("/users");
+            var usersGroup = app.MapGroup("api/users");
 
             usersGroup.MapGet("/{id:guid}", async (
                 Guid id, 

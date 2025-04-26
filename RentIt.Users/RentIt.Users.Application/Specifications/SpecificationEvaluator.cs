@@ -21,15 +21,6 @@ namespace RentIt.Users.Application.Specifications
                 queryable,
                 (current, includeExpression) => current.Include(includeExpression));
 
-            if (specification.OrderByExpression is not null)
-            {
-                queryable = queryable.OrderBy(specification.OrderByExpression);
-            }
-            else if (specification.OrderByDescendingExpression is not null)
-            {
-                queryable = queryable.OrderByDescending(specification.OrderByDescendingExpression);
-            }
-
             queryable = queryable
                 .Skip((specification.Page - 1) * specification.PageSize)
                 .Take(specification.PageSize);

@@ -1,0 +1,88 @@
+﻿using RentIt.Bookings.Application.Exceptions;
+using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
+using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
+using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
+using RentIt.Bookings.Contracts.Requests.Payments;
+using RentIt.Bookings.Core.Enums;
+using RentIt.Bookings.Core.Interfaces.Repositories;
+using RentIt.MessageBroker.Contracts.Events;
+
+namespace RentIt.Bookings.Application.UseCases.Bookings
+{
+    public class ConfirmBookingUseCase : IConfirmBookingUseCase
+    {
+        private readonly IAppLogger _logger;
+        private readonly IHousingIntegrationService _housingIntegrationsService;
+        private readonly ICreatePaymentUseCase _createPaymentUseCase;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IEventBus _eventBus;
+
+        public ConfirmBookingUseCase(
+            IAppLogger logger,
+            IHousingIntegrationService housingIntegrationsService,
+            ICreatePaymentUseCase createPaymentUseCase,
+            IUnitOfWork unitOfWork,
+            IEventBus eventBus)
+        {
+            _logger = logger;
+            _housingIntegrationsService = housingIntegrationsService;
+            _createPaymentUseCase = createPaymentUseCase;
+            _unitOfWork = unitOfWork;
+            _eventBus = eventBus;
+
+        }
+
+        public async Task ExecuteAsync(string userId, Guid bookingId, CancellationToken cancellationToken)
+        {
+            if (!Guid.TryParse(userId, out var userGuid))
+            {
+                _logger.LogWarning("Некорректный формат UserId: {UserId}", userId);
+
+                throw new ArgumentException("Некорректный формат ID.");
+            }
+
+            _logger.LogInformation("Проверка прав пользователя на доступ к данному бронированию");
+
+            var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
+
+            if (booking == null || booking.Status != BookingStatus.Pending)
+            {
+                _logger.LogWarning("Бронирование с ID {BookingId} не найдено или его статус не равен Pending.", bookingId);
+
+                throw new NotFoundException("Бронирование не найдено.");
+            }
+
+            var housingResponse = await _housingIntegrationsService.GetHousingInfoAsync(booking.HousingId);
+
+            if (userGuid != housingResponse.OwnerId)
+            {
+                _logger.LogWarning("Попытка неавторизованного доступа к бронированию.");
+
+                throw new ArgumentException("Попытка неавторизованного доступа к бронированию.");
+            }
+
+            _logger.LogInformation("Изменение статуса бронирования на \"Подтверждено\".");
+            
+            booking.Status = BookingStatus.Confirmed;
+
+            _logger.LogInformation("Публикация сообщения об успешном создании бронирования в брокер сообщений.");
+
+            booking.Payment = await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
+
+            _unitOfWork.Bookings.Update(booking);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(booking.HousingId, cancellationToken);
+
+            await _eventBus.PublishAsync(
+                new BookingUpdatedEvent
+                {
+                    HousingId = booking.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                }, cancellationToken);
+        }
+    }
+}

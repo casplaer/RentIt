@@ -1,9 +1,10 @@
-﻿using RentIt.Housing.Domain.Contracts.Dto.Users;
+﻿using RentIt.Bookings.Application.Interfaces.Services.Grpc;
+using RentIt.Bookings.Contracts.Dto;
 using RentIt.Protos.Users;
 
-namespace RentIt.Housing.Domain.Services
+namespace RentIt.Bookings.Infrastructure.Services.Grpc
 {
-    public class UserIntegrationService
+    public class UserIntegrationService : IUserIntegrationService
     {
         private readonly UsersService.UsersServiceClient _usersClient;
 
@@ -19,7 +20,7 @@ namespace RentIt.Housing.Domain.Services
             var response = await _usersClient.GetUserAsync(request);
 
             return new UserInfoDto(
-                response.FirstName, 
+                response.FirstName,
                 response.LastName,
                 response.Email,
                 response.PhoneNumber);
