@@ -35,7 +35,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         }
 
         public async Task ExecuteAsync(
-            Guid bookingId, 
+            Guid bookingId,
             bool isFined,
             CancellationToken cancellationToken)
         {
@@ -46,22 +46,62 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             if (bookingToCancel == null)
             {
                 _logger.Warning("Бронирование с ID {BookingID} не найдено.", bookingId);
-
                 throw new NotFoundException("Бронирование с таким ID не найдено.");
             }
 
-            if (bookingToCancel.Payment != null)
+            if (bookingToCancel.Payment != null && bookingToCancel.Payment.Status == PaymentStatus.Completed)
             {
                 _logger.Information("Возврат денег клиенту, если бронирование уже было оплачено.");
 
-                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, isFined, cancellationToken);
+                var payment = await _unitOfWork.Payments.GetByIdAsync(bookingToCancel.Payment.PaymentId, cancellationToken);
+                if (payment == null || payment.Status != PaymentStatus.Completed)
+                {
+                    _logger.Warning("Платеж с ID {PaymentId} не найден или не был завершен.", bookingToCancel.Payment.PaymentId);
+                    throw new Exception("Платеж не найден.");
+                }
+
+                decimal refundAmount = payment.Amount;
+                int finePercent = 0;
+
+                if (isFined)
+                {
+                    var now = DateTime.UtcNow;
+                    var totalDays = (bookingToCancel.EndDate.Date - bookingToCancel.StartDate.Date).TotalDays;
+                    var remainingDays = (bookingToCancel.EndDate.Date - now.Date).TotalDays;
+
+                    if (remainingDays <= 0)
+                    {
+                        finePercent = 50;
+                    }
+                    else
+                    {
+                        finePercent = (int)Math.Round(Math.Min((remainingDays / totalDays) * 100, 50));
+                    }
+
+                    var fineAmount = payment.Amount * finePercent / 100m;
+                    refundAmount -= fineAmount;
+
+                    _logger.Information("Пользователь оштрафован на {FinePercent}%, сумма штрафа {FineAmount}, сумма возврата {RefundAmount}",
+                        finePercent, fineAmount, refundAmount);
+                }
+
+                payment.Status = PaymentStatus.Refunded;
+
+                _unitOfWork.Payments.Update(payment);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _logger.Information("Платеж с ID {PaymentId} отмечен как возвращенный.", payment.PaymentId);
+
+                BackgroundJob.Enqueue(() =>
+                    _bookingNotificationService.NotifyUserAboutRefundAsync(
+                        bookingToCancel, payment, isFined, finePercent, refundAmount, CancellationToken.None));
             }
 
             _logger.Information("Находим следующую цепочку бронирований для обновления информации в объявлении. (Если таковая имеется)");
 
             var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
-                                                                        bookingToCancel,
-                                                                        cancellationToken);
+                bookingToCancel,
+                cancellationToken);
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
@@ -81,7 +121,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 }, cancellationToken);
 
             BackgroundJob.Enqueue(() =>
-                _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken));
+                _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, CancellationToken.None));
         }
     }
 }

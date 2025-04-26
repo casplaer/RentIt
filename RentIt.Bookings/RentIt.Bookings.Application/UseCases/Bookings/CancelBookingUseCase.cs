@@ -99,8 +99,30 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             if (bookingToCancel.Status == BookingStatus.Paid)
             {
-                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, false, cancellationToken);
+                var payment = await _unitOfWork.Payments.GetByIdAsync(bookingToCancel.Payment.PaymentId, cancellationToken);
+                if (payment == null || payment.Status != PaymentStatus.Completed)
+                {
+                    _logger.Warning("Платеж с ID {PaymentId} не найден или не был завершен.", bookingToCancel.Payment.PaymentId);
+                    throw new Exception("Платеж не найден.");
+                }
+
+                payment.Status = PaymentStatus.Refunded;
+
+                _unitOfWork.Payments.Update(payment);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _logger.Information("Платеж с ID {PaymentId} отмечен как возвращенный.", bookingToCancel.Payment.PaymentId);
+
+                BackgroundJob.Enqueue(() =>
+                    _bookingNotificationService.NotifyUserAboutRefundAsync(
+                        bookingToCancel,
+                        payment,
+                        false,
+                        0,
+                        payment.Amount,
+                        CancellationToken.None));
             }
+
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
