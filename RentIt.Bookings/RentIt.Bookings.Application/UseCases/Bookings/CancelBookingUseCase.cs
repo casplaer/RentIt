@@ -1,12 +1,12 @@
-﻿using RentIt.Bookings.Application.Exceptions;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
-using RentIt.Bookings.Application.Services;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
-using Serilog;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -14,23 +14,20 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly IEnumerable<BookingStatus> _allowedToCancelStatuses;
 
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
-        private readonly IRefundPaymentUseCase _refundPaymentUseCase;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         public CancelBookingUseCase(
-            ILogger logger, 
+            IAppLogger logger, 
             IUnitOfWork unitOfWork,
             IEventBus eventBus,
-            IRefundPaymentUseCase refundPaymentUseCase,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;
-            _refundPaymentUseCase = refundPaymentUseCase;
             _bookingNotificationService = bookingNotificationService;
 
             _allowedToCancelStatuses =
@@ -46,13 +43,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             string userId, 
             CancellationToken cancellationToken)
         {
-            _logger.Information("Начало обработки запроса на отмену бронирования {BookingId}.", bookingId);
+            _logger.LogInformation("Начало обработки запроса на отмену бронирования {BookingId}.", bookingId);
 
             var userIdParseAttempt = Guid.TryParse(userId, out var userGuid);
 
             if (!userIdParseAttempt)
             {
-                _logger.Warning("Некорректный формат ID пользователя.");
+                _logger.LogWarning("Некорректный формат ID пользователя.");
 
                 throw new ArgumentException("Некорректный формат ID пользователя.");
             }
@@ -61,49 +58,78 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             if (bookingToCancel == null)
             {
-                _logger.Warning("Бронирование с ID {BookingId} не было найдено.", bookingId);
+                _logger.LogWarning("Бронирование с ID {BookingId} не было найдено.", bookingId);
 
                 throw new NotFoundException("Бронирование с таким ID не найдено.");
             }
 
             if (bookingToCancel.UserId != userGuid)
             {
-                _logger.Warning("Произошла попытка неавторизованного доступа пользователя {UserId} к бронированию {BookingId}.", userId, bookingId);
+                _logger.LogWarning("Произошла попытка неавторизованного доступа пользователя {UserId} к бронированию {BookingId}.", userId, bookingId);
 
                 throw new UnauthorizedAccessException("Попытка неавторизованного доступа.");
             }
 
             if (!_allowedToCancelStatuses.Contains(bookingToCancel.Status))
             {
-                _logger.Warning($"Пользователь попытался отменить бронирование с некорректным статусом. Текущий статус: {bookingToCancel.Status}");
+                _logger.LogWarning($"Пользователь попытался отменить бронирование с некорректным статусом. Текущий статус: {bookingToCancel.Status}");
 
                 throw new ArgumentException($"Можно отменить бронирование только в статусе \"Обрабатывается\", \"Подтверждено\" или \"Оплачено\". Текущий статус: {bookingToCancel.Status}.");
             }
 
             if ((bookingToCancel.StartDate - DateTime.UtcNow).TotalHours <= 24)
             {
-                _logger.Warning("Пользователь попытался отменить бронирование, которое начинается ранее чем через 24 часа от текущего момента.");
+                _logger.LogWarning("Пользователь попытался отменить бронирование, которое начинается ранее чем через 24 часа от текущего момента.");
 
                 throw new ArgumentException("Минимальное время для отмены бронирования состовляет 24 часа до его начала. " +
                     "Для его отмены и возврата средств обратитесь в техническую поддержку.");
             }
 
-            _logger.Information("Находим предущую цепочу бронирований для обновления информации в объявлении. (Если такая имеется)");
+            _logger.LogInformation("Находим предущую цепочу бронирований для обновления информации в объявлении. (Если такая имеется)");
 
             var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
                                                             bookingToCancel,
                                                             cancellationToken);
 
-            _logger.Information("Возврат денег клиенту, если бронирование уже оплачено.");
+            _logger.LogInformation("Возврат денег клиенту, если бронирование уже оплачено.");
 
             if (bookingToCancel.Status == BookingStatus.Paid)
             {
-                await _refundPaymentUseCase.ExecuteAsync(bookingToCancel.Payment.PaymentId, false, cancellationToken);
+                var payment = await _unitOfWork.Payments.GetByIdAsync(bookingToCancel.Payment.PaymentId, cancellationToken);
+                if (payment == null || payment.Status != PaymentStatus.Completed)
+                {
+                    _logger.LogWarning("Платеж с ID {PaymentId} не найден или не был завершен.", bookingToCancel.Payment.PaymentId);
+                    throw new Exception("Платеж не найден.");
+                }
+
+                payment.Status = PaymentStatus.Refunded;
+
+                _unitOfWork.Payments.Update(payment);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation("Платеж с ID {PaymentId} отмечен как возвращенный.", bookingToCancel.Payment.PaymentId);
+
+                BackgroundJob.Enqueue(() =>
+                    _bookingNotificationService.NotifyUserAboutRefundAsync(
+                        bookingToCancel,
+                        payment,
+                        false,
+                        0,
+                        payment.Amount,
+                        CancellationToken.None));
             }
+
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
-            await _eventBus.PublishAsync( 
+            _logger.LogInformation("Статус бронирования успешно изменен на Cancelled.");
+
+            _unitOfWork.Bookings.Update(bookingToCancel);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Изменения успешно сохранены.");
+
+            await _eventBus.PublishAsync(
                 new BookingUpdatedEvent
                 {
                     HousingId = bookingToCancel.HousingId,
@@ -111,14 +137,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                     NewEndDate = EndDate,
                 }, cancellationToken);
 
-            _logger.Information("Статус бронирования успешно изменен на Cancelled.");
-
-            _unitOfWork.Bookings.Update(bookingToCancel);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            _logger.Information("Изменения успешно сохранены.");
-
-            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
+            BackgroundJob.Enqueue(() => 
+                _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken));
         }
     }
 }

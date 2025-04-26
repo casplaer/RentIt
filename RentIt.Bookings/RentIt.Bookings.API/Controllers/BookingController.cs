@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using System.Security.Claims;
@@ -10,7 +11,7 @@ namespace RentIt.Bookings.API.Controllers
     [Route("api")]
     public class BookingController : Controller
     {
-        private readonly Serilog.ILogger _logger;
+        private readonly IAppLogger _logger;
 
         private readonly IAddBookingUseCase _addBookingUseCase;
         private readonly IGetBookingUseCase _getBookingUseCase;
@@ -23,7 +24,7 @@ namespace RentIt.Bookings.API.Controllers
         private readonly IAdminCancelBookingUseCase _adminCancelBookingUseCase;
 
         public BookingController(
-            Serilog.ILogger logger,
+            IAppLogger logger,
             IAddBookingUseCase addBookingUseCase,
             IGetBookingUseCase getBookingUseCase,
             IGetBookingsByHousingIdUseCase getBookingsByHousingIdUseCase,
@@ -54,11 +55,11 @@ namespace RentIt.Bookings.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _logger.Information("Начало создания бронирования для пользователя {UserId}.", userId);
+            _logger.LogInformation("Начало создания бронирования для пользователя {UserId}.", userId);
 
             var booking = await _addBookingUseCase.ExecuteAsync(request, userId, cancellationToken);
 
-            _logger.Information("Бронирование успешно создано. ID: {BookingId} для пользователя {UserId}", booking.BookingId, userId);
+            _logger.LogInformation("Бронирование успешно создано. ID: {BookingId} для пользователя {UserId}", booking.BookingId, userId);
 
             return  CreatedAtAction(nameof(GetBooking), new { bookingId = booking.BookingId }, booking);
         }
@@ -72,7 +73,7 @@ namespace RentIt.Bookings.API.Controllers
             var authenticatedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var authenticatedUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            _logger.Information("Запрос на получение бронирования с ID: {BookingId}", bookingId);
+            _logger.LogInformation("Запрос на получение бронирования с ID: {BookingId}", bookingId);
 
             var booking = await _getBookingUseCase.ExecuteAsync(
                                                        bookingId, 
@@ -80,7 +81,7 @@ namespace RentIt.Bookings.API.Controllers
                                                        authenticatedUserRole!,
                                                        cancellationToken);
 
-            _logger.Information("Бронирование с ID {BookingId} успешно получено", bookingId);
+            _logger.LogInformation("Бронирование с ID {BookingId} успешно получено", bookingId);
 
             return Ok(booking);
         }
@@ -95,7 +96,7 @@ namespace RentIt.Bookings.API.Controllers
             var authenticatedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var authenticatedUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            _logger.Information("Запрос на получение бронирований для пользователя {UserId}.", userId);
+            _logger.LogInformation("Запрос на получение бронирований для пользователя {UserId}.", userId);
 
             var bookingDtos = await _getBookingsByUserIdUseCase.ExecuteAsync(
                                                                     userId,
@@ -104,7 +105,7 @@ namespace RentIt.Bookings.API.Controllers
                                                                     request, 
                                                                     cancellationToken);
 
-            _logger.Information("Получено {Count} бронирований для пользователя {UserId}", bookingDtos.Items.Count, userId);
+            _logger.LogInformation("Получено {Count} бронирований для пользователя {UserId}", bookingDtos.Items.Count, userId);
 
             return Ok(bookingDtos);
         }
@@ -120,7 +121,7 @@ namespace RentIt.Bookings.API.Controllers
             var authenticatedUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var authenticatedUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            _logger.Information("Запрос на получение бронирований по ID собственности {HousingId}.", housingId);
+            _logger.LogInformation("Запрос на получение бронирований по ID собственности {HousingId}.", housingId);
 
             var bookingDtos = await _getBookingsByHousingIdUseCase.ExecuteAsync(
                                                                        housingId,
@@ -129,7 +130,7 @@ namespace RentIt.Bookings.API.Controllers
                                                                        request,
                                                                        cancellationToken);
 
-            _logger.Information("Получено {Count} бронирований для собственности {HousingId}", housingId);
+            _logger.LogInformation("Получено {Count} бронирований для собственности {HousingId}", housingId);
 
             return Ok(bookingDtos);
         }
@@ -142,11 +143,11 @@ namespace RentIt.Bookings.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _logger.Information("Запрос на подтверждение бронирования с ID: {BookingId}.", bookingId);
+            _logger.LogInformation("Запрос на подтверждение бронирования с ID: {BookingId}.", bookingId);
 
             await _confirmBookingUseCase.ExecuteAsync(userId!, bookingId, cancellationToken);
 
-            _logger.Information("Бронирование c ID {BookingId} успешно подтверждено.", bookingId);
+            _logger.LogInformation("Бронирование c ID {BookingId} успешно подтверждено.", bookingId);
 
             return Ok("Бронирование подтверждено.");
         }
@@ -159,11 +160,11 @@ namespace RentIt.Bookings.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _logger.Information("Запрос на отклонение бронирования с ID: {BookingId}.", bookingId);
+            _logger.LogInformation("Запрос на отклонение бронирования с ID: {BookingId}.", bookingId);
 
             await _rejectBookingUseCase.ExecuteAsync(userId!, bookingId, cancellationToken);
 
-            _logger.Information("Бронирование c ID {BookingId} успешно отклонено.", bookingId);
+            _logger.LogInformation("Бронирование c ID {BookingId} успешно отклонено.", bookingId);
 
             return Ok("Бронирование отклонено.");
         }
@@ -176,11 +177,11 @@ namespace RentIt.Bookings.API.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            _logger.Information("Запрос на отмену бронирования с ID: {BookingId}.", bookingId);
+            _logger.LogInformation("Запрос на отмену бронирования с ID: {BookingId}.", bookingId);
 
             await _cancelBookingUseCase.ExecuteAsync(bookingId, userId!, cancellationToken);
 
-            _logger.Information("Бронирование c ID {BookingId} успешно отменено.", bookingId);
+            _logger.LogInformation("Бронирование c ID {BookingId} успешно отменено.", bookingId);
 
             return Ok("Бронирование отменено.");
         }
@@ -192,11 +193,11 @@ namespace RentIt.Bookings.API.Controllers
             bool isFined,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Запрос на отмену бронирования с ID: {BookingId}.", bookingId);
+            _logger.LogInformation("Запрос на отмену бронирования с ID: {BookingId}.", bookingId);
 
             await _adminCancelBookingUseCase.ExecuteAsync(bookingId, isFined, cancellationToken);
 
-            _logger.Information("Бронирование c ID {BookingId} успешно отменено.", bookingId);
+            _logger.LogInformation("Бронирование c ID {BookingId} успешно отменено.", bookingId);
 
             return Ok("Бронирование отменено.");
         }
@@ -207,11 +208,11 @@ namespace RentIt.Bookings.API.Controllers
             Guid bookingId,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Запрос на удаление бронирования с ID: {BookingId}", bookingId);
+            _logger.LogInformation("Запрос на удаление бронирования с ID: {BookingId}", bookingId);
 
             await _deleteBookingUseCase.ExecuteAsync(bookingId, cancellationToken);
 
-            _logger.Information("Бронирование с ID {BookingId} успешно удалено", bookingId);
+            _logger.LogInformation("Бронирование с ID {BookingId} успешно удалено", bookingId);
 
             return Ok("Бронирование удалено.");
         }

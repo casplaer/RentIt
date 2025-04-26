@@ -1,32 +1,31 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Hangfire;
 using RentIt.Bookings.Application.Interfaces.Services;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
-using RentIt.Bookings.Application.Services;
-using RentIt.Bookings.Application.Services.Grpc;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
     public class AddBookingUseCase : IAddBookingUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly HousingIntegrationService _housingService;
-        private readonly ILogger _logger;
+        private readonly IHousingIntegrationService _housingService;
+        private readonly IAppLogger _logger;
         private readonly IMapper _mapper;
         private readonly IValidator<CreateBookingRequest> _validator;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         public AddBookingUseCase(
             IUnitOfWork unitOfWork,
-            HousingIntegrationService housingService,
-            ILogger logger,
+            IHousingIntegrationService housingService,
+            IAppLogger logger,
             IMapper mapper,
             IValidator<CreateBookingRequest> validator,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _housingService = housingService;
@@ -41,55 +40,64 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             string userId,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Начало создания бронирования. Запрос: {@Request}, UserId: {UserId}", request, userId);
+            _logger.LogInformation("Начало создания бронирования. Запрос: {@Request}, UserId: {UserId}", request, userId);
 
             var userIdParseAttempt = Guid.TryParse(userId, out var userGuid);
 
             if (!userIdParseAttempt)
             {
-                _logger.Warning("Некорректный формат UserId: {UserId}", userId);
+                _logger.LogWarning("Некорректный формат UserId: {UserId}", userId);
 
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
-            await _validator.ValidateAndThrowAsync(request);
+            await _validator.ValidateAndThrowAsync(request, cancellationToken);
 
-            _logger.Information("Получение информации о жилье для HousingId: {HousingId}", request.HousingId);
+            var anyOverlapping = await _unitOfWork.Bookings.AnyOverlappingBookingAsync(request.HousingId, request.StartDate, request.EndDate, cancellationToken);
+
+            if (anyOverlapping)
+            {
+                throw new ArgumentException("На выбранные даты уже существует бронь.");
+            }
+
+            _logger.LogInformation("Получение информации о жилье для HousingId: {HousingId}", request.HousingId);
 
             var housingResponse = await _housingService.GetHousingInfoAsync(request.HousingId);
 
-            _logger.Information("Информация о жилье получена. Цена за ночь: {PricePerNight}", housingResponse.PricePerNight);
+            _logger.LogInformation("Информация о жилье получена. Цена за ночь: {PricePerNight}", housingResponse.PricePerNight);
 
             if (userGuid == housingResponse.OwnerId)
             {
-                _logger.Warning("Пользователь попытался забронировать свое же жилье.");
+                _logger.LogWarning("Пользователь попытался забронировать свое же жилье.");
 
                 throw new ArgumentException("Извините, но забронировать свою же собственность невозможно.");
             }
 
             var nights = (request.EndDate.Date - request.StartDate.Date).Days;
 
-            _logger.Information("Количество ночей: {Nights}", nights);
+            _logger.LogInformation("Количество ночей: {Nights}", nights);
 
             var computedTotalPrice = housingResponse.PricePerNight * nights;
 
-            _logger.Information("Общая стоимость бронирования: {TotalPrice}", computedTotalPrice);
+            _logger.LogInformation("Общая стоимость бронирования: {TotalPrice}", computedTotalPrice);
 
             var booking = _mapper.Map<Booking>(request, opt => {
                 opt.Items["ComputedTotalPrice"] = computedTotalPrice;
                 opt.Items["UserId"] = userGuid;
             });
 
-            _logger.Information("Создан объект бронирования: {@Booking}", booking);
+            _logger.LogInformation("Создан объект бронирования: {@Booking}", booking);
 
             await _unitOfWork.Bookings.AddAsync(booking, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
+            _logger.LogInformation("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
 
-            await _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, CancellationToken.None));
 
-            await _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, CancellationToken.None));
 
             return booking;
         }

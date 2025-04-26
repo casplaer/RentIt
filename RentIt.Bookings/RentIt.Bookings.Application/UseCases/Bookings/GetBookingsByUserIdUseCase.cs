@@ -4,7 +4,7 @@ using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Contracts.Dto;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -12,12 +12,12 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
 
         public GetBookingsByUserIdUseCase(
             IUnitOfWork unitOfWork, 
             IMapper mapper, 
-            ILogger logger)
+            IAppLogger logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -31,11 +31,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             GetBookingsByPagesRequest request, 
             CancellationToken cancellationToken)
         {
-            _logger.Information("Получение бронирований для пользователя с UserId: {UserId}.", userId);
+            _logger.LogInformation("Получение бронирований для пользователя с UserId: {UserId}.", userId);
 
             if (authenticatedUserId != userId.ToString() && authenticatedUserRole != "Admin")
             {
-                _logger.Warning("Произошла попытка неавторизованного доступа к данным о бронировании пользователя {UserId}.", userId);
+                _logger.LogWarning("Произошла попытка неавторизованного доступа к данным о бронировании пользователя {UserId}.", userId);
 
                 throw new UnauthorizedAccessException("Попытка неавторизованного доступа.");
             }
@@ -47,11 +47,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             var bookings = await _unitOfWork.Bookings.GetPaginatedFilteredBookingsAsync(specification, cancellationToken);
 
-            _logger.Information("Найдено бронирований: {TotalCount}", bookings.TotalCount);
+            _logger.LogInformation("Найдено бронирований: {TotalCount}", bookings.TotalCount);
 
             var paginatedDtos = _mapper.Map<PaginatedResult<BookingDto>>(bookings);
 
-            _logger.Information("Преобразование бронирований в DTO завершено");
+            _logger.LogInformation("Преобразование бронирований в DTO завершено");
 
             return paginatedDtos;
         }

@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.Bookings.Application.Interfaces.Services;
+using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.Bookings.Infrastructure.MessageBroker;
 using RentIt.Bookings.Infrastructure.Repositories;
+using RentIt.Bookings.Infrastructure.Services.Grpc;
 using RentIt.Users.Infrastructure.Services;
 
 namespace RentIt.Bookings.Infrastructure.Extensions
@@ -24,6 +26,8 @@ namespace RentIt.Bookings.Infrastructure.Extensions
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
             services.AddTransient<IEventBus, EventBus>();
+            services.AddTransient<IHousingIntegrationService, HousingIntegrationService>();
+            services.AddTransient<IUserIntegrationService, UserIntegrationService>();
             services.AddTransient<IEmailSender, EmailSender>();
 
             return services;

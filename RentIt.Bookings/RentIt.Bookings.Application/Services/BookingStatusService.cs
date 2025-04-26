@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Interfaces.EventBus;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Core.Enums;
@@ -10,14 +11,16 @@ namespace RentIt.Bookings.Application.Services
 
     public class BookingStatusService : IBookingStatusService
     {
+        private const int hoursToPayBeforeCancellation = 12;
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
-        private readonly BookingNotificationService _bookingNotificationService;
+        private readonly IBookingNotificationService _bookingNotificationService;
 
         public BookingStatusService(
-            IUnitOfWork unitOfWork, 
+            IUnitOfWork unitOfWork,
             IEventBus eventBus,
-            BookingNotificationService bookingNotificationService)
+            IBookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
             _eventBus = eventBus;
@@ -26,32 +29,30 @@ namespace RentIt.Bookings.Application.Services
 
         public async Task UpdateActiveBookingsAsync(CancellationToken cancellationToken)
         {
-            var specification = new SearchBookingSpecification(status: BookingStatus.Active);
+            var specification = new SearchBookingSpecification(endDate: DateTime.UtcNow.Date, status: BookingStatus.Active);
 
             var bookingsToUpdate = await _unitOfWork.Bookings.GetAllFilteredBookingsAsync(specification, cancellationToken);
 
             foreach (var booking in bookingsToUpdate)
             {
-                if (booking.EndDate <= DateTime.UtcNow)
+                booking.Status = BookingStatus.Completed;
+
+                BackgroundJob.Enqueue(() =>
+                    _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken));
+
+                _unitOfWork.Bookings.Update(booking);
+
+                var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                        booking,
+                        cancellationToken);
+
+                var completedEvent = new BookingUpdatedEvent
                 {
-                    booking.Status = BookingStatus.Completed;
-
-                    await _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken);
-
-                    _unitOfWork.Bookings.Update(booking);
-
-                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
-                            booking,
-                            cancellationToken);
-
-                    var completedEvent = new BookingUpdatedEvent
-                    {
-                        HousingId = booking.HousingId,
-                        NewStartDate = StartDate,
-                        NewEndDate = EndDate,
-                    };
-                    await _eventBus.PublishAsync(completedEvent, cancellationToken);
-                }
+                    HousingId = booking.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                };
+                await _eventBus.PublishAsync(completedEvent, cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -65,11 +66,12 @@ namespace RentIt.Bookings.Application.Services
 
             foreach (var booking in bookingsToUpdate)
             {
-                if ((booking.StartDate - DateTime.UtcNow).TotalHours <= 12)
+                if ((booking.StartDate - DateTime.UtcNow).TotalHours <= hoursToPayBeforeCancellation)
                 {
                     booking.Status = BookingStatus.Cancelled;
 
-                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonPaymentAsync(booking, cancellationToken);
+                    BackgroundJob.Enqueue(() =>
+                        _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonPaymentAsync(booking, cancellationToken));
 
                     _unitOfWork.Bookings.Update(booking);
 
@@ -93,27 +95,24 @@ namespace RentIt.Bookings.Application.Services
 
         public async Task UpdatePaidBookingsAsync(CancellationToken cancellationToken)
         {
-            var specification = new SearchBookingSpecification(status: BookingStatus.Paid);
+            var specification = new SearchBookingSpecification(startDate: DateTime.UtcNow.Date, status: BookingStatus.Paid);
 
             var bookingsToUpdate = await _unitOfWork.Bookings.GetAllFilteredBookingsAsync(specification, cancellationToken);
 
             foreach (var booking in bookingsToUpdate)
             {
-                if (booking.StartDate.Date == DateTime.UtcNow.Date)
+                booking.Status = BookingStatus.Active;
+
+                _unitOfWork.Bookings.Update(booking);
+
+                var activatedEvent = new BookingUpdatedEvent
                 {
-                    booking.Status = BookingStatus.Active;
-
-                    _unitOfWork.Bookings.Update(booking);
-
-                    var activatedEvent = new BookingUpdatedEvent
-                    {
-                        HousingId = booking.HousingId,
-                        NewStartDate = booking.StartDate,
-                        NewEndDate = booking.EndDate,
-                        BookingStatus = booking.Status.ToString()
-                    };
-                    await _eventBus.PublishAsync(activatedEvent, cancellationToken);
-                }
+                    HousingId = booking.HousingId,
+                    NewStartDate = booking.StartDate,
+                    NewEndDate = booking.EndDate,
+                    BookingStatus = booking.Status.ToString()
+                };
+                await _eventBus.PublishAsync(activatedEvent, cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -137,7 +136,8 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(booking, isCreatedMoreThan48HoursAgo, cancellationToken);
+                    BackgroundJob.Enqueue(() =>
+                        _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(booking, isCreatedMoreThan48HoursAgo, cancellationToken));
                 }
             }
 

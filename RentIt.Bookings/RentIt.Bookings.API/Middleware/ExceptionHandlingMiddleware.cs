@@ -1,14 +1,15 @@
 ﻿using FluentValidation;
 using RentIt.Bookings.Application.Exceptions;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.API.Middleware
 {
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly IAppLogger _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(RequestDelegate next, IAppLogger logger)
         {
             _next = next;
             _logger = logger;
@@ -28,7 +29,7 @@ namespace RentIt.Bookings.API.Middleware
 
         private Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            _logger.LogError(exception, "Возникла ошибка.");
+            _logger.LogError("Возникла ошибка.");
 
             int statusCode = StatusCodes.Status500InternalServerError;
             string message = "Возникла непредвиденная ошибка.";
