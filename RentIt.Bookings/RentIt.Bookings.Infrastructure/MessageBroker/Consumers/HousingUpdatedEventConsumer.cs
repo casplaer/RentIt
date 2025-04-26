@@ -1,17 +1,17 @@
 ﻿using RentIt.MessageBroker.Contracts.Events;
 using MassTransit;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 
 namespace RentIt.Bookings.Infrastructure.MessageBroker.Consumers
 {
     public class HousingUpdatedEventConsumer : IConsumer<HousingUpdatedEvent>
     {
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IUpdateBookingsAfterHousingChangedUseCase _updateBookingsAfterHousingChangedUseCase;
 
         public HousingUpdatedEventConsumer(
-            ILogger logger,
+            IAppLogger logger,
             IUpdateBookingsAfterHousingChangedUseCase updateBookingsAfterHousingChangedUseCase)
         {
             _logger = logger;
@@ -20,7 +20,7 @@ namespace RentIt.Bookings.Infrastructure.MessageBroker.Consumers
 
         public async Task Consume(ConsumeContext<HousingUpdatedEvent> context)
         {
-            _logger.Information("Сообщение об обновлении собственности успешно получено.");
+            _logger.LogInformation("Сообщение об обновлении собственности успешно получено.");
 
             await _updateBookingsAfterHousingChangedUseCase.ExecuteAsync(context.Message, context.CancellationToken);
         }

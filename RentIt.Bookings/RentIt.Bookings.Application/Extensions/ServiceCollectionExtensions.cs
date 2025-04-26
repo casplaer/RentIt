@@ -36,8 +36,7 @@ namespace RentIt.Bookings.Application.Extensions
             services.AddScoped<IAddBookingUseCase, AddBookingUseCase>();
             services.AddScoped<ICreatePaymentUseCase, CreatePaymentUseCase>();
             services.AddScoped<IConfirmPaymentUseCase, ConfirmPaymentUseCase>();
-            services.AddScoped<IRefundPaymentUseCase, RefundPaymentUseCase>();
-
+            services.AddScoped<IUpdateBookingsAfterHousingChangedUseCase, UpdateBookingsAfterHousingChangedUseCase>();
 
             return services;
         }
@@ -46,6 +45,7 @@ namespace RentIt.Bookings.Application.Extensions
         {
             services.AddTransient<IBookingNotificationService, BookingNotificationService>();
             services.AddTransient<IBookingStatusService, BookingStatusService>();
+            services.AddSingleton<IAppLogger, AppLogger>();
 
             return services;
         }

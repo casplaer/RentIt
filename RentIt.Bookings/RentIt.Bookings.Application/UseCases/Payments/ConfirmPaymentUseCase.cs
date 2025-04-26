@@ -5,19 +5,19 @@ using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Payments
 {
     public class ConfirmPaymentUseCase : IConfirmPaymentUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IBookingNotificationService _bookingNotificationService;
 
         public ConfirmPaymentUseCase(
             IUnitOfWork unitOfWork,
-            ILogger logger,
+            IAppLogger logger,
             IBookingNotificationService bookingNotificationService)
         {
             _unitOfWork = unitOfWork;
@@ -30,13 +30,13 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             string userId,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Начало подтверждения платежа для бронирования с BookingId {BookingId}.", bookingId);
+            _logger.LogInformation("Начало подтверждения платежа для бронирования с BookingId {BookingId}.", bookingId);
 
             var userIdParseAttempt = Guid.TryParse(userId, out var userGuid);
 
             if (!userIdParseAttempt)
             {
-                _logger.Warning("Некорректный формат ID пользователя.");
+                _logger.LogWarning("Некорректный формат ID пользователя.");
 
                 throw new ArgumentException("Некорректный формат ID пользователя.");
             }
@@ -45,14 +45,14 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             if (booking == null)
             {
-                _logger.Warning("Бронирование с ID {BookingId} не найдено.", bookingId);
+                _logger.LogWarning("Бронирование с ID {BookingId} не найдено.", bookingId);
 
                 throw new NotFoundException("Бронирование не найдено.");
             }
 
             if (booking.UserId != userGuid)
             {
-                _logger.Warning("Пользователь {IncrctUserId} попытался оплатить бронирование пользователя {CrctUserId}.", userGuid, booking.UserId);
+                _logger.LogWarning("Пользователь {IncrctUserId} попытался оплатить бронирование пользователя {CrctUserId}.", userGuid, booking.UserId);
 
                 throw new ArgumentException("Нельзя оплатить бронирование другого человека.");
             }
@@ -61,14 +61,14 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             if (payment == null)
             {
-                _logger.Warning("Платеж с ID {PaymentId} не найден.", booking.Payment.PaymentId);
+                _logger.LogWarning("Платеж с ID {PaymentId} не найден.", booking.Payment.PaymentId);
 
                 throw new Exception("Платеж не найден.");
             }
 
             if (booking.Status == BookingStatus.Cancelled)
             {
-                _logger.Warning("Пользователь пытается оплатить отмененное бронирование.");
+                _logger.LogWarning("Пользователь пытается оплатить отмененное бронирование.");
 
                 throw new ArgumentException("Извините, но это бронирование отменено. Вероятно, вы не оплатили его вовремя. Проверьте свой электронный ящик.");
             }
@@ -85,7 +85,7 @@ namespace RentIt.Bookings.Application.UseCases.Payments
             BackgroundJob.Enqueue(() =>
                 _bookingNotificationService.NotifyUserAboutPaymentSuccessAsync(booking, payment, cancellationToken));
 
-            _logger.Information("Платеж с ID {PaymentId} подтвержден.", booking.Payment.PaymentId);
+            _logger.LogInformation("Платеж с ID {PaymentId} подтвержден.", booking.Payment.PaymentId);
 
             return payment;
         }

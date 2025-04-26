@@ -3,19 +3,19 @@ using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Core.Entities;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
     public class GetBookingUseCase : IGetBookingUseCase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IHousingIntegrationService _housingIntegrationsService;
 
         public GetBookingUseCase(
             IUnitOfWork unitOfWork, 
-            ILogger logger,
+            IAppLogger logger,
             IHousingIntegrationService housingIntegrationsService)
         {
             _unitOfWork = unitOfWork;
@@ -29,13 +29,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             string authenticatedUserRole,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Получение бронирования с BookingId: {BookingId}", bookingId);
+            _logger.LogInformation("Получение бронирования с BookingId: {BookingId}", bookingId);
 
             var authenticatedUserIdParseAttmept = Guid.TryParse(authenticatedUserId, out var authenticatedUserGuid);
 
             if (!authenticatedUserIdParseAttmept)
             {
-                _logger.Warning("Некорректный формат UserId: {UserId}", authenticatedUserId);
+                _logger.LogWarning("Некорректный формат UserId: {UserId}", authenticatedUserId);
 
                 throw new ArgumentException("Некорректный формат ID.");
             }
@@ -43,7 +43,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
             if (booking == null)
             {
-                _logger.Warning("Бронирование с BookingId {BookingId} не найдено", bookingId);
+                _logger.LogWarning("Бронирование с BookingId {BookingId} не найдено", bookingId);
 
                 throw new NotFoundException("Бронирование с таким ID не найдено.");
             }
@@ -52,12 +52,12 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             if (authenticatedUserGuid != booking.UserId && authenticatedUserGuid != housing.OwnerId && authenticatedUserRole != "Admin")
             {
-                _logger.Warning("Произошла попытка неавторизованного доступа к данным о бронировании пользователя {UserId}.", booking.UserId);
+                _logger.LogWarning("Произошла попытка неавторизованного доступа к данным о бронировании пользователя {UserId}.", booking.UserId);
 
                 throw new UnauthorizedAccessException("Попытка неавторизованного доступа.");
             }
 
-            _logger.Information("Бронирование с BookingId {BookingId} успешно получено", bookingId);
+            _logger.LogInformation("Бронирование с BookingId {BookingId} успешно получено", bookingId);
 
             return booking;
         }

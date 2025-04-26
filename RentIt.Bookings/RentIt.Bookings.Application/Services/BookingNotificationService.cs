@@ -3,7 +3,7 @@ using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Contracts.Dto;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Entities;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.Services
 {
@@ -12,13 +12,13 @@ namespace RentIt.Bookings.Application.Services
         private readonly IUserIntegrationService _userIntegrationService;
         private readonly IHousingIntegrationService _housingIntegrationService;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
 
         public BookingNotificationService(
             IUserIntegrationService userIntegrationService,
             IHousingIntegrationService housingIntegrationService,
             IEmailSender emailSender,
-            ILogger logger)
+            IAppLogger logger)
         {
             _userIntegrationService = userIntegrationService;
             _housingIntegrationService = housingIntegrationService;
@@ -62,7 +62,7 @@ namespace RentIt.Bookings.Application.Services
             var ownerInfo = await _userIntegrationService.GetUserInfoAsync(housingResponse.OwnerId);
             if (ownerInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о владельце с ID {OwnerId}", housingResponse.OwnerId);
+                _logger.LogWarning("Не удалось получить информацию о владельце с ID {OwnerId}", housingResponse.OwnerId);
                 return;
             }
 
@@ -78,7 +78,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(ownerInfo.Email, "У вас новая заявка!", body, cancellationToken);
 
-            _logger.Information("Письмо отправлено владельцу жилья на почту: {OwnerEmail}", ownerInfo.Email);
+            _logger.LogInformation("Письмо отправлено владельцу жилья на почту: {OwnerEmail}", ownerInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingCreationAsync(HousingInfoDto housingResponse, CreateBookingRequest request, Guid userGuid, CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(userGuid);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", userGuid);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", userGuid);
                 return;
             }
 
@@ -99,7 +99,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Заявка успешно создана!", body, cancellationToken);
 
-            _logger.Information("Письмо отправлено пользователю на почту: {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Письмо отправлено пользователю на почту: {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingCancellationAsync(Booking bookingToCancel, CancellationToken cancellationToken)
@@ -107,14 +107,14 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToCancel.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", bookingToCancel.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", bookingToCancel.UserId);
                 return;
             }
 
             var housingInfo = await _housingIntegrationService.GetHousingInfoAsync(bookingToCancel.HousingId);
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о жилье с ID {HousingId}", bookingToCancel.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о жилье с ID {HousingId}", bookingToCancel.HousingId);
                 return;
             }
 
@@ -127,7 +127,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Отмена бронирования", body, cancellationToken);
 
-            _logger.Information("Уведомление об отмене бронирования отправлено пользователю {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Уведомление об отмене бронирования отправлено пользователю {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingRejectionAsync(Booking bookingToReject, HousingInfoDto housingInfo, CancellationToken cancellationToken)
@@ -135,7 +135,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(bookingToReject.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId} для отправки email", bookingToReject.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId} для отправки email", bookingToReject.UserId);
                 return;
             }
 
@@ -148,7 +148,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Бронирование отклонено", body, cancellationToken);
 
-            _logger.Information("Уведомление об отклонении бронирования отправлено пользователю {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Уведомление об отклонении бронирования отправлено пользователю {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingConfirmationAsync(Booking booking, Payment payment, CancellationToken cancellationToken)
@@ -156,14 +156,14 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
                 return;
             }
 
             var housingInfo = await _housingIntegrationService.GetHousingInfoAsync(booking.HousingId);
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о жилье с ID {HousingId}", booking.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о жилье с ID {HousingId}", booking.HousingId);
                 return;
             }
 
@@ -180,7 +180,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Ваше бронирование подтверждено!", body, cancellationToken);
 
-            _logger.Information("Уведомление о подтверждении бронирования отправлено пользователю {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Уведомление о подтверждении бронирования отправлено пользователю {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutPaymentSuccessAsync(Booking booking, Payment payment, CancellationToken cancellationToken)
@@ -188,7 +188,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
                 return;
             }
 
@@ -201,7 +201,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Спасибо за оплату!", body, cancellationToken);
 
-            _logger.Information("Письмо об успешной оплате отправлено пользователю на почту: {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Письмо об успешной оплате отправлено пользователю на почту: {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutRefundAsync(Booking booking, Payment payment, bool isFined, decimal finePercent, decimal refundAmount, CancellationToken cancellationToken)
@@ -209,14 +209,14 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
                 return;
             }
 
             var housingInfo = await _housingIntegrationService.GetHousingInfoAsync(booking.HousingId);
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о жилье с ID {HousingId}", booking.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о жилье с ID {HousingId}", booking.HousingId);
                 return;
             }
 
@@ -234,7 +234,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Возврат средств по вашему платежу", body, cancellationToken);
 
-            _logger.Information("Уведомление о возврате средств отправлено пользователю {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Уведомление о возврате средств отправлено пользователю {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingCompletionAsync(Booking booking, CancellationToken cancellationToken)
@@ -242,7 +242,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
                 return;
             }
 
@@ -250,7 +250,7 @@ namespace RentIt.Bookings.Application.Services
 
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Спасибо, что выбрали нас!", body, cancellationToken);
 
-            _logger.Information("Письмо о завершении бронирования отправлено пользователю на почту: {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Письмо о завершении бронирования отправлено пользователю на почту: {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingCancellationDueToNonPaymentAsync(Booking booking, CancellationToken cancellationToken)
@@ -271,7 +271,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
 
                 return;
             }
@@ -280,7 +280,7 @@ namespace RentIt.Bookings.Application.Services
 
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
                 return;
             }
 
@@ -293,7 +293,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Ваше бронирование отменено", body, cancellationToken);
 
-            _logger.Information("Письмо об отмене бронирования (не оплачено) отправлено пользователю на почту: {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Письмо об отмене бронирования (не оплачено) отправлено пользователю на почту: {UserEmail}", userInfo.Email);
         }
 
         public async Task NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(Booking booking, bool isCreatedMoreThan48HoursAgo, CancellationToken cancellationToken)
@@ -301,7 +301,7 @@ namespace RentIt.Bookings.Application.Services
             var userInfo = await _userIntegrationService.GetUserInfoAsync(booking.UserId);
             if (userInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
+                _logger.LogWarning("Не удалось получить информацию о пользователе с ID {UserId}", booking.UserId);
                 return;
             }
 
@@ -309,7 +309,7 @@ namespace RentIt.Bookings.Application.Services
 
             if (housingInfo == null)
             {
-                _logger.Warning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
+                _logger.LogWarning("Не удалось получить информацию о собственности с ID {HousingId}", booking.HousingId);
                 return;
             }
 
@@ -326,7 +326,7 @@ namespace RentIt.Bookings.Application.Services
             var body = GetEmailTemplate(content);
             await _emailSender.SendEmailAsync(userInfo.Email, "Ваше бронирование отменено", body, cancellationToken);
 
-            _logger.Information("Письмо об отмене бронирования (не подтверждено) отправлено пользователю на почту: {UserEmail}", userInfo.Email);
+            _logger.LogInformation("Письмо об отмене бронирования (не подтверждено) отправлено пользователю на почту: {UserEmail}", userInfo.Email);
         }
     }
 }

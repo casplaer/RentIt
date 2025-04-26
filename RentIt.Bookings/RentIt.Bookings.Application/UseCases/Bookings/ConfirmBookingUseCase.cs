@@ -1,5 +1,6 @@
 ﻿using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
+using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
@@ -7,20 +8,19 @@ using RentIt.Bookings.Contracts.Requests.Payments;
 using RentIt.Bookings.Core.Enums;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
-using Serilog;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
     public class ConfirmBookingUseCase : IConfirmBookingUseCase
     {
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IHousingIntegrationService _housingIntegrationsService;
         private readonly ICreatePaymentUseCase _createPaymentUseCase;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
 
         public ConfirmBookingUseCase(
-            ILogger logger,
+            IAppLogger logger,
             IHousingIntegrationService housingIntegrationsService,
             ICreatePaymentUseCase createPaymentUseCase,
             IUnitOfWork unitOfWork,
@@ -38,18 +38,18 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
         {
             if (!Guid.TryParse(userId, out var userGuid))
             {
-                _logger.Warning("Некорректный формат UserId: {UserId}", userId);
+                _logger.LogWarning("Некорректный формат UserId: {UserId}", userId);
 
                 throw new ArgumentException("Некорректный формат ID.");
             }
 
-            _logger.Information("Проверка прав пользователя на доступ к данному бронированию");
+            _logger.LogInformation("Проверка прав пользователя на доступ к данному бронированию");
 
             var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, cancellationToken);
 
             if (booking == null || booking.Status != BookingStatus.Pending)
             {
-                _logger.Warning("Бронирование с ID {BookingId} не найдено или его статус не равен Pending.", bookingId);
+                _logger.LogWarning("Бронирование с ID {BookingId} не найдено или его статус не равен Pending.", bookingId);
 
                 throw new NotFoundException("Бронирование не найдено.");
             }
@@ -58,16 +58,16 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             if (userGuid != housingResponse.OwnerId)
             {
-                _logger.Warning("Попытка неавторизованного доступа к бронированию.");
+                _logger.LogWarning("Попытка неавторизованного доступа к бронированию.");
 
                 throw new ArgumentException("Попытка неавторизованного доступа к бронированию.");
             }
 
-            _logger.Information("Изменение статуса бронирования на \"Подтверждено\".");
+            _logger.LogInformation("Изменение статуса бронирования на \"Подтверждено\".");
             
             booking.Status = BookingStatus.Confirmed;
 
-            _logger.Information("Публикация сообщения об успешном создании бронирования в брокер сообщений.");
+            _logger.LogInformation("Публикация сообщения об успешном создании бронирования в брокер сообщений.");
 
             booking.Payment = await _createPaymentUseCase.ExecuteAsync(new ProcessTestPaymentRequest(bookingId, booking.TotalPrice), cancellationToken);
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using System.Security.Claims;
-using ILogger = Serilog.ILogger;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.API.Controllers
 {
@@ -10,11 +10,11 @@ namespace RentIt.Bookings.API.Controllers
     public class PaymentController : Controller
     {
         private readonly IConfirmPaymentUseCase _confirmPaymentUseCase;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         
         public PaymentController(
             IConfirmPaymentUseCase confirmPaymentUseCase,
-            ILogger logger)
+            IAppLogger logger)
         {
             _confirmPaymentUseCase = confirmPaymentUseCase;
             _logger = logger;
@@ -25,13 +25,13 @@ namespace RentIt.Bookings.API.Controllers
             [FromQuery] Guid bookingId,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Обработка запроса на подтверждение платежа для бронирования {BookingId}.", bookingId);
+            _logger.LogInformation("Обработка запроса на подтверждение платежа для бронирования {BookingId}.", bookingId);
 
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             await _confirmPaymentUseCase.ExecuteAsync(bookingId, userId!, cancellationToken);
 
-            _logger.Information("Платеж успешно подтвержден.");
+            _logger.LogInformation("Платеж успешно подтвержден.");
 
             return Ok("Платеж завершён!");
         }

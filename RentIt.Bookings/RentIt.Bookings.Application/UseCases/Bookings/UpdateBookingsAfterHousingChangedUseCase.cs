@@ -1,7 +1,7 @@
 ﻿using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
 using RentIt.Bookings.Core.Interfaces.Repositories;
 using RentIt.MessageBroker.Contracts.Events;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -9,12 +9,12 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
     {
         private readonly IGetConfirmedBookingsByHousingIdUseCase _getConfirmedBookingsByHousingIdUseCase;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
 
         public UpdateBookingsAfterHousingChangedUseCase(
             IGetConfirmedBookingsByHousingIdUseCase getConfirmedBookingsByHousingIdUseCase,
             IUnitOfWork unitOfWork,
-            ILogger logger)
+            IAppLogger logger)
         {
             _getConfirmedBookingsByHousingIdUseCase = getConfirmedBookingsByHousingIdUseCase;
             _unitOfWork = unitOfWork;
@@ -23,7 +23,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
         public async Task ExecuteAsync(HousingUpdatedEvent message, CancellationToken cancellationToken)
         {
-            _logger.Information("Получение всех бронирований для обновления.");
+            _logger.LogInformation("Получение всех бронирований для обновления.");
 
             var bookingsToUpdate = await _getConfirmedBookingsByHousingIdUseCase.ExecuteAsync(message.HousingId, cancellationToken);
 
@@ -38,7 +38,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                 _unitOfWork.Bookings.Update(booking);
             }
 
-            _logger.Information("Бронирования успешно обновлены. Сохраняем изменения.");
+            _logger.LogInformation("Бронирования успешно обновлены. Сохраняем изменения.");
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

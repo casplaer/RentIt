@@ -5,19 +5,19 @@ using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Contracts.Dto;
 using RentIt.Bookings.Contracts.Requests.Bookings;
 using RentIt.Bookings.Core.Interfaces.Repositories;
-using Serilog;
+using RentIt.Bookings.Application.Interfaces.Services;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
     public class GetBookingsByHousingIdUseCase : IGetBookingsByHousingIdUseCase
     {
-        private readonly ILogger _logger;
+        private readonly IAppLogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHousingIntegrationService _housingIntegrationsService;
         private readonly IMapper _mapper;
 
         public GetBookingsByHousingIdUseCase(
-            ILogger logger, 
+            IAppLogger logger, 
             IUnitOfWork unitOfWork,
             IHousingIntegrationService housingIntegrationsService,
             IMapper mapper)
@@ -35,13 +35,13 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
             GetBookingsByPagesRequest request,
             CancellationToken cancellationToken)
         {
-            _logger.Information("Получение бронирований для собственности с ID {HousingId}.", housingId);
+            _logger.LogInformation("Получение бронирований для собственности с ID {HousingId}.", housingId);
 
             var parseUserIdAttempt = Guid.TryParse(authenticatedUserId, out var authenticatedUserGuid);
 
             if (!parseUserIdAttempt)
             {
-                _logger.Warning("Некорректный формат ID пользователя.");
+                _logger.LogWarning("Некорректный формат ID пользователя.");
 
                 throw new ArgumentException("Некорректный формат ID пользователя.");
             }
@@ -50,7 +50,7 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             if (housing.OwnerId != authenticatedUserGuid && authenticatedUserRole != "Admin")
             {
-                _logger.Warning("Попытка неавторизованного доступа к бронированиям собственности с ID {HousingId}.", housingId);
+                _logger.LogWarning("Попытка неавторизованного доступа к бронированиям собственности с ID {HousingId}.", housingId);
 
                 throw new UnauthorizedAccessException("Попытка неавторизованного доступа.");
             }
@@ -62,11 +62,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             var bookings = await _unitOfWork.Bookings.GetPaginatedFilteredBookingsAsync(specification, cancellationToken);
 
-            _logger.Information("Найдено бронирований: {TotalCount}", bookings.TotalCount);
+            _logger.LogInformation("Найдено бронирований: {TotalCount}", bookings.TotalCount);
 
             var paginatedDtos = _mapper.Map<PaginatedResult<BookingDto>>(bookings);
 
-            _logger.Information("Преобразование бронирований в DTO завершено");
+            _logger.LogInformation("Преобразование бронирований в DTO завершено");
 
             return paginatedDtos;
         }
