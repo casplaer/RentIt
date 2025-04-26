@@ -103,20 +103,20 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             bookingToCancel.Status = BookingStatus.Cancelled;
 
-            await _eventBus.PublishAsync( 
-                new BookingUpdatedEvent
-                {
-                    HousingId = bookingToCancel.HousingId,
-                    NewStartDate = StartDate,
-                    NewEndDate = EndDate,
-                }, cancellationToken);
-
             _logger.Information("Статус бронирования успешно изменен на Cancelled.");
 
             _unitOfWork.Bookings.Update(bookingToCancel);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             _logger.Information("Изменения успешно сохранены.");
+
+            await _eventBus.PublishAsync(
+                new BookingUpdatedEvent
+                {
+                    HousingId = bookingToCancel.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                }, cancellationToken);
 
             await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
         }

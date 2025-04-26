@@ -10,6 +10,8 @@ namespace RentIt.Bookings.Application.Services
 
     public class BookingStatusService : IBookingStatusService
     {
+        private const int hoursToPayBeforeCancellation = 12;
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEventBus _eventBus;
         private readonly IBookingNotificationService _bookingNotificationService;
@@ -26,32 +28,29 @@ namespace RentIt.Bookings.Application.Services
 
         public async Task UpdateActiveBookingsAsync(CancellationToken cancellationToken)
         {
-            var specification = new SearchBookingSpecification(status: BookingStatus.Active);
+            var specification = new SearchBookingSpecification(endDate: DateTime.UtcNow.Date, status: BookingStatus.Active);
 
             var bookingsToUpdate = await _unitOfWork.Bookings.GetAllFilteredBookingsAsync(specification, cancellationToken);
 
             foreach (var booking in bookingsToUpdate)
             {
-                if (booking.EndDate <= DateTime.UtcNow)
+                booking.Status = BookingStatus.Completed;
+
+                await _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken);
+
+                _unitOfWork.Bookings.Update(booking);
+
+                var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
+                        booking,
+                        cancellationToken);
+
+                var completedEvent = new BookingUpdatedEvent
                 {
-                    booking.Status = BookingStatus.Completed;
-
-                    await _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken);
-
-                    _unitOfWork.Bookings.Update(booking);
-
-                    var (StartDate, EndDate) = await _unitOfWork.Bookings.GetCurrentBookingChainAsync(
-                            booking,
-                            cancellationToken);
-
-                    var completedEvent = new BookingUpdatedEvent
-                    {
-                        HousingId = booking.HousingId,
-                        NewStartDate = StartDate,
-                        NewEndDate = EndDate,
-                    };
-                    await _eventBus.PublishAsync(completedEvent, cancellationToken);
-                }
+                    HousingId = booking.HousingId,
+                    NewStartDate = StartDate,
+                    NewEndDate = EndDate,
+                };
+                await _eventBus.PublishAsync(completedEvent, cancellationToken);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -65,7 +64,7 @@ namespace RentIt.Bookings.Application.Services
 
             foreach (var booking in bookingsToUpdate)
             {
-                if ((booking.StartDate - DateTime.UtcNow).TotalHours <= 12)
+                if ((booking.StartDate - DateTime.UtcNow).TotalHours <= hoursToPayBeforeCancellation)
                 {
                     booking.Status = BookingStatus.Cancelled;
 
