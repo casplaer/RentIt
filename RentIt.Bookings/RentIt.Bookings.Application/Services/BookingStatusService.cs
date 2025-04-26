@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Interfaces.EventBus;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Specifications.Bookings;
 using RentIt.Bookings.Core.Enums;
@@ -36,7 +37,8 @@ namespace RentIt.Bookings.Application.Services
             {
                 booking.Status = BookingStatus.Completed;
 
-                await _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken);
+                BackgroundJob.Enqueue(() =>
+                    _bookingNotificationService.NotifyUserAboutBookingCompletionAsync(booking, cancellationToken));
 
                 _unitOfWork.Bookings.Update(booking);
 
@@ -68,7 +70,8 @@ namespace RentIt.Bookings.Application.Services
                 {
                     booking.Status = BookingStatus.Cancelled;
 
-                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonPaymentAsync(booking, cancellationToken);
+                    BackgroundJob.Enqueue(() =>
+                        _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonPaymentAsync(booking, cancellationToken));
 
                     _unitOfWork.Bookings.Update(booking);
 
@@ -133,7 +136,8 @@ namespace RentIt.Bookings.Application.Services
 
                     _unitOfWork.Bookings.Update(booking);
 
-                    await _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(booking, isCreatedMoreThan48HoursAgo, cancellationToken);
+                    BackgroundJob.Enqueue(() =>
+                        _bookingNotificationService.NotifyUserAboutBookingCancellationDueToNonConfirmationAsync(booking, isCreatedMoreThan48HoursAgo, cancellationToken));
                 }
             }
 

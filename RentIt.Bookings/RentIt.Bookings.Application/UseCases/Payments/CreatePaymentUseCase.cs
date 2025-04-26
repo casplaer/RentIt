@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Exceptions;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Contracts.Requests.Payments;
@@ -56,7 +57,8 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             _logger.Information("Платеж с ID: {PaymentId} успешно сохранён в базе данных", payment.PaymentId);
 
-            await _bookingNotificationService.NotifyUserAboutBookingConfirmationAsync(booking, payment, cancellationToken);
+            BackgroundJob.Enqueue(() => 
+                _bookingNotificationService.NotifyUserAboutBookingConfirmationAsync(booking, payment, cancellationToken));
 
             return payment;
         }

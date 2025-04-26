@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Exceptions;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Core.Entities;
@@ -81,7 +82,8 @@ namespace RentIt.Bookings.Application.UseCases.Payments
 
             _logger.Information("Платеж с ID {PaymentId} отмечен как возвращенный.", paymentId);
 
-            await _bookingNotificationService.NotifyUserAboutRefundAsync(booking, payment, isFined, finePercent, refundAmount, cancellationToken);
+            BackgroundJob.Enqueue(() => 
+                _bookingNotificationService.NotifyUserAboutRefundAsync(booking, payment, isFined, finePercent, refundAmount, cancellationToken));
 
             return payment;
         }

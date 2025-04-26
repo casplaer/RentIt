@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Exceptions;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
@@ -118,7 +119,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                     NewEndDate = EndDate,
                 }, cancellationToken);
 
-            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
+            BackgroundJob.Enqueue(() => 
+                _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken));
         }
     }
 }

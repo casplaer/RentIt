@@ -1,4 +1,5 @@
-﻿using RentIt.Bookings.Application.Exceptions;
+﻿using Hangfire;
+using RentIt.Bookings.Application.Exceptions;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
@@ -67,7 +68,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Изменения успешно сохранены.");
 
-            await _bookingNotificationService.NotifyUserAboutBookingRejectionAsync(bookingToReject, housing, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyUserAboutBookingRejectionAsync(bookingToReject, housing, cancellationToken));
         }
     }
 }

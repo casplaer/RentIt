@@ -7,6 +7,7 @@ using RentIt.Bookings.Application.Interfaces.EventBus;
 using RentIt.MessageBroker.Contracts.Events;
 using RentIt.Bookings.Application.Interfaces.UseCases.Payments;
 using RentIt.Bookings.Application.Interfaces.Services;
+using Hangfire;
 
 namespace RentIt.Bookings.Application.UseCases.Bookings
 {
@@ -79,7 +80,8 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
                     NewEndDate = EndDate,
                 }, cancellationToken);
 
-            await _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyUserAboutBookingCancellationAsync(bookingToCancel, cancellationToken));
         }
     }
 }

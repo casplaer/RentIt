@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Hangfire;
 using RentIt.Bookings.Application.Interfaces.Services;
 using RentIt.Bookings.Application.Interfaces.Services.Grpc;
 using RentIt.Bookings.Application.Interfaces.UseCases.Bookings;
@@ -93,9 +94,11 @@ namespace RentIt.Bookings.Application.UseCases.Bookings
 
             _logger.Information("Бронирование успешно сохранено в базе. Id: {BookingId}", booking.BookingId);
 
-            await _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyOwnerAboutNewBookingAsync(housingResponse, request, CancellationToken.None));
 
-            await _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, cancellationToken);
+            BackgroundJob.Enqueue(() =>
+                _bookingNotificationService.NotifyUserAboutBookingCreationAsync(housingResponse, request, userGuid, CancellationToken.None));
 
             return booking;
         }
